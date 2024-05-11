@@ -77,4 +77,4 @@ axiosClient.interceptors.request.use(function (config) {
     return config;
 });
 
-export { csrfCookie, axiosClient, axiosProduct, axiosOrder, axiosCart, axiosUser };
+export { axiosClient, axiosProduct, axiosOrder, axiosCart, axiosUser };
