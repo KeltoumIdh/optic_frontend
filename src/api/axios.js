@@ -1,27 +1,27 @@
 import axios from "axios";
 export const csrfCookie = axios.create({
-    baseURL: "https://tyfwt-vision.website",
+    baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
     withCredentials: true,
     withXSRFToken: true,
 });
 export const axiosAuth = axios.create({
-    baseURL: "https://tyfwt-vision.website",
+    baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
     withCredentials: true,
     withXSRFToken: true,
 });
 const axiosCart = axios.create({
-    baseURL: "https://tyfwt-vision.website/api",
+    baseURL: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api`,
     withCredentials: true,
 });
 const axiosOrder = axios.create({
-    baseURL: "https://tyfwt-vision.website/api",
+    baseURL: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api`,
     withCredentials: true,
     withXSRFToken: true,
 
 });
 
 const axiosProduct = axios.create({
-    baseURL: "https://tyfwt-vision.website/api",
+    baseURL: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api`,
     headers: {
         "X-Requested-With": "XMLHttpRequest",
         },
@@ -30,13 +30,13 @@ const axiosProduct = axios.create({
 
 });
 const axiosClient = axios.create({
-    baseURL: "https://tyfwt-vision.website/api",
+    baseURL: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api`,
     withCredentials: true,
     withXSRFToken: true,
 
 });
 const axiosUser = axios.create({
-    baseURL: "https://tyfwt-vision.website/api",
+    baseURL: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api`,
     withCredentials: true,
     withXSRFToken: true,
 });
