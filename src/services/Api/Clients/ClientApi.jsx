@@ -1,4 +1,4 @@
-import {axiosClient} from "../../../api/axios";
+import {axiosClient, csrfCookie} from "../../../api/axios";
 
 const csrf = () => csrfCookie.get("/sanctum/csrf-cookie");
 
