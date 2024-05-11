@@ -1,22 +1,22 @@
 import axios from "axios";
 export const axiosAuth = axios.create({
-    baseURL: "http://localhost:8000",
+    baseURL: "https://tyfwt-vision.website",
     withCredentials: true,
     withXSRFToken: true,
 });
 const axiosCart = axios.create({
-    baseURL: "http://localhost:8000/api",
+    baseURL: "https://tyfwt-vision.website/api",
     withCredentials: true,
 });
 const axiosOrder = axios.create({
-    baseURL: "http://localhost:8000/api",
+    baseURL: "https://tyfwt-vision.website/api",
     withCredentials: true,
     withXSRFToken: true,
 
 });
 
 const axiosProduct = axios.create({
-    baseURL: "http://localhost:8000/api",
+    baseURL: "https://tyfwt-vision.website/api",
     headers: {
         "X-Requested-With": "XMLHttpRequest",
         },
@@ -25,13 +25,13 @@ const axiosProduct = axios.create({
 
 });
 const axiosClient = axios.create({
-    baseURL: "http://localhost:8000/api",
+    baseURL: "https://tyfwt-vision.website/api",
     withCredentials: true,
     withXSRFToken: true,
 
 });
 const axiosUser = axios.create({
-    baseURL: "http://localhost:8000/api",
+    baseURL: "https://tyfwt-vision.website/api",
     withCredentials: true,
     withXSRFToken: true,
 });
