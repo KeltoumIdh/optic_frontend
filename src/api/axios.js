@@ -1,4 +1,9 @@
 import axios from "axios";
+export const csrfCookie = axios.create({
+    baseURL: "https://tyfwt-vision.website",
+    withCredentials: true,
+    withXSRFToken: true,
+});
 export const axiosAuth = axios.create({
     baseURL: "https://tyfwt-vision.website",
     withCredentials: true,
@@ -72,4 +77,4 @@ axiosClient.interceptors.request.use(function (config) {
     return config;
 });
 
-export { axiosClient, axiosProduct, axiosOrder, axiosCart, axiosUser };
+export { csrfCookie, axiosClient, axiosProduct, axiosOrder, axiosCart, axiosUser };

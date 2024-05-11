@@ -1,6 +1,6 @@
 import {axiosClient} from "../../../api/axios";
 
-const csrf = () => axiosClient.get("/sanctum/csrf-cookie");
+const csrf = () => csrfCookie.get("/sanctum/csrf-cookie");
 
 const ClientApi = {
     delete: async (id) => {
