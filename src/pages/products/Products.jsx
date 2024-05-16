@@ -27,6 +27,7 @@ import {
     AvatarFallback,
 } from "../../components/ui/avatar";
 import { Image } from "@radix-ui/react-avatar";
+import { backEndUrl } from "@/helpers/utils";
 
 function Products() {
     const [products, setProducts] = useState([]);
@@ -190,7 +191,7 @@ function Products() {
                             <TableRow key={product.id}>
                                 <TableCell className="flex items-center max-md:p-2">
                                     <img
-                                        src={`http://localhost:8000/assets/uploads/products/${product.image}`}
+                                        src={`${backEndUrl}/assets/uploads/products/${product.image}`}
                                         alt="avatar"
                                         width="40px"
                                         height="40px"

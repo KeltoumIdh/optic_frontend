@@ -193,10 +193,10 @@ function Clients() {
                                     />
                                     {client.name} {client.lname}
                                 </TableCell>
-                                <TableCell>{client.phone}</TableCell>
+                                <TableCell className='max-md:p-2'>{client.phone}</TableCell>
                                 <TableCell>{client.city}</TableCell>
-                                <TableCell className='flex justify-center'>{client.orders_count}</TableCell>
-                                <TableCell className="text-center ">
+                                <TableCell className='flex justify-center max-md:p-2'>{client.orders_count}</TableCell>
+                                <TableCell className="text-center max-md:p-2">
                                     {client.has_credit ? (
                                         <div className="bg-red-100 rounded text-red-800">
                                             {" "}
@@ -208,8 +208,8 @@ function Clients() {
                                         </div>
                                     )}
                                 </TableCell>
-                                <TableCell className='text-right'>
-                                    <Button className="bg-blue-400 m-1  max-lg:p-2">
+                                <TableCell className='max-md:p-2 flex items-center h-full'>
+                                    <Button className="bg-blue-400 m-1  max-md:px-3">
                                         <Link
                                             to={`/clients/edit/${client.id}`}
                                             className="max-lg:text-xs "
@@ -217,7 +217,7 @@ function Clients() {
                                             <RiEditFill/>
                                         </Link>
                                     </Button>
-                                    <Button className="bg-purple-400 mx-1 max-lg:text-sm max-lg:p-2">
+                                    <Button className="bg-purple-400 mx-1 max-lg:text-sm max-md:px-3">
                                         <Link
                                             to={`/clients/details/${client.id}`}
                                             className="max-lg:text-xs "

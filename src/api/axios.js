@@ -1,30 +1,36 @@
+import { backEndUrl } from "@/helpers/utils";
 import axios from "axios";
 
 // const backendUrl = process.env.REACT_APP_BACKEND_URL ?? '#';
 // console.log('backendUrl',backendUrl);
 // 'https://tyfwt-vision.website' ||
-const getBaseUrl = () =>  'http://localhost:8000';
-console.log('backendUrl',getBaseUrl());
 
-const createAxiosInstance = (baseURL, withCredentials = true, withXSRFToken = true, additionalHeaders = {}) => {
-    const instance = axios.create({
-        baseURL,
-        withCredentials,
-        headers: {
-            ...additionalHeaders,
-            ...(withXSRFToken ? { "X-Requested-With": "XMLHttpRequest" } : {})
-        }
-    });
+const getBaseUrl = () => backEndUrl;
 
-    instance.interceptors.request.use((config) => {
-        const token = localStorage.getItem("optic-token");
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-    });
+const createAxiosInstance = (
+  baseURL,
+  withCredentials = true,
+  withXSRFToken = true,
+  additionalHeaders = {}
+) => {
+  const instance = axios.create({
+    baseURL,
+    withCredentials,
+    headers: {
+      ...additionalHeaders,
+      ...(withXSRFToken ? { "X-Requested-With": "XMLHttpRequest" } : {}),
+    },
+  });
 
-    return instance;
+  instance.interceptors.request.use((config) => {
+    const token = localStorage.getItem("optic-token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  });
+
+  return instance;
 };
 
 const baseApiUrl = `${getBaseUrl()}/api`;
@@ -33,13 +39,11 @@ export const csrfCookie = createAxiosInstance(getBaseUrl(), true, true);
 export const axiosAuth = createAxiosInstance(getBaseUrl(), true, true);
 export const axiosCart = createAxiosInstance(baseApiUrl, true, true);
 export const axiosOrder = createAxiosInstance(baseApiUrl, true, true);
-export const axiosProduct = createAxiosInstance(baseApiUrl, true, true, { "X-Requested-With": "XMLHttpRequest" });
+export const axiosProduct = createAxiosInstance(baseApiUrl, true, true, {
+  "X-Requested-With": "XMLHttpRequest",
+});
 export const axiosClient = createAxiosInstance(baseApiUrl, true, true);
 export const axiosUser = createAxiosInstance(baseApiUrl, true, true);
-
-
-
-
 
 // export const csrfCookie = axios.create({
 //     baseURL: "http://localhost:8000",
