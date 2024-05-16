@@ -2,8 +2,8 @@ import axios from "axios";
 
 // const backendUrl = process.env.REACT_APP_BACKEND_URL ?? '#';
 // console.log('backendUrl',backendUrl);
-
-const getBaseUrl = () => 'https://tyfwt-vision.website' || 'http://localhost:8000';
+// 'https://tyfwt-vision.website' ||
+const getBaseUrl = () =>  'http://localhost:8000';
 console.log('backendUrl',getBaseUrl());
 
 const createAxiosInstance = (baseURL, withCredentials = true, withXSRFToken = true, additionalHeaders = {}) => {
