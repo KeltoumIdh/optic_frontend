@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { axiosUser } from "../../api/axios";
 import { useToast } from "../../components/ui/use-toast";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const EditUser = () => {
   const { id } = useParams();
@@ -85,6 +86,7 @@ const EditUser = () => {
         <Input
           type="text"
           name="name"
+          className="w-[500px]"
           value={userData.name}
           onChange={handleChange}
         />
@@ -94,27 +96,38 @@ const EditUser = () => {
         <Input
           type="email"
           name="email"
+          className="w-[500px]"
           value={userData.email}
           onChange={handleChange}
         />
       </div>
       <div>
         <label>Role</label>
-        <Input
-          type="text"
+      
+         <Select
           name="role"
-          value={userData.role}
-          onChange={handleChange}
-        />
+                     value={userData.role}
+                     onChange={handleChange}
+                  >
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="admin">Admin</SelectItem>
+                      <SelectItem value="owner">Owner</SelectItem>
+                    </SelectContent>
+                  </Select>
       </div>
       <div>
         <label>Password</label>
         <Input
           type="password"
           name="password"
+          className="w-[500px]"
           value={userData.password}
           onChange={handleChange}
         />
+        
       </div>
       <div className="py-4">
         <Button onClick={updateUser}>Update User</Button>
