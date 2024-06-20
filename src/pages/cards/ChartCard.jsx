@@ -1,49 +1,20 @@
-// import React from 'react'
-// import {
-//     Card,
-//     CardContent,
-//     CardDescription,
-//     CardFooter,
-//     CardHeader,
-//     CardTitle,
-// } from "@/components/ui/card";
-
-
-// export const ChartCard = () => {
-//   return (
-//     <Card className="h-[100%] w-[50%]">
-//     <CardHeader className="flex flex-row justify-between items-center">
-//       <h2 className="text-xl"></h2>
-     
-//     </CardHeader>
-//     <CardContent className="flex flex-row justify-between items-center">
-//       <div>
-//         <p className="text-lg"></p>
-//         <CardDescription>
-    
-//         </CardDescription>
-//       </div>
-     
-//     </CardContent>
-//   </Card>
-//   )
-// }
-
-// export default ChartCard
-
 import { BarChart } from '@mui/x-charts/BarChart';
 import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
+import { useAuth } from '@/hooks/useAuth';
+import axiosClient from '@/api/axiosClient';
 
-import { axiosUser } from '../../api/axios';
 
 export default function ChartCard() {
     const [products, setProducts] = useState([]);
+    
+    const { csrf } = useAuth();
 
     useEffect(() => {
         const fetchTopSellingProducts = async () => {
             try {
-                const response = await axiosUser.get('/top/product');
+                await csrf();
+                const response = await axiosClient.get('/api/top/product');
                 setProducts(response.data);
             } catch (error) {
                 console.error('Erreur lors de la récupération des produits les plus vendus :', error);

@@ -1,24 +1,33 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import dayjs from "dayjs";
+import { useAuth } from "@/hooks/useAuth";
+import axiosClient from "@/api/axiosClient";
+import Loader from "@/components/loader";
 
-import ProductApi from "../../services/Api/Products/ProductApi";
 
 function ProductDetails() {
+    
+    const { csrf } = useAuth()
+
+    const [loading, setLoading] = useState(false);
+    
     const [product, setProduct] = useState();
     const [orders, setOrders] = useState();
-    console.log("product", product);
-    console.log("orders", orders);
+    
     const { id } = useParams();
 
     const getProduct = async () => {
         try {
-            const response = await ProductApi.show(id);
-            console.log("data", response);
+            setLoading(true)
+            await csrf()
+            const response = await axiosClient.get(`/api/products/details/${id}`);
             setProduct(response.data.product);
             setOrders(response.data.orders);
         } catch (err) {
             console.log("err", err);
+        } finally {
+            setLoading(false)
         }
     };
 
@@ -26,7 +35,7 @@ function ProductDetails() {
         getProduct();
     }, [id]);
 
-    return (
+    return loading ? <Loader /> : (
         <>
             <div className="pb-14 px-4 md:px-6 2xl:px-20 2xl:container 2xl:mx-auto">
                 <div className="flex justify-start item-start space-y-2 flex-col">
@@ -130,7 +139,7 @@ function ProductDetails() {
                 </div>
                 <div className="flex justify-between xl:h-full items-center w-full flex-col mt-6 ">
                     <div className="flex w-full justify-center items-center ">
-                        <button className="mt-6 md:mt-0 dark:border-white dark:hover:bg-gray-900 dark:bg-transparent dark:text-white py-5 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 border border-gray-800 font-medium w-96 2xl:w-full text-base font-medium leading-4 text-gray-800">
+                        <button className="mt-6 md:mt-0 dark:border-white dark:hover:bg-gray-900 dark:bg-transparent dark:text-white py-5 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 border border-gray-800 font-medium w-96 2xl:w-full text-base leading-4 text-gray-800">
                             <Link to={`/products/edit/${product?.id}`}>
                                 Modifier le produit
                             </Link>

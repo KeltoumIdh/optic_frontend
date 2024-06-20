@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import {
     Table,
@@ -17,21 +17,24 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination";
-
-import { axiosOrder } from "../../api/axios";
-import { Button } from "../../components/ui/button";
 import {
     Avatar,
     AvatarImage,
     AvatarFallback,
 } from "../../components/ui/avatar";
 import { Image } from "@radix-ui/react-avatar";
-import { useParams } from "react-router-dom";
 import { useCheckoutStore } from "../../store";
+import { useAuth } from "@/hooks/useAuth";
+import axiosClient from "@/api/axiosClient.jsx";
+import { backEndUrl } from "@/helpers/utils";
+
 
 function OrderProductsAdd() {
+
+    const { csrf } = useAuth();
+
     const { setSelectedProd, clientId, selectedProd } = useCheckoutStore();
-    console.log("clientId", clientId, "selectedProd", selectedProd);
+    
     const [products, setProducts] = useState([]);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [page, setPage] = useState(0);
@@ -80,16 +83,15 @@ function OrderProductsAdd() {
 
     const getProducts = async (page, perPage, query = "", status = "") => {
         try {
-            const res = await axiosOrder.post(
-                `/orders/products/add/${clientId}  `,
-                {
-                    params: {
-                        page: page + 1,
-                        per_page: perPage,
-                        query: query,
-                        status: status || "",
-                    },
-                }
+            await csrf();
+            const res = await axiosClient.post(`/api/orders/products/add/${clientId}`, {
+                params: {
+                    page: page + 1,
+                    per_page: perPage,
+                    query: query,
+                    status: status || "",
+                },
+            }
             );
             const data = res.data?.data?.data ?? [];
             const client = res?.data?.client ?? [];
@@ -228,7 +230,7 @@ function OrderProductsAdd() {
                                     <Avatar className="mr-2">
                                         <AvatarImage asChild>
                                             <Image
-                                                src={`http://localhost:8000/public/assets/uploads/products/${product.image}`}
+                                                src={`${backEndUrl}/public/assets/uploads/products/${product.image}`}
                                                 alt="avatar"
                                                 width={40}
                                                 height={40}

@@ -20,15 +20,12 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination";
-
-import { axiosClient } from "../../api/axios";
 import { Button } from "../../components/ui/button";
-import {
-    Avatar,
-    AvatarImage,
-    AvatarFallback,
-} from "../../components/ui/avatar";
-import { Image } from "@radix-ui/react-avatar";
+import { useAuth } from "@/hooks/useAuth.jsx";
+import axiosClient from "@/api/axiosClient.jsx";
+import Loader from "@/components/loader";
+
+
 
 function Clients() {
     const [clients, setClients] = useState([]);
@@ -38,6 +35,10 @@ function Clients() {
     const [totalClients, setTotalClients] = useState(0);
     const [searchQuery, setSearchQuery] = useState("");
     const [searchStatus, setSearchStatus] = useState("");
+
+    const { csrf } = useAuth()
+
+    const [loading, setLoading] = useState(false);
 
 
     const handleChangePage = (event, newPage) => {
@@ -60,7 +61,9 @@ function Clients() {
 
     const getClients = async (page, perPage, query = "", status = "") => {
         try {
-            const res = await axiosClient.get("/clients", {
+            setLoading(true)
+            await csrf();
+            const res = await axiosClient.get("/api/clients", {
                 params: {
                     page: page + 1,
                     per_page: perPage,
@@ -78,12 +81,15 @@ function Clients() {
             setTotalClients(totalClientsCount);
         } catch (err) {
             console.log("err", err);
+        } finally {
+            setLoading(false)
         }
     };
 
     const handleDelete = async (id) => {
         try {
-            await axiosClient.delete(`/clients/delete/${id}`);
+            await csrf();
+            await axiosClient.delete(`/api/clients/delete/${id}`);
             setClients((prevClients) =>
                 prevClients.filter((client) => client.id !== id)
             );
@@ -96,7 +102,7 @@ function Clients() {
         getClients(page, rowsPerPage, searchQuery, searchStatus);
     }, [page, rowsPerPage, searchQuery, searchStatus]);
 
-    return (
+    return loading ? <Loader /> : (
         <>
             <div className="flex p-2 justify-between">
                 <h4 className="text-2xl font-semibold dark:text-gray-300">

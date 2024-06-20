@@ -4,11 +4,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { axiosUser } from "../../api/axios";
 import { useToast } from "../../components/ui/use-toast";
+import { useAuth } from "@/hooks/useAuth.jsx";
+import axiosClient from "@/api/axiosClient.jsx";
+import Loader from "@/components/loader";
+
 
 const EditUser = () => {
   const { id } = useParams();
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const { csrf } = useAuth()
+
+  const [loading, setLoading] = useState(false);
 
   const [userData, setUserData] = useState({
     name: "",
@@ -20,7 +28,9 @@ const EditUser = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axiosUser.get(`/users/edit/${id}`);
+        setLoading(true)
+        await csrf();
+        const response = await axiosClient.get(`/api/users/edit/${id}`);
         if (response.status === 200) {
           setUserData(response.data);
         } else {
@@ -28,6 +38,8 @@ const EditUser = () => {
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false)
       }
     };
 
@@ -36,7 +48,8 @@ const EditUser = () => {
 
   const updateUser = async () => {
     try {
-      const response = await axiosUser.put(`/users/update/${id}`, userData);
+      await csrf();
+      const response = await axiosClient.put(`/api/users/update/${id}`, userData);
       if (response.status === 200) {
         toast({
           title: "Success",
@@ -57,7 +70,7 @@ const EditUser = () => {
     }));
   };
 
-  return (
+  return loading ? <Loader /> : (
     <div className="w-full">
       <div className="flex items-center p-2">
         <Link to={"/user/list"} className="mr-2">

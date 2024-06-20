@@ -14,16 +14,22 @@ import {
   DialogClose
 } from "@/components/ui/dialog"
 import { Button } from "../../components/ui/button"
+import { useAuth } from "@/hooks/useAuth"
+import axiosClient from "@/api/axiosClient.jsx";
 
 
 
 export function ListCard() {
+
+  const { csrf } = useAuth();
+
   const [clients, setClients] = React.useState([])
 
   React.useEffect(() => {
     const fetchClients = async () => {
       try {
-        const response = await axiosUser.get("/credit/clients");
+        await csrf();
+        const response = await axiosClient.get("/api/credit/clients");
         if (response.status === 200) {
           setClients(response.data);
           console.log("clients", response.data);

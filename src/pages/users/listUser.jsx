@@ -2,20 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
     CaretSortIcon,
-    ChevronDownIcon,
-    DotsHorizontalIcon,
 } from "@radix-ui/react-icons";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import {
     Table,
     TableBody,
@@ -24,20 +11,28 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Link, Navigate, useNavigate } from "react-router-dom";
-import { Pencil, Trash2 } from "lucide-react";
-import { axiosUser } from "../../api/axios";
+import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "../../components/ui/use-toast";
+import { useAuth } from "@/hooks/useAuth.jsx";
+import axiosClient from "@/api/axiosClient.jsx";
+import Loader from "@/components/loader";
+
 
 export const DataTableDemo = () => {
     const [users, setUsers] = useState([]);
     const { toast } = useToast();
     const navigate = useNavigate();
 
+    const { csrf } = useAuth()
+
+    const [loading, setLoading] = useState(false);
+
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await axiosUser.get("/users");
+                setLoading(true)
+                await csrf();
+                const response = await axiosClient.get("/api/users");
                 if (response.status === 200) {
                     setUsers(response.data);
                 } else {
@@ -45,6 +40,8 @@ export const DataTableDemo = () => {
                 }
             } catch (error) {
                 console.error("Error fetching users:", error);
+            } finally {
+                setLoading(false)
             }
         };
 
@@ -53,7 +50,8 @@ export const DataTableDemo = () => {
 
     const deleteUser = async (userId) => {
         try {
-            const response = await axiosUser.delete(`/users/delete/${userId}`);
+            await csrf();
+            const response = await axiosClient.delete(`/api/users/delete/${userId}`);
             if (response.status === 204) {
                
                 toast({
@@ -67,7 +65,7 @@ export const DataTableDemo = () => {
     };
    
 
-    return (
+    return loading ? <Loader /> : (
         <div className="w-full">
              <div className="flex p-2 justify-between">
                 <h4 className="text-2xl font-semibold dark:text-gray-300">

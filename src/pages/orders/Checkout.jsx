@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import { HiOutlineBanknotes } from "react-icons/hi2";
 import { CiMoneyCheck1 } from "react-icons/ci";
 import { useCheckoutStore } from "../../store";
 import { GiBanknote } from "react-icons/gi";
 import { BsCreditCard2Front } from "react-icons/bs";
-import { axiosOrder, axiosProduct } from "../../api/axios";
 import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import axiosClient from "@/api/axiosClient";
 
 function Checkout() {
+
+    const { csrf } = useAuth();
+
     const location = useLocation();
     const {
         setisCred,
@@ -40,13 +43,10 @@ function Checkout() {
     const [traitaForClient, setTraitaForClient] = useState(false);
     const [traitaClient, setTraitaClient] = useState('');
     const [file, setFile] = useState("");
-    // console.log("traitaForClient", traitaForClient);
-    console.log("traitaFile", file);
-    // console.log("cart", cart);
-    // console.log("prixPayee", prixPayee);
+
+
     const calculateRestPrice = () => {
         const totalAmount = cart.total_price;
-
         if (etatPayment === "credit") {
             // Calculate rest price for credit payment
             return prixPayee
@@ -54,10 +54,12 @@ function Checkout() {
                 : totalAmount;
         }
     };
+
     const [prixReste, setPrixReste] = useState(calculateRestPrice());
     const handleCheckout = async () => {
         try {
-            const response = await axiosOrder.post("add-order", {
+            await csrf();
+            const response = await axiosClient.post("/api/add-order", {
                 client_id: clientId,
                 cart: cart,
                 isCredit: etatPayment === "credit" ? true : false,
@@ -67,8 +69,8 @@ function Checkout() {
                     etatPayment !== "credit"
                         ? cart.total_price
                         : isNaN(prixPayee) || prixPayee === ""
-                        ? 0
-                        : parseFloat(prixPayee).toFixed(2),
+                            ? 0
+                            : parseFloat(prixPayee).toFixed(2),
                 remain_price: prixReste || 0,
                 total_price: cart.total_price,
                 reference_credit: referenceCredit,
@@ -78,11 +80,12 @@ function Checkout() {
             });
             await Promise.all(cart.productsCart.map(async (product) => {
                 try {
-                    const productData = await axiosProduct.get(`products/get/${product.product_id}`);
-                    const updatedQuantityAvailable = productData.data.quantity_available - product.quantity;
-                    const updatedQuantitySold = productData.data.quantity_sold + product.quantity;
+                    await csrf();
+                    const productData = await axiosClient.get(`/api/products/get/${product.product_id}`);
+                    const updatedQuantityAvailable = productData.data.quantity_available ?? 0 - product.quantity ?? 0;
+                    const updatedQuantitySold = productData.data.quantity_sold ?? 0 + product.quantity ?? 0;
 
-                    await axiosProduct.post(`products/update/${product.product_id}`, {
+                    await axiosClient.post(`/api/products/update/${product.product_id}`, {
                         ...productData.data, // Include other product fields to prevent them from becoming null
                         quantity_available: updatedQuantityAvailable,
                         quantity_sold: updatedQuantitySold,
@@ -92,7 +95,7 @@ function Checkout() {
                     throw error; // Rethrow the error to stop the execution of further updates
                 }
             }));
-            console.log("Order created successfully:", response.data);
+
             toast({
                 title: "Success",
                 description: "la Commande created successfully!",
@@ -145,31 +148,29 @@ function Checkout() {
     // };
     const downloadInvoice = async (orderId) => {
         try {
-            const response = await axiosOrder.get(
-                `/download-invoice/${orderId}`,
-                {
-                    responseType: "blob",
-                }
-            );
-          // Create a URL for the blob data
-          const url = window.URL.createObjectURL(new Blob([response.data]));
+            await csrf();
+            const response = await axiosClient.get(`/api/download-invoice/${orderId}`, {
+                responseType: "blob",
+            });
+            // Create a URL for the blob data
+            const url = window.URL.createObjectURL(new Blob([response.data]));
 
-          // Create a temporary link element
-          const link = document.createElement("a");
-          link.href = url;
-          link.setAttribute("download", `invoice.pdf`); // Set the filename for download
-          document.body.appendChild(link);
+            // Create a temporary link element
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", `invoice.pdf`); // Set the filename for download
+            document.body.appendChild(link);
 
-          // Click the link to trigger download
-          link.click();
+            // Click the link to trigger download
+            link.click();
 
-          // Cleanup
-          window.URL.revokeObjectURL(url);
-          link.remove();
+            // Cleanup
+            window.URL.revokeObjectURL(url);
+            link.remove();
         } catch (error) {
-          console.error("Error downloading invoice:", error);
+            console.error("Error downloading invoice:", error);
         }
-      };
+    };
 
     useEffect(() => {
         setPrixReste(calculateRestPrice());
@@ -608,7 +609,7 @@ function Checkout() {
                                         </h3>
                                         <div className="text-right">
                                             <span className="block">
-                                                {cart.price * cart.quantity} dh
+                                                {cart.price ?? 0 * cart.quantity ?? 0} dh
                                             </span>
                                             <span className="text-sm text-gray-600 dark:text-gray-400">
                                                 à {cart.price} dh
@@ -650,12 +651,12 @@ function Checkout() {
                                     <span>
                                         {etatPayment == "credit"
                                             ? // ? prixPayee.toFixed(2)
-                                              isNaN(prixPayee) ||
-                                              prixPayee === ""
+                                            isNaN(prixPayee) ||
+                                                prixPayee === ""
                                                 ? "0.00"
                                                 : parseFloat(prixPayee).toFixed(
-                                                      2
-                                                  )
+                                                    2
+                                                )
                                             : cart.total_price}{" "}
                                         dh
                                     </span>

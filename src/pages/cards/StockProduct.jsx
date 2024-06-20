@@ -1,21 +1,20 @@
 import React, { useEffect, useState } from 'react'
-
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
-import { Link } from "react-router-dom"
-import { axiosUser } from '../../api/axios'
-import { TableCell } from '@mui/material'
+import { useAuth } from '@/hooks/useAuth'
+import axiosClient from "@/api/axiosClient.jsx";
 
 
 export function StockCard() {
+
+  const { csrf } = useAuth();
+
     const [products, setProducts] = useState([]);
-   
-      
-      
           useEffect(() => {
               const fetchAvailableProducts = async () => {
                   try {
-                      const response = await axiosUser.get('/stock/product');
+                    await csrf()
+                      const response = await axiosClient.get('/api/stock/product');
                       setProducts(response.data);
                       console.log('stock', response.data)
                   } catch (error) {

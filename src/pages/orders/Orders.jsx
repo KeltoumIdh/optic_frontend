@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { BiSolidShow } from "react-icons/bi";
 import { RiEditFill } from "react-icons/ri";
-import { RiDeleteBin6Fill } from "react-icons/ri";
-
 import {
     Table,
     TableBody,
@@ -22,17 +20,16 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination";
-
-import { axiosOrder } from "../../api/axios";
 import { Button } from "../../components/ui/button";
-import {
-    Avatar,
-    AvatarImage,
-    AvatarFallback,
-} from "../../components/ui/avatar";
-import { Image } from "@radix-ui/react-avatar";
+import { useAuth } from "@/hooks/useAuth";
+import axiosClient from "@/api/axiosClient.jsx";
+
+
 
 function Orders() {
+
+    const { csrf } = useAuth();
+
     const [orders, setOrders] = useState([]);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [page, setPage] = useState(0);
@@ -58,7 +55,8 @@ function Orders() {
 
     const getOrders = async (page, perPage, query = "", status = "") => {
         try {
-            const res = await axiosOrder.get("/orders", {
+            await csrf();
+            const res = await axiosClient.get("/api/orders", {
                 params: {
                     page: page + 1,
                     per_page: perPage,
@@ -81,7 +79,8 @@ function Orders() {
 
     const handleDelete = async (id) => {
         try {
-            await axiosOrder.delete(`/orders/delete/${id}`);
+            await csrf();
+            await axiosClient.delete(`/api/orders/delete/${id}`);
             setOrders((prevOrders) =>
                 prevOrders.filter((order) => order.id !== id)
             );
