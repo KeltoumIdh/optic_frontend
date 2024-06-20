@@ -14,10 +14,12 @@ import {
 import { Input } from "../../components/ui/input.jsx";
 import { Button } from "../../components/ui/button.jsx";
 import { Loader } from "lucide-react";
-import OrderApi from "@/services/Api/Orders/OrderApi.jsx";
 import { useToast } from "../../components/ui/use-toast.js";
 import { Label } from "../../components/ui/label.jsx";
 import SuccessPopup from "../../components/Popups/SuccessPopup.jsx";
+import { useAuth } from "@/hooks/useAuth.jsx";
+import axiosClient from "@/api/axiosClient.jsx";
+
 
 const formSchema = z.object({
   payment_method: z.string().max(50),
@@ -29,6 +31,9 @@ const formSchema = z.object({
 });
 
 export default function OrderEdit() {
+
+  const { csrf } = useAuth();
+
   const { id } = useParams();
   const [isCredit, setIsCredit] = useState(false);
   const { toast } = useToast();
@@ -44,7 +49,8 @@ export default function OrderEdit() {
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const response = await OrderApi.edit(id);
+        await csrf();
+        const response = await axiosClient.post(`/api/orders/edit/${id}`);
         setValue("payment_method", response.data.payment_method);
         setValue("date_fin_credit", response.data.date_fin_credit);
         setValue("paid_price", response.data.paid_price);
@@ -59,11 +65,19 @@ export default function OrderEdit() {
     fetchOrder();
   }, [id, setValue]);
 
-  const onSubmit = async (data) => {
-    console.log("hello m in");
-    console.log("Form data:", data); // Log form data for debugging
+  const onSubmit = async (e) => {
+    e.preventDefault();
+
+    const data = {
+      paid_price: e?.target?.paid_price?.value,
+      payment_method: e?.target?.payment_method?.value,
+      payement_file: e?.target?.payement_file?.value,
+      date_fin_credit: e?.target?.date_fin_credit?.value ?? "",
+    };
+    
     try {
-      const response = await OrderApi.update(id, data);
+      await csrf();
+      const response = await axiosClient.put(`/api/orders/update/${id}`, data);
       toast({
         title: "Success",
         description: "Order updated successfully!",

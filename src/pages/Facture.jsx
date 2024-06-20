@@ -2,20 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
     CaretSortIcon,
-    ChevronDownIcon,
-    DotsHorizontalIcon,
 } from "@radix-ui/react-icons";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import {
     Table,
     TableBody,
@@ -24,12 +11,15 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Link, Navigate, useNavigate } from "react-router-dom";
-import { Pencil, Trash2 } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 
 import { useToast } from "../components/ui/use-toast";
-import { axiosUser } from "../api/axios";
 import { BiSolidShow } from "react-icons/bi";
+import { backEndUrl } from "@/helpers/utils";
+import { useAuth } from "@/hooks/useAuth";
+import Loader from "@/components/loader";
+import axiosClient from "@/api/axiosClient";
+
 
 export const FactureTable = () => {
     const [clients, setClients] = useState([]);
@@ -38,32 +28,39 @@ export const FactureTable = () => {
     const showPDF = (url) => {
         window.open(url, '_blank');
     };
- 
 
-  
+    const { csrf } = useAuth();
+
+    const [loading, setLoading] = useState(false);
+
+
+
     useEffect(() => {
         const fetchClients = async () => {
             try {
-                const response = await axiosUser.get("/order/facture");
+                setLoading(true)
+                await csrf()
+                const response = await axiosClient.get("/api/order/facture");
                 if (response.status === 200) {
                     setClients(response.data);
-                    console.log("clients", response.data);
                 } else {
                     throw new Error("Failed to fetch clients");
                 }
             } catch (error) {
                 console.error("Error fetching clients:", error);
+            } finally {
+                setLoading(false)
             }
         };
 
         fetchClients();
     }, []);
 
-    return (
+    return loading ? <Loader /> : (
         <div className="w-full">
             <div className="flex p-2 justify-between">
                 <h4 className="text-2xl font-semibold dark:text-gray-300">
-                 Factures
+                    Factures
                 </h4>
             </div>
             {/* <div className="flex items-end py-4">
@@ -98,10 +95,10 @@ export const FactureTable = () => {
                             </TableHead>
                             <TableHead>méthode de payement</TableHead>
                             <TableHead>payement status </TableHead>
-                            
+
                             <TableHead>Facture file </TableHead>
                             <TableHead>Actions </TableHead>
-                            
+
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -113,21 +110,23 @@ export const FactureTable = () => {
                                 <TableCell>{client.phone}</TableCell>
                                 <TableCell>{client.payment_method}</TableCell>
                                 <TableCell>{client.payment_status}</TableCell>
-                                <TableCell>        
-                                <Button
-                                className="bg-green-400 mr-2"
-                                onClick={() => showPDF(`http://localhost:8000/assets/uploads/pdf/${client.invoice}`)}
-                            >
-                                Show PDF
-                            </Button>
-</TableCell>
-                                <TableHead>  <Button className="bg-purple-400 mr-2">
-                                        <Link
-                                            to={`/orders/details/${client.id}`}
-                                        >
-                                            <BiSolidShow/>
-                                        </Link>
-                                    </Button></TableHead>
+                                <TableCell>
+                                    <Button
+                                        className="bg-green-400 mr-2"
+                                        onClick={() => showPDF(`${backEndUrl}/assets/uploads/pdf/${client.invoice}`)}
+                                    >
+                                        Show PDF
+                                    </Button>
+                                </TableCell>
+                                <TableHead>
+                                    <Button className="bg-purple-400 mr-2">
+                                    <Link
+                                        to={`/orders/details/${client.id}`}
+                                    >
+                                        <BiSolidShow />
+                                    </Link>
+                                </Button>
+                                </TableHead>
                             </TableRow>
                         ))}
                     </TableBody>

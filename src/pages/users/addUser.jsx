@@ -8,23 +8,16 @@ import {
   FormLabel,
   FormMessage,
 } from "../../components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 import { Loader } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
-import UserApi from "../../services/Api/User/UserApi";
-import { toast, useToast } from "../../components/ui/use-toast";
-import { axiosUser } from "@/api/axios";
-import { useEffect, useState } from "react";
+import { useToast } from "../../components/ui/use-toast";
+import { useAuth } from "@/hooks/useAuth.jsx";
+import axiosClient from "@/api/axiosClient.jsx";
+
 
 const formSchema = z.object({
   name: z.string().min(2).max(20),
@@ -47,13 +40,40 @@ export default function ProfileForm() {
     formState: { isSubmitting },
   } = form;
 
-  const onSubmit = async (values) => {
-    console.log("values", values);
-    const formData = {
-      name: values.name,
-      email: values.email,
-      role: values.role,
-      password: values.password,
+    const { csrf } = useAuth()
+
+    const onSubmit = async (values) => {
+        console.log('values', values);
+        const formData = new FormData();
+        formData.append('name', values.name);
+        formData.append('email', values.email);
+        formData.append('role', values.role);
+        formData.append('password', values.password);
+
+        try {
+            await csrf();
+            const { status, data } = await axiosClient.post('/api/users/add', formData);
+
+            if (status === 201) {
+
+                toast({
+                    title: "Success",
+                    description: "user created successfully!",
+                });
+                navigate('/user/list')
+                reset();
+                setShowSuccessPopup(true);
+            }
+        } catch (error) {
+            if (error.response && error.response.data && error.response.data.errors) {
+                Object.entries(error.response.data.errors).forEach((error) => {
+                    const [fieldName, errorMessages] = error;
+                    setError(fieldName, {
+                        message: errorMessages.join(),
+                    });
+                });
+            }
+        }
     };
 
     try {
@@ -86,7 +106,7 @@ export default function ProfileForm() {
     }
   };
 
-  
+
 
   useEffect(() => {
     const fetchUserData = async () => {

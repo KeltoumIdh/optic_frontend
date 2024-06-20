@@ -4,11 +4,18 @@ import { Button } from "../../components/ui/button.jsx";
 import ClientApi from "../../services/Api/Clients/ClientApi.jsx";
 import { useToast } from "../../components/ui/use-toast.js";
 import { Loader } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import axiosClient from "@/api/axiosClient.jsx";
+import Loader2 from "@/components/loader";
 
 export default function ClientEdit() {
     const { id } = useParams();
     const { toast } = useToast();
     const navigate = useNavigate();
+
+    const { csrf } = useAuth();
+
+    const [loading, setLoading] = useState(false);
 
     // State to hold client data
     const [clientData, setClientData] = useState({
@@ -25,7 +32,9 @@ export default function ClientEdit() {
     useEffect(() => {
         const fetchClient = async () => {
             try {
-                const response = await ClientApi.edit(id);
+                setLoading(true)
+                await csrf();
+                const response = await axiosClient.post(`/api/clients/edit/${id}`);
                 if (response.status === 200) {
                     setClientData(response.data);
                 } else {
@@ -33,6 +42,8 @@ export default function ClientEdit() {
                 }
             } catch (error) {
                 console.error("Fetch Client Error", error);
+            } finally {
+                setLoading(false)
             }
         };
         fetchClient();
@@ -70,8 +81,10 @@ export default function ClientEdit() {
             formData.append("address", clientData.address);
             formData.append("image", newImage);
 
+            await csrf();
+
             // Call API to update client data
-            const response = await ClientApi.update(id, formData);
+            const response = await axiosClient.post(`/api/clients/update/${id}`, formData);
             if (response.status === 201) {
                 toast({
                     title: "Success",
@@ -93,7 +106,7 @@ export default function ClientEdit() {
         }
     };
 
-    return (
+    return loading ? <Loader2 /> : (
         <>
             <div className="flex items-center p-2">
                 <Link to={"/clients"} className="mr-2">
@@ -188,7 +201,6 @@ export default function ClientEdit() {
                     />
                 </div>
                 </div>
-
                 <div className="grid w-full max-w-sm items-center gap-1.5">
                     <label htmlFor="image" className="block mb-1">
                         Image
@@ -207,8 +219,6 @@ export default function ClientEdit() {
                     Modifier
                 </Button>
             </form>
-
-
         </>
     );
 }

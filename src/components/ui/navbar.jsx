@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -10,21 +9,24 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronLeft, LogOutIcon, Menu } from "lucide-react";
-
 import { Button } from "./button";
-import { useUserContext } from "../../context/AuthContext";
-import Profile from "../../pages/profile";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 // import LanguagePicker from "./language_picker";
 
+
 const NavBar = ({ open, toggleOpen }) => {
-    const { logout: contextLogout, user } = useUserContext();
+    const { authUser, logout } = useAuth()
+
     const navigate = useNavigate();
+
     const handleNavigate = () => {
         navigate("/profile");
         console.log(user.email);
     };
-    const { name, email, role } = user;
+
+    const { name, email, role } = authUser?.data ?? {};
+
     return (
         <div className="sticky top-0 mb-3 p-2 h-[4em] w-full shadow-md flex justify-between items-center">
             <div className="flex flex-row justify-center items-center">
@@ -35,11 +37,14 @@ const NavBar = ({ open, toggleOpen }) => {
             <div className="flex justify-center items-center flex-row gap-3 mr-3">
                 <DropdownMenu>
                     <DropdownMenuTrigger>
-                        {/* <LanguagePicker /> */}
-                        <Avatar>
-                            <AvatarImage className=' border-2 border-red-400 rounded-full' src="http://localhost:8000/assets/uploads/clients/default.jpg" />
-                            <AvatarFallback>Admin</AvatarFallback>
-                        </Avatar>
+                        <div className="flex items-center gap-2">
+                            {/* <LanguagePicker /> */}
+                            <Avatar>
+                                <AvatarImage className=' border-2 border-red-400 rounded-full' src="http://localhost:8000/assets/uploads/clients/default.jpg" />
+                                <AvatarFallback>Admin</AvatarFallback>
+                            </Avatar>
+                            <p>{email}</p>
+                        </div>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                         <DropdownMenuLabel>account</DropdownMenuLabel>
@@ -50,15 +55,15 @@ const NavBar = ({ open, toggleOpen }) => {
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                             className="gap-2 text-red-500 cursor-pointer"
-                            onClick={contextLogout}
+                            onClick={() => {
+                                logout()
+                            }}
                         >
                             <LogOutIcon />
                             Logout
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
-
-                <p>{email}</p>
             </div>
         </div>
     );

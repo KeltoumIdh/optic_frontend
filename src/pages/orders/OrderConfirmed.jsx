@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-
-import { axiosOrder } from "../../api/axios";
 import { useCheckoutStore } from "../../store";
+import { useAuth } from "@/hooks/useAuth";
+import axiosClient from "@/api/axiosClient";
+import { backEndUrl } from "@/helpers/utils";
 
 function OrderConfirmed() {
+    
+    const { csrf } = useAuth();
+
     const { removeFromSelectedProd, setCartI } = useCheckoutStore();
     const [products, setProducts] = useState([]);
     const [quantities, setQuantities] = useState({});
@@ -26,7 +30,8 @@ function OrderConfirmed() {
 
     const getProducts = async (selectedProducts) => {
         try {
-            const response = await axiosOrder.get("/orders/confirmed", {
+            await csrf();
+            const response = await axiosClient.get("/api/orders/confirmed", {
                 params: {
                     selectedProductIds: selectedProducts,
                 },
@@ -203,7 +208,7 @@ function OrderConfirmed() {
                                                         <div className="flex items-center">
                                                             <img
                                                                 className="h-16 w-16 mr-4"
-                                                                src={`http://localhost:8000/assets/uploads/products/${product.image}`}
+                                                                src={`${backEndUrl}/assets/uploads/products/${product.image}`}
                                                                 alt=""
                                                             />
                                                             <div className="flex flex-col">

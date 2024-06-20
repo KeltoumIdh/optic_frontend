@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-
 import { Button } from "../../components/ui/button.jsx";
 import { Loader } from "lucide-react";
 import { useToast } from "../../components/ui/use-toast.js";
 import { axiosProduct } from "../../api/axios.js";
+import { useAuth } from "@/hooks/useAuth";
+import axiosClient from "@/api/axiosClient";
+
 
 export default function ProductAdd() {
+
+    const { csrf } = useAuth()
+
     const { id } = useParams();
     const { toast } = useToast();
     const navigate = useNavigate();
@@ -24,11 +29,13 @@ export default function ProductAdd() {
     const [newImage, setNewImage] = useState({})
 
 
+    const [loading, setLoading] = useState(false);
+
     const fetchProduct = async () => {
         try {
-            const response = await axiosProduct.post(
-                `/products/edit/${id}`
-            );
+            setLoading(true)
+            await csrf();
+            const response = await axiosClient.post(`/api/products/edit/${id}`);
             if (response.status === 200) {
                 setproduct(response.data);
             } else {
@@ -36,6 +43,8 @@ export default function ProductAdd() {
             }
         } catch (error) {
             console.error("Error fetching Product data:", error);
+        } finally {
+            setLoading(false)
         }
     };
 
@@ -73,8 +82,9 @@ export default function ProductAdd() {
             formData.append("quantity_sold", product.quantity_sold);
             formData.append("image", newImage);
 
+            await csrf();
 
-            const response = await axiosProduct.post(`/products/update/${id}`, formData);
+            const response = await axiosClient.post(`/api/products/update/${id}`, formData);
 
 
             if (response.status === 200) {
@@ -99,7 +109,7 @@ export default function ProductAdd() {
         }));
     };
 
-    return (
+    return loading ? <Loader /> : (
         <>
             <div className="flex items-center p-2">
                 <Link to={"/products"} className="mr-2">

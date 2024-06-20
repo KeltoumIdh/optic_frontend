@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import dayjs from "dayjs";
-import OrderApi from "../../services/Api/Orders/OrderApi";
-import { axiosOrder } from "../../api/axios";
 import { Loader } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import axiosClient from "@/api/axiosClient.jsx";
+import { backEndUrl } from "@/helpers/utils";
+
 
 function OrderDetails() {
+
+    const { csrf } = useAuth();
+
     const [order, setOrder] = useState({});
     const [products, setProducts] = useState();
 
@@ -13,7 +18,8 @@ function OrderDetails() {
 
     const getOrder = async () => {
         try {
-            const response = await OrderApi.show(id);
+            await csrf();
+            const response = await axiosClient.get(`/api/orders/details/${id}`);
             setOrder(response.data.order);
             setProducts(response.data.products);
         } catch (err) {
@@ -25,10 +31,9 @@ function OrderDetails() {
     const handleDownload = async () => {
         try {
             setIsLoading(true);
+            await csrf();
 
-            const { data: filePath } = await axiosOrder.post(
-                `/download-invoice/${id}`
-            );
+            const { data: filePath } = await axiosClient.post(`/api/download-invoice/${id}`);
 
             const alink = document.createElement("a");
             alink.href = filePath ?? "";
@@ -134,12 +139,12 @@ function OrderDetails() {
                                             <div className="max-md:pb-4 w-full md:w-20 max-md:flex justify-center">
                                                 <img
                                                     className="w-full hidden md:block"
-                                                    src={`http://localhost:8000/assets/uploads/products/${product.image}`}
+                                                    src={`${backEndUrl}/assets/uploads/products/${product.image}`}
                                                     alt="product_img"
                                                 />
                                                 <img
                                                     className="w-1/2 md:hidden"
-                                                    src={`http://localhost:8000/assets/uploads/products/${product.image}`}
+                                                    src={`${backEndUrl}/assets/uploads/products/${product.image}`}
                                                     alt="product"
                                                 />
                                             </div>
@@ -221,7 +226,7 @@ function OrderDetails() {
                                 <div className="flex-col justify-between items-center flex-shrink-0">
                                     <div className="flex justify-start w-full md:justify-start items-center space-x-4 py-4  border-gray-200">
                                         <img
-                                            src={`http://localhost:8000/assets/uploads/clients/${order?.client?.image}`}
+                                            src={`${backEndUrl}/assets/uploads/clients/${order?.client?.image}`}
                                             alt="avatar"
                                             className="w-10"
                                         />

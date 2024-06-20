@@ -1,21 +1,10 @@
-import React, { useEffect } from "react";
-import { useUserContext } from "../context/AuthContext";
-
+import React from "react";
 import { FourCard } from "./cards/FourCard";
-
 import { ListCard } from "./cards/listCard";
 import ChartCard from "./cards/ChartCard";
-import { axiosUser } from "../api/axios";
 import { StockCard } from "./cards/StockProduct";
 
 const Home = () => {
-  // const { getUser, user } = useAuthContext();
-  const { setAuthenticated, user } = useUserContext();
-
-  useEffect(() => {
-    setAuthenticated;
-  }, []);
-
   return (
     <div className="w-full">
       <div className="md:m-2 flex flex-col justify-between items-start gap-2 w-full md:w-[calc(100 - 5)] ">

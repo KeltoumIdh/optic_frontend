@@ -2,20 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
     CaretSortIcon,
-    ChevronDownIcon,
-    DotsHorizontalIcon,
 } from "@radix-ui/react-icons";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import {
     Table,
     TableBody,
@@ -24,22 +11,25 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Link, Navigate, useNavigate } from "react-router-dom";
-import { Pencil, Trash2 } from "lucide-react";
-
+import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "../components/ui/use-toast";
-import { axiosUser } from "../api/axios";
 import { BiSolidShow } from "react-icons/bi";
+import { useAuth } from "@/hooks/useAuth";
+import axiosClient from "@/api/axiosClient";
+
 
 export const DataTable = () => {
     const [clients, setClients] = useState([]);
     const { toast } = useToast();
     const navigate = useNavigate();
 
+    const { csrf } = useAuth();
+
     useEffect(() => {
         const fetchClients = async () => {
             try {
-                const response = await axiosUser.get("/order/check");
+                await csrf();
+                const response = await axiosClient.get("/api/order/check");
                 if (response.status === 200) {
                     setClients(response.data);
                     console.log("clients", response.data);
@@ -61,25 +51,6 @@ export const DataTable = () => {
                  Banque
                 </h4>
             </div>
-            {/* <div className="flex items-end py-4">
-                <Input placeholder="Filter emails..." className="max-w-sm" />
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="ml-auto">
-                            Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                       
-                    </DropdownMenuContent>
-                   
-                </DropdownMenu>
-                <div className="p-2">
-                        <Link to="/user/add">
-                            <Button variant="outline">Add User</Button>
-                        </Link>
-                    </div>
-            </div> */}
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-
 import {
     Table,
     TableBody,
@@ -19,18 +18,18 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination";
-
-import { axiosClient, axiosOrder } from "../../api/axios";
 import { Button } from "../../components/ui/button";
-import {
-    Avatar,
-    AvatarImage,
-    AvatarFallback,
-} from "../../components/ui/avatar";
-import { Image } from "@radix-ui/react-avatar";
 import { useCheckoutStore } from "../../store";
+import { useAuth } from "@/hooks/useAuth";
+import axiosClient from "@/api/axiosClient";
+import { backEndUrl } from "@/helpers/utils";
+
+
 
 function OrderAdd() {
+    
+    const { csrf } = useAuth();
+
     const { setClient } = useCheckoutStore();
     const [clients, setClients] = useState([]);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -57,7 +56,8 @@ function OrderAdd() {
 
     const getClients = async (page, perPage, query = "", status = "") => {
         try {
-            const res = await axiosOrder.get("/orders/add", {
+            await csrf();
+            const res = await axiosClient.get("/api/orders/add", {
                 params: {
                     page: page + 1,
                     per_page: perPage,
@@ -190,7 +190,7 @@ function OrderAdd() {
                             <TableRow key={client.id}>
                                 <TableCell className="h-full flex items-center">
                                     <img
-                                        src={`http://localhost:8000/assets/uploads/clients/${client.image}`}
+                                        src={`${backEndUrl}/assets/uploads/clients/${client.image}`}
                                         alt="avatar"
                                         width="40"
                                         height="40"

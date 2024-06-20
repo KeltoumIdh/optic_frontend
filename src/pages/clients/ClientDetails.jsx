@@ -1,24 +1,31 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import dayjs from "dayjs";
-
-import ClientApi from "../../services/Api/Clients/ClientApi";
+import { useAuth } from "@/hooks/useAuth";
+import axiosClient from "@/api/axiosClient.jsx";
+import Loader from "@/components/loader";
 
 function ClientDetails() {
     const [client, setClient] = useState();
     const [orders, setOrders] = useState();
-    console.log("client", client);
-    console.log("orders", orders);
+    
     const { id } = useParams();
+
+    const { csrf } = useAuth();
+
+    const [loading, setLoading] = useState(false);
 
     const getClient = async () => {
         try {
-            const response = await ClientApi.show(id);
-            console.log("data", response);
+            setLoading(true)
+            await csrf();
+            const response = await axiosClient.get(`/api/clients/details/${id}`);
             setClient(response.data.client);
             setOrders(response.data.orders);
         } catch (err) {
             console.log("err", err);
+        } finally {
+            setLoading(false)
         }
     };
 
@@ -26,7 +33,7 @@ function ClientDetails() {
         getClient();
     }, [id]);
 
-    return (
+    return loading ? <Loader /> : (
         <>
             <div className="pb-14 px-4 md:px-6 2xl:px-20 2xl:container 2xl:mx-auto">
                 <div className="flex justify-start item-start space-y-2 flex-col">
@@ -117,7 +124,7 @@ function ClientDetails() {
                 </div>
                 <div className="flex justify-between xl:h-full items-center w-full flex-col mt-6 ">
                     <div className="flex w-full justify-center items-center ">
-                        <button className="mt-6 md:mt-0 dark:border-white dark:hover:bg-gray-900 dark:bg-transparent dark:text-white py-5 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 border border-gray-800 font-medium w-96 2xl:w-full text-base font-medium leading-4 text-gray-800">
+                        <button className="mt-6 md:mt-0 dark:border-white dark:hover:bg-gray-900 dark:bg-transparent dark:text-white py-5 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 border border-gray-800 font-medium w-96 2xl:w-full text-base leading-4 text-gray-800">
                             <Link to={`/clients/edit/${client?.id}`}>
                                 Edit Client
                             </Link>
@@ -181,11 +188,10 @@ function ClientDetails() {
                                     </td>
                                     <td className="px-6 py-4">
                                         <div
-                                            className={`px-2 rounded ${
-                                                order.is_credit === 1
+                                            className={`px-2 rounded ${order.is_credit === 1
                                                     ? "bg-red-100 text-red-800"
                                                     : "bg-green-100 text-green-800"
-                                            }`}
+                                                }`}
                                         >
                                             {order.is_credit === 1
                                                 ? "Oui"

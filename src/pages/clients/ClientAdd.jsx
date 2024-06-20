@@ -1,23 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import * as z from "zod";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
     Form,
-    FormControl,
     FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
 } from "../../components/ui/form";
 import { Input } from "../../components/ui/input.jsx";
 import { Button } from "../../components/ui/button.jsx";
 import { Loader } from "lucide-react";
-import ClientApi from "../../services/Api/Clients/ClientApi";
 import { useToast } from "../../components/ui/use-toast.js";
-import { Label } from "../../components/ui/label";
-// import SuccessPopup from "../../components/Popups/SuccessPopup.jsx"; // Import your success popup component
+import { useAuth } from "@/hooks/useAuth";
+import axiosClient from "@/api/axiosClient.jsx";
 
 export default function ClientAdd() {
     const { toast } = useToast();
@@ -32,6 +25,8 @@ export default function ClientAdd() {
         setValue,
         formState: { errors },
     } = form;
+
+    const { csrf } = useAuth()
 
     // state to store image Obj
     const [image, setImage] = useState({})
@@ -61,7 +56,8 @@ export default function ClientAdd() {
         formData.append("image", image);
 
         try {
-            const response = await ClientApi.create(formData);
+            await csrf();
+            const response = await axiosClient.post('/api/clients/add',formData);
             if (response.status === 201) {
                 toast({
                     title: "Success",
@@ -192,8 +188,6 @@ export default function ClientAdd() {
                     </Button>
                 </form>
             </Form>
-            {/* {showSuccessPopup && <SuccessPopup message="Client created successfully!"
-        onClose={closeSuccessPopup}  />} */}
         </>
     );
 }

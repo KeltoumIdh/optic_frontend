@@ -21,15 +21,17 @@ import {
 
 import { axiosProduct } from "../../api/axios";
 import { Button } from "../../components/ui/button";
-import {
-    Avatar,
-    AvatarImage,
-    AvatarFallback,
-} from "../../components/ui/avatar";
-import { Image } from "@radix-ui/react-avatar";
 import { backEndUrl } from "@/helpers/utils";
+import { useAuth } from "@/hooks/useAuth";
+import axiosClient from "@/api/axiosClient";
+import Loader from "@/components/loader";
+
+
 
 function Products() {
+    
+    const { csrf } = useAuth()
+
     const [products, setProducts] = useState([]);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [page, setPage] = useState(0);
@@ -53,8 +55,12 @@ function Products() {
         setSearchQuery(event.target.value);
     };
 
+    const [loading, setLoading] = useState(false);
+
     const getProducts = async (page, perPage, query = "", status = "") => {
         try {
+            setLoading(true)
+            await csrf();
             const res = await axiosProduct.get("/products", {
                 params: {
                     page: page + 1,
@@ -73,6 +79,8 @@ function Products() {
             setTotalProducts(totalProductsCount);
         } catch (err) {
             console.log("err", err);
+        } finally {
+            setLoading(false)
         }
     };
     const getStatusColorClass = (status) => {
@@ -90,7 +98,8 @@ function Products() {
 
     const handleDelete = async (id) => {
         try {
-            await axiosProduct.delete(`/products/delete/${id}`);
+            await csrf();
+            await axiosClient.delete(`/api/products/delete/${id}`);
             setProducts((prevProducts) =>
                 prevProducts.filter((product) => product.id !== id)
             );
@@ -102,7 +111,7 @@ function Products() {
         getProducts(page, rowsPerPage, searchQuery, searchStatus);
     }, [page, rowsPerPage, searchQuery, searchStatus]);
 
-    return (
+    return loading ? <Loader /> : (
         <>
             <div className="flex p-2 justify-between">
             <h4 className="lg:text-2xl text-lg font-semibold dark:text-gray-300">

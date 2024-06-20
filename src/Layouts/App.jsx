@@ -1,36 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Outlet } from "react-router-dom";
 import SideBar, { MobileMenu } from "../components/ui/sidebar";
 import NavBar from "../components/ui/navbar";
 import { useMediaQuery } from "react-responsive";
-import { useUserContext } from "../context/AuthContext.jsx";
-import AuthApi from "../services/Api/Auth/AuthApi.js";
 import "../App.css";
+import { useAuth } from "@/hooks/useAuth";
+
+
 const App = () => {
-    const {
-        authenticated,
-        setUser,
-        user,
-        setAuthenticated,
-        logout: contextLogout,
-    } = useUserContext();
-    const [isLoading, setIsLoading] = useState(true);
-    const navigate = useNavigate();
-    useEffect(() => {
-        if (authenticated === true) {
-            setIsLoading(false);
-            AuthApi.getUser()
-                .then(({ data }) => {
-                    setUser(data);
-                    setAuthenticated(true);
-                })
-                .catch((reason) => {
-                    contextLogout();
-                });
-        } else {
-            navigate("/login");
-        }
-    }, [authenticated]);
+    
+    const { authUser } = useAuth()
+
 
     const [open, setOpen] = useState(true);
     const isLargeScreen = useMediaQuery({ query: "(min-width: 1011px)" });

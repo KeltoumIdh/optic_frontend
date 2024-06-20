@@ -1,21 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  CaretSortIcon,
-  ChevronDownIcon,
-  DotsHorizontalIcon,
+    CaretSortIcon,
 } from "@radix-ui/react-icons";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -24,10 +11,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Link, Navigate, useNavigate } from "react-router-dom";
-import { Pencil, Trash2 } from "lucide-react";
-import { axiosUser } from "../../api/axios";
+import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "../../components/ui/use-toast";
+import { useAuth } from "@/hooks/useAuth.jsx";
+import axiosClient from "@/api/axiosClient.jsx";
+import Loader from "@/components/loader";
+
 
 export const DataTableDemo = () => {
   const [users, setUsers] = useState([]);
@@ -35,77 +24,57 @@ export const DataTableDemo = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await axiosUser.get("/users");
-        if (response.status === 200) {
-          setUsers(response.data);
-        } else {
-          throw new Error("Failed to fetch users");
+    const { csrf } = useAuth()
+
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                setLoading(true)
+                setLoading(false)
+            }
+        };
+
+        fetchUsers();
+    }, []);
+
+    const deleteUser = async (userId) => {
+        try {
+            await csrf();
+            const response = await axiosClient.delete(`/api/users/delete/${userId}`);
+            if (response.status === 204) {
+
+                toast({
+                    title: "Success",
+                    description: "User deleted successfully!",
+                });
+            }
+        } catch (error) {
+            console.error("Error deleting user:", error);
         }
       } catch (error) {
         console.error("Error fetching users:", error);
       }
     };
 
-    fetchUsers();
-  }, []);
-
-  const deleteUser = async (userId) => {
-    try {
-      const response = await axiosUser.delete(`/users/delete/${userId}`);
-      if (response.status === 204) {
-        toast({
-          title: "Success",
-          description: "User deleted successfully!",
-        });
-      }
-    } catch (error) {
-      console.error("Error deleting user:", error);
-    }
-  };
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const token = localStorage.getItem("optic-token");
-        const response = await axiosUser.get("/user", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setUser1(response.data);
-      } catch (error) {
-        console.error(
-          "Erreur lors de la récupération des informations utilisateur:",
-          error
-        );
-      }
-    };
-
-    fetchUserData();
-  }, []);
-
-  return (
-    <div className="w-full">
-      <div className="flex p-2 justify-between">
-        <h4 className="text-2xl font-semibold dark:text-gray-300">Users</h4>
-        
-          {user1?.role === "admin" ? (
-            <button
-            className=" select-none rounded-lg bg-gradient-to-tr from-gray-900 to-gray-800 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none inline-block"
-            type="button"
-          >
-            <Link className={"flex items-center"} to={"/user/add"}>
-              {" "}
-              Ajouter
-            </Link>
-              </button>
-          ) : null}
-      
-      </div>
-      {/* <div className="flex items-end py-4">
+    return loading ? <Loader /> : (
+        <div className="w-full">
+             <div className="flex p-2 justify-between">
+                <h4 className="text-2xl font-semibold dark:text-gray-300">
+                    Users
+                </h4>
+                <button
+                    className=" select-none rounded-lg bg-gradient-to-tr from-gray-900 to-gray-800 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none inline-block"
+                    type="button"
+                >
+                    <Link className={"flex items-center"} to={"/user/add"}>
+                        {" "}
+                        Ajouter
+                    </Link>
+                </button>
+            </div>
+            {/* <div className="flex items-end py-4">
                 <Input placeholder="Filter emails..." className="max-w-sm" />
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -114,9 +83,9 @@ export const DataTableDemo = () => {
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                       
+
                     </DropdownMenuContent>
-                   
+
                 </DropdownMenu>
                 <div className="p-2">
                         <Link to="/user/add">
