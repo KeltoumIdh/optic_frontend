@@ -30,6 +30,9 @@ const createAxiosInstance = (
     return config;
   });
 
+  instance.defaults.withCredentials = true;
+  instance.defaults.withXSRFToken = true;
+
   return instance;
 };
 
