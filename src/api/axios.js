@@ -18,6 +18,8 @@ const createAxiosInstance = (
     withCredentials,
     headers: {
       ...additionalHeaders,
+      withCredentials: true,
+      withXSRFToken: true,
       ...(withXSRFToken ? { "X-Requested-With": "XMLHttpRequest" } : {}),
     },
   });
