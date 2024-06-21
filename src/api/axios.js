@@ -7,29 +7,15 @@ import axios from "axios";
 
 const getBaseUrl = () => backEndUrl;
 
-const createAxiosInstance = (
-  baseURL,
-  withCredentials = true,
-  withXSRFToken = true,
-  additionalHeaders = {}
-) => {
+const createAxiosInstance = (baseURL, additionalHeaders = {}) => {
   const instance = axios.create({
     baseURL,
-    withCredentials,
     headers: {
       ...additionalHeaders,
-      withCredentials: true,
-      withXSRFToken: true,
-      ...(withXSRFToken ? { "X-Requested-With": "XMLHttpRequest" } : {}),
+      "X-Requested-With": "XMLHttpRequest",
     },
-  });
-
-  instance.interceptors.request.use((config) => {
-    const token = localStorage.getItem("optic-token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
+    withCredentials: true,
+    withXSRFToken: true,
   });
 
   instance.defaults.withCredentials = true;

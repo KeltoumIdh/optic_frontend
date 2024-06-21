@@ -28,6 +28,7 @@ export const useAuth = () => {
     const authUser = useSWR(isAuth ? "api/auth/user" : null, () =>
         axiosClient.get(isAuth ? "api/auth/user" : null)
             .then(async res => {
+                window.localStorage.setItem("isAuth", true);
                 const userData = res.data;
 
                 return userData;
