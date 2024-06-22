@@ -18,6 +18,14 @@ const createAxiosInstance = (baseURL, additionalHeaders = {}) => {
     withXSRFToken: true,
   });
 
+  instance.interceptors.request.use((config) => {
+    const token = localStorage.getItem("optic-token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  });
+
   instance.defaults.withCredentials = true;
   instance.defaults.withXSRFToken = true;
 
@@ -26,15 +34,13 @@ const createAxiosInstance = (baseURL, additionalHeaders = {}) => {
 
 const baseApiUrl = `${getBaseUrl()}/api`;
 
-export const csrfCookie = createAxiosInstance(getBaseUrl(), true, true);
-export const axiosAuth = createAxiosInstance(getBaseUrl(), true, true);
-export const axiosCart = createAxiosInstance(baseApiUrl, true, true);
-export const axiosOrder = createAxiosInstance(baseApiUrl, true, true);
-export const axiosProduct = createAxiosInstance(baseApiUrl, true, true, {
-  "X-Requested-With": "XMLHttpRequest",
-});
-export const axiosClient = createAxiosInstance(baseApiUrl, true, true);
-export const axiosUser = createAxiosInstance(baseApiUrl, true, true);
+export const csrfCookie = createAxiosInstance(getBaseUrl());
+export const axiosAuth = createAxiosInstance(getBaseUrl());
+export const axiosCart = createAxiosInstance(baseApiUrl);
+export const axiosOrder = createAxiosInstance(baseApiUrl);
+export const axiosProduct = createAxiosInstance(baseApiUrl);
+export const axiosClient = createAxiosInstance(baseApiUrl);
+export const axiosUser = createAxiosInstance(baseApiUrl);
 
 // export const csrfCookie = axios.create({
 //     baseURL: "http://localhost:8000",
