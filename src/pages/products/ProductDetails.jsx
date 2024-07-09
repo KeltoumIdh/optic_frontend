@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import { useAuth } from "@/hooks/useAuth";
 import axiosClient from "@/api/axiosClient";
 import Loader from "@/components/loader";
+import { renderImageDir } from "@/helpers/utils";
 
 
 function ProductDetails() {
@@ -75,12 +76,12 @@ function ProductDetails() {
                                 <div className="max-md:pb-4 w-44 md:w-48 ">
                                     <img
                                         className="w-full hidden r md:block  "
-                                        src={`http://localhost:8000/assets/uploads/products/${product?.image}`}
+                                        src={renderImageDir(product?.image)}
                                         alt="product_img"
                                     />
                                     <img
                                         className="w-full md:hidden"
-                                        src={`http://localhost:8000/assets/uploads/products/${product?.image}`}
+                                        src={renderImageDir(product?.image)}
                                         alt="product"
                                     />
                                 </div>

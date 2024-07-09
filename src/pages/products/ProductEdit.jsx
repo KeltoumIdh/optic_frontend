@@ -6,6 +6,7 @@ import { useToast } from "../../components/ui/use-toast.js";
 import { axiosProduct } from "../../api/axios.js";
 import { useAuth } from "@/hooks/useAuth";
 import axiosClient from "@/api/axiosClient";
+import Spinner from "@/components/Spinner.jsx";
 
 
 export default function ProductAdd() {
@@ -117,7 +118,7 @@ export default function ProductAdd() {
         }));
     };
 
-    return loading ? <Loader /> : (
+    return loading ? <Spinner /> : (
         <>
             <div className="flex items-center p-2">
                 <Link to={"/products"} className="mr-2">
