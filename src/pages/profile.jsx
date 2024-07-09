@@ -11,8 +11,8 @@ const Profile = () => {
             Profile
         </h4>
         <div className="flex flex-col lg:flex-row md:flex-row">
-            <Informations className=" " />
-            <Update className="" /> 
+            <Informations className="w-full" />
+            <Update className="w-full" /> 
         </div>
     </div>
     

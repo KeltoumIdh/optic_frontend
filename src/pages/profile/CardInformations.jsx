@@ -18,13 +18,13 @@ export const Informations = () => {
     const { authUser } = useAuth()
 
     return (
-        <div className="w-1/2 m-2 h-full">
+        <div className="w-1/2 max-lg:w-full m-2 h-full">
             <Card className="h-full">
                 <CardHeader>
                     <CardDescription>Informations</CardDescription>
                 </CardHeader>
-                <CardContent>
-                    <div className="grid w-full max-w-sm items-center gap-1.5">
+                <CardContent className="flex flex-col">
+                    <div className="grid w-full items-center gap-1.5">
                         <Label htmlFor="name">Name</Label>
                         <Input
                             type="text"
@@ -33,7 +33,7 @@ export const Informations = () => {
                             disabled
                         />
                     </div>
-                    <div className="grid w-full max-w-sm items-center gap-1.5 mt-8">
+                    <div className="grid w-full items-center gap-1.5 mt-8">
                         <Label htmlFor="email">Email</Label>
                         <Input
                             type="email"
@@ -42,7 +42,7 @@ export const Informations = () => {
                             disabled
                         />
                     </div>
-                    <div className="grid w-full max-w-sm items-center gap-1.5 mt-8">
+                    <div className="grid w-full items-center gap-1.5 mt-8">
                         <Label htmlFor="role">Role</Label>
                         <Input
                             type="text"

@@ -49,7 +49,7 @@ export const Update = () => {
     };
 
     return (
-        <div className="w-1/2 mt-2 h-full">
+        <div className="w-1/2 max-lg:w-full mt-2 h-full">
             <Card className="h-full">
                 <CardHeader>
                     <CardDescription> Update Password </CardDescription>
