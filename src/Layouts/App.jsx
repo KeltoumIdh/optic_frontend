@@ -6,8 +6,8 @@ import { useMediaQuery } from "react-responsive";
 import "../App.css";
 import { useAuth } from "@/hooks/useAuth";
 
-const App =  () => {
-  const { authUser } =  useAuth();
+const App = () => {
+  const { authUser } = useAuth();
   const location = useLocation();
   const path = location.pathname;
   const navigate = useNavigate();
@@ -22,6 +22,9 @@ const App =  () => {
   const toggleOpen = () => {
     setOpen(!open);
   };
+
+  const [openMobileSideBar, setOpenMobileSideBar] = useState(true);
+  const toggleMobileSideBar = () => setOpenMobileSideBar(!openMobileSideBar);
 
   useEffect(() => {
     if (!authUser.isLoading) {
@@ -42,16 +45,13 @@ const App =  () => {
           </div>
         )}
 
-        {(isMediumScreen || isSmallScreen) && (
-          <div className="lg:hidden">
-            <MobileMenu open={open} />
-          </div>
-        )}
+        {/* SideBar for Small Devices */}
+        {openMobileSideBar && <MobileMenu toggleMobileSideBar={toggleMobileSideBar} />}
       </div>
 
       <div className="flex-1 flex flex-col overflow-hidden">
         <header>
-          <NavBar open={open} toggleOpen={toggleOpen} />
+          <NavBar open={open} toggleOpen={toggleOpen} openMobileSideBar={openMobileSideBar} toggleMobileSideBar={toggleMobileSideBar} />
         </header>
 
         <main className="flex-1 overflow-x-hidden overflow-y-auto  p-4">

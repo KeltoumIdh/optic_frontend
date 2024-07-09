@@ -15,7 +15,7 @@ import { useAuth } from "@/hooks/useAuth";
 // import LanguagePicker from "./language_picker";
 
 
-const NavBar = ({ open, toggleOpen }) => {
+const NavBar = ({ open, toggleOpen, toggleMobileSideBar }) => {
     const { authUser, logout } = useAuth()
 
     const navigate = useNavigate();
@@ -30,8 +30,12 @@ const NavBar = ({ open, toggleOpen }) => {
     return (
         <div className="sticky top-0 mb-3 p-2 h-[4em] w-full shadow-md flex justify-between items-center">
             <div className="flex flex-row justify-center items-center">
-                <Button variant={"ghost"} onClick={toggleOpen}>
+                <Button variant={"ghost"} onClick={toggleOpen} className="max-lg:hidden">
                     {open ? <ChevronLeft /> : <Menu />}
+                </Button>
+
+                <Button variant={"ghost"} onClick={toggleMobileSideBar} className="lg:hidden">
+                    <Menu />
                 </Button>
             </div>
             <div className="flex justify-center items-center flex-row gap-3 mr-3">
