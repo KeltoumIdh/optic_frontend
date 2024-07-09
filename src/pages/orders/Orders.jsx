@@ -188,39 +188,37 @@ function Orders() {
                                 </TableCell>
                                 <TableCell className="max-md:p-2">{order.total_price}</TableCell>
                                 <TableCell
-                                    className={`${
-                                        order.remain_price === "0.00"
+                                    className={`${order.remain_price === "0.00"
                                             ? "text-green-500"
                                             : "text-red-500"
-                                    } max-md:p-2`}
+                                        } max-md:p-2`}
                                 >
                                     {order.remain_price}
                                 </TableCell>
                                 <TableCell className='max-md:p-2'>
                                     <div
-                                        className={`${
-                                            order.is_credit === 1
+                                        className={`${order.is_credit === 1
                                                 ? "bg-red-100 text-red-800"
                                                 : "bg-green-100 text-green-800"
-                                        } flex items-center max-md:p-2 w-fit p-1 rounded-md`}
+                                            } flex items-center max-md:p-2 w-fit p-1 rounded-md`}
                                     >
                                         {order.is_credit === 1 ? "Oui" : "Non"}
                                     </div>
                                 </TableCell>
                                 <TableCell className='max-md:p-2'>{order.order_status}</TableCell>
                                 <TableCell className='max-md:p-2 flex items-center h-full'>
-                                    <Button className="bg-blue-400 mr-2 max-md:px-3">
-                                        <Link to={`/orders/edit/${order.id}`}>
-                                            <RiEditFill className="max-md:w-3 "/>
-                                        </Link>
-                                    </Button>
-                                    <Button className="bg-purple-400 mr-2 max-md:px-3">
-                                        <Link
-                                            to={`/orders/details/${order.id}`}
-                                        >
-                                            <BiSolidShow className="max-md:w-3 "/>
-                                        </Link>
-                                    </Button>
+                                    <Link to={`/orders/edit/${order.id}`}>
+                                        <Button className="bg-blue-400 mr-2 max-md:px-3">
+                                            <RiEditFill className="max-md:w-3 " />
+                                        </Button>
+                                    </Link>
+                                    <Link
+                                        to={`/orders/details/${order.id}`}
+                                    >
+                                        <Button className="bg-purple-400 mr-2 max-md:px-3">
+                                            <BiSolidShow className="max-md:w-3 " />
+                                        </Button>
+                                    </Link>
                                     {/* <Button
                                         className="bg-red-500"
                                         onClick={() => handleDelete(order.id)}
@@ -235,7 +233,7 @@ function Orders() {
             <div className="flex justify-between md:mt-4 md:px-4 md:text-xs">
                 <div className="w-full">
                     <p className="text-sm w-full text-gray-500">
-                    Affichage de {orders.length} sur {totalOrders} commandes
+                        Affichage de {orders.length} sur {totalOrders} commandes
                     </p>
                 </div>
                 <Pagination className="flex justify-end">
