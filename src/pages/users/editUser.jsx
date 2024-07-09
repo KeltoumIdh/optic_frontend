@@ -7,6 +7,7 @@ import { useToast } from "../../components/ui/use-toast";
 import { useAuth } from "@/hooks/useAuth.jsx";
 import axiosClient from "@/api/axiosClient.jsx";
 import Loader from "@/components/loader";
+import Spinner from "@/components/Spinner";
 
 
 const EditUser = () => {
@@ -70,7 +71,7 @@ const EditUser = () => {
     }));
   };
 
-  return loading ? <Loader /> : (
+  return loading ? <Spinner /> : (
     <div className="w-full">
       <div className="flex items-center p-2">
         <Link to={"/user/list"} className="mr-2">

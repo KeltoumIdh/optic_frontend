@@ -16,6 +16,7 @@ import { useToast } from "../../components/ui/use-toast";
 import { useAuth } from "@/hooks/useAuth.jsx";
 import axiosClient from "@/api/axiosClient.jsx";
 import Loader from "@/components/loader";
+import Spinner from "@/components/Spinner";
 
 
 export const DataTableDemo = () => {
@@ -53,7 +54,7 @@ export const DataTableDemo = () => {
             await csrf();
             const response = await axiosClient.delete(`/api/users/delete/${userId}`);
             if (response.status === 204) {
-               
+
                 toast({
                     title: "Success",
                     description: "User deleted successfully!",
@@ -63,23 +64,23 @@ export const DataTableDemo = () => {
             console.error("Error deleting user:", error);
         }
     };
-   
 
-    return loading ? <Loader /> : (
+
+    return loading ? <Spinner /> : (
         <div className="w-full">
-             <div className="flex p-2 justify-between">
+            <div className="flex p-2 justify-between">
                 <h4 className="text-2xl font-semibold dark:text-gray-300">
                     Users
                 </h4>
-                <button
-                    className=" select-none rounded-lg bg-gradient-to-tr from-gray-900 to-gray-800 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none inline-block"
-                    type="button"
-                >
-                    <Link className={"flex items-center"} to={"/user/add"}>
+                <Link className={"flex items-center"} to={"/user/add"}>
+                    <button
+                        className=" select-none rounded-lg bg-gradient-to-tr from-gray-900 to-gray-800 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none inline-block"
+                        type="button"
+                    >
                         {" "}
                         Ajouter
-                    </Link>
-                </button>
+                    </button>
+                </Link>
             </div>
             {/* <div className="flex items-end py-4">
                 <Input placeholder="Filter emails..." className="max-w-sm" />
@@ -104,7 +105,6 @@ export const DataTableDemo = () => {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                           
                             <TableHead>Name</TableHead>
                             <TableHead>
                                 <Button variant="ghost">
@@ -119,7 +119,7 @@ export const DataTableDemo = () => {
                     <TableBody>
                         {users.map((user) => (
                             <TableRow key={user.id}>
-                              
+
                                 <TableCell>{user.name}</TableCell>
                                 <TableCell>{user.email}</TableCell>
                                 <TableCell>{user.role}</TableCell>
@@ -162,14 +162,14 @@ export const DataTableDemo = () => {
 
                                         </DropdownMenuContent>
                                     </DropdownMenu> */}
-                                      <Button className="bg-blue-400 mr-2">
-                                        <Link
-                                           to={`/user/edit/${user.id}`}
-                                        >
+                                    <Link
+                                        to={`/user/edit/${user.id}`}
+                                    >
+                                        <Button className="bg-blue-400 mr-2">
                                             Edit
-                                        </Link>
-                                    </Button>
-                                 
+                                        </Button>
+                                    </Link>
+
                                     <Button
                                         className="bg-red-500"
                                         onClick={() => deleteUser(user.id)}
