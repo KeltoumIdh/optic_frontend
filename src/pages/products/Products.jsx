@@ -21,7 +21,7 @@ import {
 
 import { axiosProduct } from "../../api/axios";
 import { Button } from "../../components/ui/button";
-import { backEndUrl } from "@/helpers/utils";
+import { backEndUrl, renderImageDir } from "@/helpers/utils";
 import { useAuth } from "@/hooks/useAuth";
 import axiosClient from "@/api/axiosClient";
 import Loader from "@/components/loader";
@@ -200,7 +200,7 @@ function Products() {
                             <TableRow key={product.id}>
                                 <TableCell className="flex items-center max-md:p-2">
                                     <img
-                                        src={`${backEndUrl}/assets/uploads/products/${product.image}`}
+                                        src={renderImageDir(product.image)}
                                         alt="avatar"
                                         width="40px"
                                         height="40px"

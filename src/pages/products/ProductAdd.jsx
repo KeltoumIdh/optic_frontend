@@ -10,7 +10,7 @@ import axiosClient from "@/api/axiosClient.jsx";
 
 export default function ProductEdit() {
     const { toast } = useToast()
-    const [imageName, setImageName] = useState('');
+    const [image, setImage] = useState('');
     const methods = useForm();
     const navigate = useNavigate();
 
@@ -24,14 +24,22 @@ export default function ProductEdit() {
         reset,
     } = useForm();
 
-    const handleFileChange = (event) => {
-        const files = event.target.files;
 
-        if (files.length > 0) {
-            const firstFile = files[0];
-            setImageName(firstFile.name);
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImage(reader.result); // Base64 string
+            };
+            reader.readAsDataURL(file);
+        } else {
+            setImage('')
         }
     }
+
+
     const onSubmit = async (values) => {
 
         const formData = new FormData();
@@ -40,9 +48,8 @@ export default function ProductEdit() {
         formData.append('message', values.message);
         formData.append('quantity', values.quantity);
         formData.append('price', values.price);
-        if (values.image && values.image.length > 0) {
-            formData.append('image', values.image[0]);
-        }
+        formData.append('image', image);
+        
 
         try {
             await csrf();
@@ -154,6 +161,7 @@ export default function ProductEdit() {
                             type="file"
                             onChange={handleFileChange}
                             className="w-full md:p-2 px-2 py-1 max-md:text-xs border border-gray-300 rounded"
+                            accept="image/png, image/jpg, image/jpeg"
                         />
                     </div>
 
