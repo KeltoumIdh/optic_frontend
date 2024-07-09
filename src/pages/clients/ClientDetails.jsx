@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import { useAuth } from "@/hooks/useAuth";
 import axiosClient from "@/api/axiosClient.jsx";
 import Loader from "@/components/loader";
+import { renderImageDir } from "@/helpers/utils";
 
 function ClientDetails() {
     const [client, setClient] = useState();
@@ -73,12 +74,12 @@ function ClientDetails() {
                                 <div className="max-md:pb-4 w-full md:w-36  ">
                                     <img
                                         className="w-full hidden r md:block  "
-                                        src={`http://localhost:8000/assets/uploads/clients/${client?.image}`}
+                                        src={renderImageDir(client?.image)}
                                         alt="client_img"
                                     />
                                     <img
                                         className="w-full md:hidden"
-                                        src={`http://localhost:8000/assets/uploads/clients/${client?.image}`}
+                                        src={renderImageDir(client?.image)}
                                         alt="client"
                                     />
                                 </div>

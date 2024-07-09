@@ -32,14 +32,18 @@ export default function ClientAdd() {
     const [image, setImage] = useState({})
     
     const handleFileChange = (e) => {
-        const files = e.target.files;
+        const file = e.target.files[0];
 
-        if (files.length > 0) {
-            const firstFile = files[0];
-            setValue("image", firstFile);
-            setImage(firstFile);
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImage(reader.result); // Base64 string
+            };
+            reader.readAsDataURL(file);
+        } else {
+            setImage('')
         }
-    };
+    }
 
     
     
@@ -178,6 +182,7 @@ export default function ClientAdd() {
                             type="file"
                             onChange={handleFileChange}
                             className="w-full p-2 border border-gray-300 rounded"
+                            accept="image/png, image/jpg, image/jpeg"
                         />
                     </div>
                     <Button type="submit" disabled={isSubmitting}>

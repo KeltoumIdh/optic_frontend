@@ -25,6 +25,7 @@ import { useAuth } from "@/hooks/useAuth.jsx";
 import axiosClient from "@/api/axiosClient.jsx";
 import Loader from "@/components/loader";
 import Spinner from "@/components/Spinner";
+import { renderImageDir } from "@/helpers/utils";
 
 
 
@@ -193,7 +194,7 @@ export default function Clients() {
                                 <TableRow key={client.id}>
                                     <TableCell className="h-full flex items-center">
                                         <img
-                                            src={`http://localhost:8000/assets/uploads/clients/${client.image}`}
+                                            src={renderImageDir(client.image)}
                                             alt="avatar"
                                             width="40"
                                             height="40"
