@@ -24,7 +24,7 @@ export const DataTableDemo = () => {
     const { toast } = useToast();
     const navigate = useNavigate();
 
-    const { csrf } = useAuth()
+    const { csrf, authUser } = useAuth()
 
     const [loading, setLoading] = useState(false);
 
@@ -66,6 +66,10 @@ export const DataTableDemo = () => {
     };
 
 
+    // only owners can edit or delete other users
+    const isOwner = authUser?.data?.role === "admin";
+
+
     return loading ? <Spinner /> : (
         <div className="w-full">
             <div className="flex p-2 justify-between">
@@ -82,25 +86,6 @@ export const DataTableDemo = () => {
                     </button>
                 </Link>
             </div>
-            {/* <div className="flex items-end py-4">
-                <Input placeholder="Filter emails..." className="max-w-sm" />
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="ml-auto">
-                            Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                       
-                    </DropdownMenuContent>
-                   
-                </DropdownMenu>
-                <div className="p-2">
-                        <Link to="/user/add">
-                            <Button variant="outline">Add User</Button>
-                        </Link>
-                    </div>
-            </div> */}
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>
@@ -113,7 +98,7 @@ export const DataTableDemo = () => {
                                 </Button>
                             </TableHead>
                             <TableHead>Role</TableHead>
-                            <TableHead>Actions</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -123,57 +108,15 @@ export const DataTableDemo = () => {
                                 <TableCell>{user.name}</TableCell>
                                 <TableCell>{user.email}</TableCell>
                                 <TableCell>{user.role}</TableCell>
-                                <TableCell>
-                                    {/* <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button
-                                                variant="ghost"
-                                                className="h-8 w-8 p-0"
-                                            >
-                                                <span className="sr-only">
-                                                    Open menu
-                                                </span>
-                                                <DotsHorizontalIcon className="h-4 w-4" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuLabel>
-                                                Actions
-                                            </DropdownMenuLabel>
-                                            <DropdownMenuSeparator />
-                                            <Link to={`/user/edit/${user.id}`}>
-                                              <DropdownMenuItem>
-                                                <div className="flex items-center space-x-1">
-                                                  <Pencil size={18} strokeWidth={1} />
-                                                  <span>Edit</span>
-                                                </div>
-                                              </DropdownMenuItem>
-                                            </Link>
-
-                                            <DropdownMenuItem>
-                                              <button
-                                                className="flex items-center space-x-1"
-                                                onClick={() => deleteUser(user.id)}
-                                              >
-                                                <Trash2 size={18} strokeWidth={1} />
-                                                <span>Delete</span>
-                                              </button>
-                                            </DropdownMenuItem>
-
-                                        </DropdownMenuContent>
-                                    </DropdownMenu> */}
-                                    <Link
-                                        to={`/user/edit/${user.id}`}
-                                    >
-                                        <Button className="bg-blue-400 mr-2">
-                                            Edit
-                                        </Button>
-                                    </Link>
-
+                                <TableCell className="text-right">
+                                    {isOwner
+                                        ? <Link to={`/user/edit/${user.id}`}><Button className="bg-blue-400 mr-2">Edit</Button></Link>
+                                        : <Button disabled={!isOwner} className="bg-blue-400 mr-2">Edit</Button>
+                                    }
                                     <Button
+                                        disabled={!isOwner}
                                         className="bg-red-500"
-                                        onClick={() => deleteUser(user.id)}
-                                    >
+                                        onClick={() => deleteUser(user.id)}>
                                         Delete
                                     </Button>
                                 </TableCell>
