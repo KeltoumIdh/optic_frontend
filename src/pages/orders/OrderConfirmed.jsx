@@ -181,12 +181,6 @@ function OrderConfirmed() {
                                     <tbody>
                                         {products?.length > 0 ? (
                                             products.map((product, i) => {
-                                                console.log(i + "---", product)
-
-                                                const handleChangeQNT = () => {
-                                                    const availableQNT = product.quantity_available;
-                                                }
-
                                                 return (
                                                     <tr key={product.id}>
                                                         <td className="py-4">
