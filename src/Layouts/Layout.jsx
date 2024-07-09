@@ -42,7 +42,7 @@ export default function Layout() {
       .catch(async error => {
         if (error.response.data.message === 'Unauthenticated.') {
           window.localStorage.setItem("isAuth", false);
-          navigate('/login==============')
+          navigate('/login')
         }
       })
   }
@@ -51,7 +51,7 @@ export default function Layout() {
     if (isAuth === true) {
       getAuthUser()
     } else {
-      navigate("/login___________");
+      navigate("/login");
     }
   }, [isAuth]);
 

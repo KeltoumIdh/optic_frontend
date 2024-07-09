@@ -23,6 +23,7 @@ import {
 import { Button } from "../../components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import axiosClient from "@/api/axiosClient.jsx";
+import Spinner from "@/components/Spinner";
 
 
 
@@ -53,8 +54,11 @@ function Orders() {
         setSearchQuery(event.target.value);
     };
 
+    const [loading, setLoading] = useState(false);
+
     const getOrders = async (page, perPage, query = "", status = "") => {
         try {
+            setLoading(true)
             await csrf();
             const res = await axiosClient.get("/api/orders", {
                 params: {
@@ -74,6 +78,8 @@ function Orders() {
             setTotalOrders(totalOrdersCount);
         } catch (err) {
             console.log("err", err);
+        } finally {
+            setLoading(false)
         }
     };
 
@@ -163,114 +169,117 @@ function Orders() {
                     </div>
                 </form>
             </div>
-
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead className='truncate '>Commande</TableHead>
-                        <TableHead>Client</TableHead>
-                        <TableHead>Prix</TableHead>
-                        <TableHead>Prix restant</TableHead>
-                        <TableHead>Crédit</TableHead>
-                        <TableHead>Statut</TableHead>
-                        <TableHead>Actions</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {orders?.length > 0 &&
-                        orders.map((order) => (
-                            <TableRow key={order.id} >
-                                <TableCell className="flex items-center max-md:p-2 w-fit">
-                                    {order.id}
-                                </TableCell>
-                                <TableCell className="max-md:p-2">
-                                    {order.client.name} {order.client.lname}
-                                </TableCell>
-                                <TableCell className="max-md:p-2">{order.total_price}</TableCell>
-                                <TableCell
-                                    className={`${order.remain_price === "0.00"
-                                            ? "text-green-500"
-                                            : "text-red-500"
-                                        } max-md:p-2`}
-                                >
-                                    {order.remain_price}
-                                </TableCell>
-                                <TableCell className='max-md:p-2'>
-                                    <div
-                                        className={`${order.is_credit === 1
-                                                ? "bg-red-100 text-red-800"
-                                                : "bg-green-100 text-green-800"
-                                            } flex items-center max-md:p-2 w-fit p-1 rounded-md`}
-                                    >
-                                        {order.is_credit === 1 ? "Oui" : "Non"}
-                                    </div>
-                                </TableCell>
-                                <TableCell className='max-md:p-2'>{order.order_status}</TableCell>
-                                <TableCell className='max-md:p-2 flex items-center h-full'>
-                                    <Link to={`/orders/edit/${order.id}`}>
-                                        <Button className="bg-blue-400 mr-2 max-md:px-3">
-                                            <RiEditFill className="max-md:w-3 " />
-                                        </Button>
-                                    </Link>
-                                    <Link
-                                        to={`/orders/details/${order.id}`}
-                                    >
-                                        <Button className="bg-purple-400 mr-2 max-md:px-3">
-                                            <BiSolidShow className="max-md:w-3 " />
-                                        </Button>
-                                    </Link>
-                                    {/* <Button
+            {loading
+                ? <Spinner />
+                : <>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className='truncate '>Commande</TableHead>
+                                <TableHead>Client</TableHead>
+                                <TableHead>Prix</TableHead>
+                                <TableHead>Prix restant</TableHead>
+                                <TableHead>Crédit</TableHead>
+                                <TableHead>Statut</TableHead>
+                                <TableHead>Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {orders?.length > 0 &&
+                                orders.map((order) => (
+                                    <TableRow key={order.id} >
+                                        <TableCell className="flex items-center max-md:p-2 w-fit">
+                                            {order.id}
+                                        </TableCell>
+                                        <TableCell className="max-md:p-2">
+                                            {order.client.name} {order.client.lname}
+                                        </TableCell>
+                                        <TableCell className="max-md:p-2">{order.total_price}</TableCell>
+                                        <TableCell
+                                            className={`${order.remain_price === "0.00"
+                                                ? "text-green-500"
+                                                : "text-red-500"
+                                                } max-md:p-2`}
+                                        >
+                                            {order.remain_price}
+                                        </TableCell>
+                                        <TableCell className='max-md:p-2'>
+                                            <div
+                                                className={`${order.is_credit === 1
+                                                    ? "bg-red-100 text-red-800"
+                                                    : "bg-green-100 text-green-800"
+                                                    } flex items-center max-md:p-2 w-fit p-1 rounded-md`}
+                                            >
+                                                {order.is_credit === 1 ? "Oui" : "Non"}
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className='max-md:p-2'>{order.order_status}</TableCell>
+                                        <TableCell className='max-md:p-2 flex items-center h-full'>
+                                            <Link to={`/orders/edit/${order.id}`}>
+                                                <Button className="bg-blue-400 mr-2 max-md:px-3">
+                                                    <RiEditFill className="max-md:w-3 " />
+                                                </Button>
+                                            </Link>
+                                            <Link
+                                                to={`/orders/details/${order.id}`}
+                                            >
+                                                <Button className="bg-purple-400 mr-2 max-md:px-3">
+                                                    <BiSolidShow className="max-md:w-3 " />
+                                                </Button>
+                                            </Link>
+                                            {/* <Button
                                         className="bg-red-500"
                                         onClick={() => handleDelete(order.id)}
                                     >
                                         <RiDeleteBin6Fill/>
                                     </Button> */}
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                </TableBody>
-            </Table>
-            <div className="flex justify-between md:mt-4 md:px-4 md:text-xs">
-                <div className="w-full">
-                    <p className="text-sm w-full text-gray-500">
-                        Affichage de {orders.length} sur {totalOrders} commandes
-                    </p>
-                </div>
-                <Pagination className="flex justify-end">
-                    <PaginationContent>
-                        <PaginationItem>
-                            <PaginationPrevious
-                                href="#"
-                                onClick={(e) => handleChangePage(e, page - 1)}
-                                style={{ color: page > 0 ? "blue" : "gray" }}
-                            />
-                        </PaginationItem>
-                        {[...Array(totalPages)].map((_, index) => (
-                            <PaginationItem key={index}>
-                                <PaginationLink
-                                    href="#"
-                                    onClick={(e) => handleChangePage(e, index)}
-                                    style={{
-                                        color: index === page ? "red" : "black",
-                                    }}
-                                >
-                                    {index + 1}
-                                </PaginationLink>
-                            </PaginationItem>
-                        ))}
-                        <PaginationItem>
-                            <PaginationNext
-                                href="#"
-                                onClick={(e) => handleChangePage(e, page + 1)}
-                                style={{
-                                    color:
-                                        page < totalPages - 1 ? "blue" : "gray",
-                                }}
-                            />
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination>
-            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                        </TableBody>
+                    </Table>
+                    <div className="flex justify-between md:mt-4 md:px-4 md:text-xs">
+                        <div className="w-full">
+                            <p className="text-sm w-full text-gray-500">
+                                Affichage de {orders.length} sur {totalOrders} commandes
+                            </p>
+                        </div>
+                        <Pagination className="flex justify-end">
+                            <PaginationContent>
+                                <PaginationItem>
+                                    <PaginationPrevious
+                                        href="#"
+                                        onClick={(e) => handleChangePage(e, page - 1)}
+                                        style={{ color: page > 0 ? "blue" : "gray" }}
+                                    />
+                                </PaginationItem>
+                                {[...Array(totalPages)].map((_, index) => (
+                                    <PaginationItem key={index}>
+                                        <PaginationLink
+                                            href="#"
+                                            onClick={(e) => handleChangePage(e, index)}
+                                            style={{
+                                                color: index === page ? "red" : "black",
+                                            }}
+                                        >
+                                            {index + 1}
+                                        </PaginationLink>
+                                    </PaginationItem>
+                                ))}
+                                <PaginationItem>
+                                    <PaginationNext
+                                        href="#"
+                                        onClick={(e) => handleChangePage(e, page + 1)}
+                                        style={{
+                                            color:
+                                                page < totalPages - 1 ? "blue" : "gray",
+                                        }}
+                                    />
+                                </PaginationItem>
+                            </PaginationContent>
+                        </Pagination>
+                    </div>
+                </>}
         </>
     );
 }
