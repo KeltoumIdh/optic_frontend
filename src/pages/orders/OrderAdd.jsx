@@ -22,7 +22,7 @@ import { Button } from "../../components/ui/button";
 import { useCheckoutStore } from "../../store";
 import { useAuth } from "@/hooks/useAuth";
 import axiosClient from "@/api/axiosClient";
-import { backEndUrl } from "@/helpers/utils";
+import { backEndUrl, renderImageDir } from "@/helpers/utils";
 import Spinner from "@/components/Spinner";
 
 
@@ -197,7 +197,7 @@ export default function OrderAdd() {
                                 <TableRow key={client.id}>
                                     <TableCell className="h-full flex items-center">
                                         <img
-                                            src={`${backEndUrl}/assets/uploads/clients/${client.image}`}
+                                            src={renderImageDir(client.image)}
                                             alt="avatar"
                                             width="40"
                                             height="40"

@@ -112,6 +112,7 @@ export default function OrderProductsAdd() {
             setLoading(false)
         }
     };
+
     const getStatusColorClass = (status) => {
         switch (status) {
             case "Stock faible":
@@ -127,8 +128,8 @@ export default function OrderProductsAdd() {
 
     useEffect(() => {
         getProducts(page, rowsPerPage, searchQuery, searchStatus);
-        setSelectedProd(selectedProducts);
-    }, [page, rowsPerPage, searchQuery, searchStatus, selectedProducts]);
+        // setSelectedProd(selectedProducts);
+    }, [page, rowsPerPage, searchQuery, searchStatus]);
 
     return (
         <>

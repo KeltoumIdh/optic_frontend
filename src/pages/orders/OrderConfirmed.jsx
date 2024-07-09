@@ -8,7 +8,7 @@ import { backEndUrl, renderImageDir } from "@/helpers/utils";
 import Spinner from "@/components/Spinner";
 
 function OrderConfirmed() {
-    
+
     const { csrf } = useAuth();
 
     const { removeFromSelectedProd, setCartI } = useCheckoutStore();
@@ -20,14 +20,7 @@ function OrderConfirmed() {
     const location = useLocation();
     const selectedProducts = location?.state?.selectedProducts;
     const clientId = location.state?.clientId;
-    console.log(
-        "clientId",
-        clientId,
-        "selectedProd",
-        selectedProducts,
-        "cart",
-        cart
-    );
+    
 
     const [inProgress, setInProgress] = useState(false)
 
@@ -48,6 +41,7 @@ function OrderConfirmed() {
             setInProgress(false)
         }
     };
+
     const handleIncrementQuantity = (productId) => {
         const availableQuantity =
             products.find((product) => product.id === productId)
@@ -81,29 +75,7 @@ function OrderConfirmed() {
             [productId]: limitedQuantity,
         }));
     };
-
-    // const handleIncrementQuantity = (productId) => {
-    //     setQuantities((prevQuantities) => ({
-    //         ...prevQuantities,
-    //         [productId]: (prevQuantities[productId] || 0) + 1,
-    //     }));
-    // };
-    // const handleDecrementQuantity = (productId) => {
-    //     setQuantities((prevQuantities) => ({
-    //         ...prevQuantities,
-    //         [productId]: Math.max(
-    //             (prevQuantities[productId] || 0) -
-    //                 (prevQuantities[productId] > 1 ? 1 : 0)
-    //         ),
-    //     }));
-    // };
-    // const handleInputChange = (productId, newQuantity) => {
-    //     setQuantities((prevQuantities) => ({
-    //         ...prevQuantities,
-    //         [productId]: newQuantity !== "" ? parseInt(newQuantity, 10) || 1 : "",
-    //     }));
-    // };
-    console.log("totalPrice", totalPrice);
+    
 
     const handleRemoveProduct = (productId) => {
         setProducts((prevProducts) =>
@@ -142,14 +114,16 @@ function OrderConfirmed() {
         setCartI(cartItem);
         setCart(cartItem);
     };
+
     useEffect(() => {
         const newTotalPrice = products.reduce((acc, product) => {
-            const quantity = quantities[product.id] || 0;
+            const quantity = quantities[product.id] || 1;
             return acc + quantity * product.price;
         }, 0);
 
         setTotalPrice(newTotalPrice);
     }, [quantities, products]);
+
     useEffect(() => {
         getProducts(selectedProducts);
     }, [selectedProducts]);
@@ -238,58 +212,22 @@ function OrderConfirmed() {
                                                         <div className="flex items-center">
                                                             <button
                                                                 className="border rounded-md py-2 px-4 mr-2"
-                                                                onClick={() =>
-                                                                    handleDecrementQuantity(
-                                                                        product.id
-                                                                    )
-                                                                }
-                                                            >
+                                                                onClick={() => handleDecrementQuantity(product.id)}>
                                                                 -
                                                             </button>
                                                             <span className="text-center w-8">
                                                                 <input
                                                                     className="w-8  text-center "
                                                                     type="number"
-                                                                    value={
-                                                                        quantities[
-                                                                            product
-                                                                                .id
-                                                                        ] !==
-                                                                        undefined
-                                                                            ? quantities[
-                                                                                  product
-                                                                                      .id
-                                                                              ]
-                                                                            : ""
-                                                                    }
-                                                                    onChange={(
-                                                                        e
-                                                                    ) =>
-                                                                        handleInputChange(
-                                                                            product.id,
-                                                                            e
-                                                                                .target
-                                                                                .value !==
-                                                                                ""
-                                                                                ? parseInt(
-                                                                                      e
-                                                                                          .target
-                                                                                          .value,
-                                                                                      10
-                                                                                  )
-                                                                                : ""
-                                                                        )
+                                                                    value={quantities[product.id] !== undefined ? quantities[product.id] : 1}
+                                                                    onChange={(e) =>
+                                                                        handleInputChange(product.id, e.target.value !== "" ? parseInt(e.target.value, 10) : "")
                                                                     }
                                                                 />
                                                             </span>
                                                             <button
                                                                 className="border rounded-md py-2 px-4 ml-2"
-                                                                onClick={() =>
-                                                                    handleIncrementQuantity(
-                                                                        product.id
-                                                                    )
-                                                                }
-                                                            >
+                                                                onClick={() => handleIncrementQuantity(product.id)}>
                                                                 +
                                                             </button>
                                                         </div>
@@ -300,11 +238,11 @@ function OrderConfirmed() {
                                                             product.id
                                                         ] > 0
                                                             ? (
-                                                                  product.price *
-                                                                  quantities[
-                                                                      product.id
-                                                                  ]
-                                                              ).toFixed(2)
+                                                                product.price *
+                                                                quantities[
+                                                                product.id
+                                                                ]
+                                                            ).toFixed(2)
                                                             : product.price}
                                                     </td>
                                                     <td className="py-4">

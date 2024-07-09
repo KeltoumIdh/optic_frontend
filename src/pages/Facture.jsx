@@ -19,6 +19,7 @@ import { backEndUrl } from "@/helpers/utils";
 import { useAuth } from "@/hooks/useAuth";
 import Loader from "@/components/loader";
 import axiosClient from "@/api/axiosClient";
+import Spinner from "@/components/Spinner";
 
 
 export const FactureTable = () => {
@@ -56,32 +57,13 @@ export const FactureTable = () => {
         fetchClients();
     }, []);
 
-    return loading ? <Loader /> : (
+    return loading ? <Spinner /> : (
         <div className="w-full">
             <div className="flex p-2 justify-between">
                 <h4 className="text-2xl font-semibold dark:text-gray-300">
                     Factures
                 </h4>
             </div>
-            {/* <div className="flex items-end py-4">
-                <Input placeholder="Filter emails..." className="max-w-sm" />
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="ml-auto">
-                            Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                       
-                    </DropdownMenuContent>
-                   
-                </DropdownMenu>
-                <div className="p-2">
-                        <Link to="/user/add">
-                            <Button variant="outline">Add User</Button>
-                        </Link>
-                    </div>
-            </div> */}
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>
@@ -95,10 +77,8 @@ export const FactureTable = () => {
                             </TableHead>
                             <TableHead>méthode de payement</TableHead>
                             <TableHead>payement status </TableHead>
-
                             <TableHead>Facture file </TableHead>
                             <TableHead>Actions </TableHead>
-
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -119,13 +99,13 @@ export const FactureTable = () => {
                                     </Button>
                                 </TableCell>
                                 <TableHead>
-                                    <Button className="bg-purple-400 mr-2">
                                     <Link
                                         to={`/orders/details/${client.id}`}
                                     >
-                                        <BiSolidShow />
+                                        <Button className="bg-purple-400 mr-2">
+                                            <BiSolidShow />
+                                        </Button>
                                     </Link>
-                                </Button>
                                 </TableHead>
                             </TableRow>
                         ))}

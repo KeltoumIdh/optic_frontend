@@ -117,46 +117,7 @@ function Checkout() {
             setInProgress(false)
         }
     };
-    // const downloadInvoice = async (orderId) => {
-    //     try {
-    //         const response = await axiosOrder.get(
-    //             `/download-invoice/${orderId}`,
-    //             {
-    //                 responseType: "blob", // Response type is set to 'blob' to handle binary data (PDF)
-    //             }
-    //         );
-
-    //         // Check if response is valid
-    //         if (response.status === 200) {
-    //             // Create a URL for the blob data
-    //             const url = window.URL.createObjectURL(
-    //                 new Blob([response.data])
-    //             );
-
-    //             // Log blob URL for debugging
-    //             console.log("Blob URL:", url);
-
-    //             // Create a temporary link element
-    //             const link = document.createElement("a");
-    //             link.href = url;
-    //             link.setAttribute("download", `invoice_${orderId}.pdf`); // Set the filename for download
-    //             document.body.appendChild(link);
-
-    //             // Click the link to trigger download
-    //             link.click();
-
-    //             // Cleanup
-    //             window.URL.revokeObjectURL(url);
-    //             link.remove();
-    //         } else {
-    //             console.error(
-    //                 "Error downloading invoice: Invalid response status"
-    //             );
-    //         }
-    //     } catch (error) {
-    //         console.error("Error downloading invoice:", error);
-    //     }
-    // };
+    
     const downloadInvoice = async (orderId) => {
         try {
             await csrf();
@@ -602,7 +563,7 @@ function Checkout() {
                                 )}
                             </form>
                         </div>
-                        <div className="flex flex-col lg:w-1/2 p-6 space-y-4 bg-gray-300 divide-y  sm:px-10 dark:divide-gray-700 dark:bg-gray-900 dark:text-gray-100">
+                        <div className="flex flex-col lg:w-1/2 p-6 space-y-4 bg-gray-300 divide-y  sm:px-10">
                             <h2 className="text-2xl font-semibold">
                                 Order items
                             </h2>
@@ -614,15 +575,16 @@ function Checkout() {
                                     <li className="flex items-start justify-between">
                                         <h3>
                                             {cart.name} ({cart.reference})
-                                            <span className="text-sm pl-1 text-violet-700  dark:text-violet-400">
-                                                x{cart.quantity}
-                                            </span>
+                                            {cart.quantity &&
+                                            <span className="text-base pl-1 text-violet-700">
+                                                x {cart.quantity}
+                                            </span>}
                                         </h3>
                                         <div className="text-right">
                                             <span className="block">
                                                 {cart.price ?? 0 * cart.quantity ?? 0} dh
                                             </span>
-                                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                                            <span className="text-sm text-gray-600">
                                                 à {cart.price} dh
                                             </span>
                                         </div>
@@ -693,7 +655,7 @@ function Checkout() {
                                     <button
                                         type="button"
                                         onClick={handleCheckout}
-                                        className="w-full py-2 hover:bg-black hover:text-white font-semibold border rounded dark:bg-violet-400 dark:text-gray-900 dark:border-violet-400 flex items-center gap-2 justify-center"
+                                        className="w-full py-2 hover:bg-black hover:text-white font-semibold border rounded flex items-center gap-2 justify-center"
                                     >
                                         <span>checkout</span>
                                         {inProgress && <div className="animate-spin"><Loader /></div>}
