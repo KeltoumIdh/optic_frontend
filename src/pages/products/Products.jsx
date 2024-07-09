@@ -25,10 +25,11 @@ import { backEndUrl, renderImageDir } from "@/helpers/utils";
 import { useAuth } from "@/hooks/useAuth";
 import axiosClient from "@/api/axiosClient";
 import Loader from "@/components/loader";
+import Spinner from "@/components/Spinner";
 
 
 
-function Products() {
+export default function Products() {
 
     const { csrf } = useAuth()
 
@@ -43,14 +44,17 @@ function Products() {
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
+    
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     };
+
     const handleSearch = () => {
         console.log("Search Query2:", searchQuery);
         getProducts(0, rowsPerPage, searchQuery, searchStatus);
     };
+
     const handleChangeSearch = (event) => {
         setSearchQuery(event.target.value);
     };
@@ -83,6 +87,7 @@ function Products() {
             setLoading(false)
         }
     };
+
     const getStatusColorClass = (status) => {
         switch (status) {
             case "Stock faible":
@@ -107,11 +112,12 @@ function Products() {
             console.log("err", err);
         }
     };
+
     useEffect(() => {
         getProducts(page, rowsPerPage, searchQuery, searchStatus);
     }, [page, rowsPerPage, searchQuery, searchStatus]);
 
-    return loading ? <Loader /> : (
+    return (
         <>
             <div className="flex p-2 justify-between">
                 <h4 className="lg:text-2xl text-lg font-semibold dark:text-gray-300">
@@ -195,104 +201,108 @@ function Products() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {products?.length > 0 &&
-                        products.map((product) => (
-                            <TableRow key={product.id}>
-                                <TableCell className="flex items-center max-md:p-2">
-                                    <img
-                                        src={renderImageDir(product.image)}
-                                        alt="avatar"
-                                        width="40px"
-                                        height="40px"
-                                        className="pr-2"
-                                    />{" "}
-                                    <div className="flex flex-col">
-                                        <div>{product.name}</div>
-                                        <div>{product.reference}</div>
-                                    </div>
-                                </TableCell>
-                                <TableCell className="max-md:p-2 text-center">{product.price}</TableCell>
-                                <TableCell className="max-md:p-2 text-center">
-                                    {product.quantity_available}
-                                </TableCell>
-                                <TableCell className="max-md:p-2">
-                                    <span
-                                        className={`px-2 inline-flex text-center text-xs leading-5 font-semibold rounded-full ${getStatusColorClass(
-                                            product.status
-                                        )}`}
-                                    >
-                                        {product.status}
-                                    </span>
-                                </TableCell>
-                                <TableCell className="max-md:p-2 flex items-center h-full">
-                                    <Link
-                                        to={`/products/edit/${product.id}`}
-                                    >
-                                        <Button className="bg-blue-400 mr-2 max-md:px-3">
-                                            <RiEditFill />
-                                        </Button>
-                                    </Link>
-                                    <Link
-                                        to={`/products/details/${product.id}`}
-                                    >
-                                        <Button className="bg-purple-400 mr-2 max-md:px-3">
-                                            <BiSolidShow />
-                                        </Button>
-                                    </Link>
-                                    {/* <Button
+                    {loading ? suspense() :
+                        products?.length === 0 ? notFound() :
+                            products.map((product) => (
+                                <TableRow key={product.id}>
+                                    <TableCell className="flex items-center max-md:p-2">
+                                        <img
+                                            src={renderImageDir(product.image)}
+                                            alt="avatar"
+                                            width="40px"
+                                            height="40px"
+                                            className="pr-2"
+                                        />{" "}
+                                        <div className="flex flex-col">
+                                            <div>{product.name}</div>
+                                            <div>{product.reference}</div>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="max-md:p-2 text-center">{product.price}</TableCell>
+                                    <TableCell className="max-md:p-2 text-center">
+                                        {product.quantity_available}
+                                    </TableCell>
+                                    <TableCell className="max-md:p-2">
+                                        <span
+                                            className={`px-2 inline-flex text-center text-xs leading-5 font-semibold rounded-full ${getStatusColorClass(
+                                                product.status
+                                            )}`}
+                                        >
+                                            {product.status}
+                                        </span>
+                                    </TableCell>
+                                    <TableCell className="max-md:p-2 flex items-center h-full">
+                                        <Link
+                                            to={`/products/edit/${product.id}`}
+                                        >
+                                            <Button className="bg-blue-400 mr-2 max-md:px-3">
+                                                <RiEditFill />
+                                            </Button>
+                                        </Link>
+                                        <Link
+                                            to={`/products/details/${product.id}`}
+                                        >
+                                            <Button className="bg-purple-400 mr-2 max-md:px-3">
+                                                <BiSolidShow />
+                                            </Button>
+                                        </Link>
+                                        {/* <Button
                                         className="bg-red-500"
                                         onClick={() => handleDelete(product.id)}
                                     >
                                         Delete
                                     </Button> */}
-                                </TableCell>
-                            </TableRow>
-                        ))}
+                                    </TableCell>
+                                </TableRow>
+                            ))}
                 </TableBody>
             </Table>
-            <div className="flex justify-between mt-4 px-4">
-                <div className="w-full">
-                    <p className="text-sm w-full text-gray-500">
-                        Showing {products.length} of {totalProducts} products
-                    </p>
-                </div>
-                <Pagination className="flex justify-end">
-                    <PaginationContent>
-                        <PaginationItem>
-                            <PaginationPrevious
-                                href="#"
-                                onClick={(e) => handleChangePage(e, page - 1)}
-                                style={{ color: page > 0 ? "blue" : "gray" }}
-                            />
-                        </PaginationItem>
-                        {[...Array(totalPages)].map((_, index) => (
-                            <PaginationItem key={index}>
-                                <PaginationLink
+            {!loading && products?.length > 0 &&
+                <div className="flex justify-between mt-4 px-4">
+                    <div className="w-full">
+                        <p className="text-sm w-full text-gray-500">
+                            Showing {products.length} of {totalProducts} products
+                        </p>
+                    </div>
+                    <Pagination className="flex justify-end">
+                        <PaginationContent>
+                            <PaginationItem>
+                                <PaginationPrevious
                                     href="#"
-                                    onClick={(e) => handleChangePage(e, index)}
-                                    style={{
-                                        color: index === page ? "red" : "black",
-                                    }}
-                                >
-                                    {index + 1}
-                                </PaginationLink>
+                                    onClick={(e) => handleChangePage(e, page - 1)}
+                                    style={{ color: page > 0 ? "blue" : "gray" }}
+                                />
                             </PaginationItem>
-                        ))}
-                        <PaginationItem>
-                            <PaginationNext
-                                href="#"
-                                onClick={(e) => handleChangePage(e, page + 1)}
-                                style={{
-                                    color:
-                                        page < totalPages - 1 ? "blue" : "gray",
-                                }}
-                            />
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination>
-            </div>
+                            {[...Array(totalPages)].map((_, index) => (
+                                <PaginationItem key={index}>
+                                    <PaginationLink
+                                        href="#"
+                                        onClick={(e) => handleChangePage(e, index)}
+                                        style={{
+                                            color: index === page ? "red" : "black",
+                                        }}
+                                    >
+                                        {index + 1}
+                                    </PaginationLink>
+                                </PaginationItem>
+                            ))}
+                            <PaginationItem>
+                                <PaginationNext
+                                    href="#"
+                                    onClick={(e) => handleChangePage(e, page + 1)}
+                                    style={{
+                                        color:
+                                            page < totalPages - 1 ? "blue" : "gray",
+                                    }}
+                                />
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
+                </div>}
         </>
     );
 }
 
-export default Products;
+
+const suspense = () => <TableRow className="bg-white hover:bg-white"><TableCell colSpan={5}><Spinner /></TableCell></TableRow>
+const notFound = () => <TableRow className="bg-white hover:bg-white"><TableCell colSpan={5}>No results!</TableCell></TableRow>
