@@ -23,11 +23,12 @@ import { useCheckoutStore } from "../../store";
 import { useAuth } from "@/hooks/useAuth";
 import axiosClient from "@/api/axiosClient";
 import { backEndUrl } from "@/helpers/utils";
+import Spinner from "@/components/Spinner";
 
 
 
-function OrderAdd() {
-    
+export default function OrderAdd() {
+
     const { csrf } = useAuth();
 
     const { setClient } = useCheckoutStore();
@@ -54,8 +55,11 @@ function OrderAdd() {
         setSearchQuery(event.target.value);
     };
 
+    const [isLoading, setIsLoading] = useState(false)
+
     const getClients = async (page, perPage, query = "", status = "") => {
         try {
+            setIsLoading(true)
             await csrf();
             const res = await axiosClient.get("/api/orders/add", {
                 params: {
@@ -75,6 +79,8 @@ function OrderAdd() {
             setTotalClients(totalClientsCount);
         } catch (err) {
             console.log("err", err);
+        } finally {
+            setIsLoading(false)
         }
     };
 
@@ -107,15 +113,15 @@ function OrderAdd() {
                         Les Clients
                     </h4>
                 </div>
-                <button
-                    className=" select-none rounded-lg bg-gradient-to-tr from-gray-900 to-gray-800 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none inline-block"
-                    type="button"
-                >
-                    <Link className={"flex items-center"} to={"/clients/add"}>
+                <Link className={"flex items-center"} to={"/clients/add"}>
+                    <button
+                        className=" select-none rounded-lg bg-gradient-to-tr from-gray-900 to-gray-800 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none inline-block"
+                        type="button"
+                    >
                         {" "}
                         Créer une nouvelle commande pour un invité
-                    </Link>
-                </button>
+                    </button>
+                </Link>
             </div>
             <div className="flex p-2 justify-start space-x-2">
                 {/* <select
@@ -185,91 +191,96 @@ function OrderAdd() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {clients?.length > 0 &&
-                        clients.map((client) => (
-                            <TableRow key={client.id}>
-                                <TableCell className="h-full flex items-center">
-                                    <img
-                                        src={`${backEndUrl}/assets/uploads/clients/${client.image}`}
-                                        alt="avatar"
-                                        width="40"
-                                        height="40"
-                                        className="pr-2"
-                                    />
-                                    {client.name} {client.lname}
-                                </TableCell>
-                                <TableCell>{client.phone}</TableCell>
-                                <TableCell>{client.city}</TableCell>
-                                <TableCell className='flex justify-center'>{client.orders_count}</TableCell>
-                                <TableCell className="text-center ">
-                                    {client.has_credit ? (
-                                        <div className="bg-red-100 rounded text-red-800">
-                                            {" "}
-                                            Oui{" "}
-                                        </div>
-                                    ) : (
-                                        <div className="bg-green-100 text-green-800">
-                                            Non{" "}
-                                        </div>
-                                    )}
-                                </TableCell>
-                                <TableCell>
-                                    <Button className="bg-blue-400 mr-2">
+                    {isLoading ? suspense() :
+                        clients?.length === 0 ? notFound() :
+                            clients.map((client) => (
+                                <TableRow key={client.id}>
+                                    <TableCell className="h-full flex items-center">
+                                        <img
+                                            src={`${backEndUrl}/assets/uploads/clients/${client.image}`}
+                                            alt="avatar"
+                                            width="40"
+                                            height="40"
+                                            className="pr-2"
+                                        />
+                                        {client.name} {client.lname}
+                                    </TableCell>
+                                    <TableCell>{client.phone}</TableCell>
+                                    <TableCell>{client.city}</TableCell>
+                                    <TableCell className='flex justify-center'>{client.orders_count}</TableCell>
+                                    <TableCell className="text-center ">
+                                        {client.has_credit ? (
+                                            <div className="bg-red-100 rounded text-red-800">
+                                                {" "}
+                                                Oui{" "}
+                                            </div>
+                                        ) : (
+                                            <div className="bg-green-100 text-green-800">
+                                                Non{" "}
+                                            </div>
+                                        )}
+                                    </TableCell>
+                                    <TableCell>
                                         <Link
                                             onClick={() => setClient(client.id)}
                                             to={`/orders/products/add/${client.id}`}
                                         >
-                                            Create Order
+                                            <Button className="bg-blue-400 mr-2">
+                                                Create Order
+                                            </Button>
                                         </Link>
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        ))}
+                                    </TableCell>
+                                </TableRow>
+                            ))}
                 </TableBody>
             </Table>
-            <div className="flex justify-between mt-4 px-4">
-                <div className="w-full">
-                    <p className="text-sm w-full text-gray-500">
-                        Showing {clients.length} of {totalClients} clients
-                    </p>
-                </div>
-                <Pagination className="flex justify-end">
-                    <PaginationContent>
-                        <PaginationItem>
-                            <PaginationPrevious
-                                href="#"
-                                onClick={(e) => handleChangePage(e, page - 1)}
-                                style={{ color: page > 0 ? "blue" : "gray" }}
-                            />
-                        </PaginationItem>
-                        {[...Array(totalPages)].map((_, index) => (
-                            <PaginationItem key={index}>
-                                <PaginationLink
+
+            {!isLoading && clients?.length > 0 &&
+                <div className="flex justify-between mt-4 px-4">
+                    <div className="w-full">
+                        <p className="text-sm w-full text-gray-500">
+                            Showing {clients.length} of {totalClients} clients
+                        </p>
+                    </div>
+                    <Pagination className="flex justify-end">
+                        <PaginationContent>
+                            <PaginationItem>
+                                <PaginationPrevious
                                     href="#"
-                                    onClick={(e) => handleChangePage(e, index)}
-                                    style={{
-                                        color: index === page ? "red" : "black",
-                                    }}
-                                >
-                                    {index + 1}
-                                </PaginationLink>
+                                    onClick={(e) => handleChangePage(e, page - 1)}
+                                    style={{ color: page > 0 ? "blue" : "gray" }}
+                                />
                             </PaginationItem>
-                        ))}
-                        <PaginationItem>
-                            <PaginationNext
-                                href="#"
-                                onClick={(e) => handleChangePage(e, page + 1)}
-                                style={{
-                                    color:
-                                        page < totalPages - 1 ? "blue" : "gray",
-                                }}
-                            />
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination>
-            </div>
+                            {[...Array(totalPages)].map((_, index) => (
+                                <PaginationItem key={index}>
+                                    <PaginationLink
+                                        href="#"
+                                        onClick={(e) => handleChangePage(e, index)}
+                                        style={{
+                                            color: index === page ? "red" : "black",
+                                        }}
+                                    >
+                                        {index + 1}
+                                    </PaginationLink>
+                                </PaginationItem>
+                            ))}
+                            <PaginationItem>
+                                <PaginationNext
+                                    href="#"
+                                    onClick={(e) => handleChangePage(e, page + 1)}
+                                    style={{
+                                        color:
+                                            page < totalPages - 1 ? "blue" : "gray",
+                                    }}
+                                />
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
+                </div>}
         </>
     );
 }
 
-export default OrderAdd;
+
+const suspense = () => <TableRow className="bg-white hover:bg-white"><TableCell colSpan={5}><Spinner /></TableCell></TableRow>
+const notFound = () => <TableRow className="bg-white hover:bg-white"><TableCell colSpan={5}>No results!</TableCell></TableRow>

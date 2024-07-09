@@ -4,7 +4,8 @@ import { useLocation } from "react-router-dom";
 import { useCheckoutStore } from "../../store";
 import { useAuth } from "@/hooks/useAuth";
 import axiosClient from "@/api/axiosClient";
-import { backEndUrl } from "@/helpers/utils";
+import { backEndUrl, renderImageDir } from "@/helpers/utils";
+import Spinner from "@/components/Spinner";
 
 function OrderConfirmed() {
     
@@ -28,8 +29,11 @@ function OrderConfirmed() {
         cart
     );
 
+    const [inProgress, setInProgress] = useState(false)
+
     const getProducts = async (selectedProducts) => {
         try {
+            setInProgress(true)
             await csrf();
             const response = await axiosClient.get("/api/orders/confirmed", {
                 params: {
@@ -40,6 +44,8 @@ function OrderConfirmed() {
             setProducts(products);
         } catch (error) {
             console.error("Error fetching selected products:", error);
+        } finally {
+            setInProgress(false)
         }
     };
     const handleIncrementQuantity = (productId) => {
@@ -152,7 +158,7 @@ function OrderConfirmed() {
         handleInputChange(null, null);
     }, []);
 
-    return (
+    return inProgress ? <Spinner /> : (
         <>
             <div className=" h-screen py-2">
                 <div className="container mx-auto px-4">
@@ -208,7 +214,7 @@ function OrderConfirmed() {
                                                         <div className="flex items-center">
                                                             <img
                                                                 className="h-16 w-16 mr-4"
-                                                                src={`${backEndUrl}/assets/uploads/products/${product.image}`}
+                                                                src={renderImageDir(product.image)}
                                                                 alt=""
                                                             />
                                                             <div className="flex flex-col">

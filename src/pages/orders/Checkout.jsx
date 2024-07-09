@@ -8,6 +8,7 @@ import { BsCreditCard2Front } from "react-icons/bs";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import axiosClient from "@/api/axiosClient";
+import { Loader } from "lucide-react";
 
 function Checkout() {
 
@@ -55,9 +56,12 @@ function Checkout() {
         }
     };
 
+    const [inProgress, setInProgress] = useState(false)
+
     const [prixReste, setPrixReste] = useState(calculateRestPrice());
     const handleCheckout = async () => {
         try {
+            setInProgress(true)
             await csrf();
             const response = await axiosClient.post("/api/add-order", {
                 client_id: clientId,
@@ -82,14 +86,19 @@ function Checkout() {
                 try {
                     await csrf();
                     const productData = await axiosClient.get(`/api/products/get/${product.product_id}`);
-                    const updatedQuantityAvailable = productData.data.quantity_available ?? 0 - product.quantity ?? 0;
-                    const updatedQuantitySold = productData.data.quantity_sold ?? 0 + product.quantity ?? 0;
+                    const updatedQuantityAvailable = productData?.data?.quantity_available ?? 0 - product?.quantity ?? 0;
+                    const updatedQuantitySold = productData?.data?.quantity_sold ?? 0 + product?.quantity ?? 0;
+
+                    const productValues = productData?.data;
+                    
+                    delete productValues.image;
 
                     await axiosClient.post(`/api/products/update/${product.product_id}`, {
-                        ...productData.data, // Include other product fields to prevent them from becoming null
+                        ...productValues,
                         quantity_available: updatedQuantityAvailable,
                         quantity_sold: updatedQuantitySold,
                     });
+
                 } catch (error) {
                     console.error(`Error updating product ${product.product_id} quantity:`, error);
                     throw error; // Rethrow the error to stop the execution of further updates
@@ -104,6 +113,8 @@ function Checkout() {
 
         } catch (error) {
             console.error("Error creating order:", error);
+        } finally {
+            setInProgress(false)
         }
     };
     // const downloadInvoice = async (orderId) => {
@@ -682,9 +693,10 @@ function Checkout() {
                                     <button
                                         type="button"
                                         onClick={handleCheckout}
-                                        className="w-full py-2 hover:bg-black hover:text-white font-semibold border rounded dark:bg-violet-400 dark:text-gray-900 dark:border-violet-400"
+                                        className="w-full py-2 hover:bg-black hover:text-white font-semibold border rounded dark:bg-violet-400 dark:text-gray-900 dark:border-violet-400 flex items-center gap-2 justify-center"
                                     >
-                                        checkout
+                                        <span>checkout</span>
+                                        {inProgress && <div className="animate-spin"><Loader /></div>}
                                     </button>
                                 </div>
                             </div>

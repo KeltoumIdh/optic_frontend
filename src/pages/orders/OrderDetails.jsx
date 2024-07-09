@@ -4,7 +4,8 @@ import dayjs from "dayjs";
 import { Loader } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import axiosClient from "@/api/axiosClient.jsx";
-import { backEndUrl } from "@/helpers/utils";
+import { backEndUrl, renderImageDir } from "@/helpers/utils";
+import Spinner from "@/components/Spinner";
 
 
 function OrderDetails() {
@@ -16,14 +17,18 @@ function OrderDetails() {
 
     const { id } = useParams();
 
+    const [isProgress, setIsProgress] = useState(false);
     const getOrder = async () => {
         try {
+            setIsProgress(true)
             await csrf();
             const response = await axiosClient.get(`/api/orders/details/${id}`);
             setOrder(response.data.order);
             setProducts(response.data.products);
         } catch (err) {
             console.log("err", err);
+        } finally {
+            setIsProgress(false)
         }
     };
 
@@ -52,7 +57,7 @@ function OrderDetails() {
         getOrder();
     }, [id]);
 
-    return (
+    return isLoading || isProgress ? <Spinner /> : (
         <>
             <div
                 id="pdfElement"
@@ -139,12 +144,12 @@ function OrderDetails() {
                                             <div className="max-md:pb-4 w-full md:w-20 max-md:flex justify-center">
                                                 <img
                                                     className="w-full hidden md:block"
-                                                    src={`${backEndUrl}/assets/uploads/products/${product.image}`}
+                                                    src={renderImageDir(product.image)}
                                                     alt="product_img"
                                                 />
                                                 <img
                                                     className="w-1/2 md:hidden"
-                                                    src={`${backEndUrl}/assets/uploads/products/${product.image}`}
+                                                    src={renderImageDir(product.image)}
                                                     alt="product"
                                                 />
                                             </div>

@@ -26,15 +26,16 @@ import { Image } from "@radix-ui/react-avatar";
 import { useCheckoutStore } from "../../store";
 import { useAuth } from "@/hooks/useAuth";
 import axiosClient from "@/api/axiosClient.jsx";
-import { backEndUrl } from "@/helpers/utils";
+import { backEndUrl, renderImageDir } from "@/helpers/utils";
+import Spinner from "@/components/Spinner";
 
 
-function OrderProductsAdd() {
+export default function OrderProductsAdd() {
 
     const { csrf } = useAuth();
 
     const { setSelectedProd, clientId, selectedProd } = useCheckoutStore();
-    
+
     const [products, setProducts] = useState([]);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [page, setPage] = useState(0);
@@ -81,8 +82,11 @@ function OrderProductsAdd() {
         setSearchQuery(event.target.value);
     };
 
+    const [loading, setLoading] = useState(false);
+
     const getProducts = async (page, perPage, query = "", status = "") => {
         try {
+            setLoading(true)
             await csrf();
             const res = await axiosClient.post(`/api/orders/products/add/${clientId}`, {
                 params: {
@@ -104,6 +108,8 @@ function OrderProductsAdd() {
             setTotalProducts(totalProductsCount);
         } catch (err) {
             console.log("err", err);
+        } finally {
+            setLoading(false)
         }
     };
     const getStatusColorClass = (status) => {
@@ -223,80 +229,76 @@ function OrderProductsAdd() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {products?.length > 0 &&
-                        products.map((product) => (
-                            <TableRow key={product.id}>
-                                <TableCell className="flex items-center ">
-                                    <Avatar className="mr-2">
-                                        <AvatarImage asChild>
-                                            <Image
-                                                src={`${backEndUrl}/public/assets/uploads/products/${product.image}`}
-                                                alt="avatar"
-                                                width={40}
-                                                height={40}
-                                            />
-                                        </AvatarImage>
-                                        <AvatarFallback></AvatarFallback>
-                                    </Avatar>
-                                    <div className="flex flex-col">
-                                        <div>{product.name}</div>
-                                        <div>{product.reference}</div>
-                                    </div>
-                                </TableCell>
-                                <TableCell>{product.price}</TableCell>
-                                <TableCell>
-                                    {product.quantity_available}
-                                </TableCell>
-                                <TableCell>
-                                    <span
-                                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColorClass(
-                                            product.status
-                                        )}`}
-                                    >
-                                        {product.status}
-                                    </span>
-                                </TableCell>
-
-                                <TableCell>
-                                    <div className="inline-flex items-center">
-                                        <label
-                                            className="relative flex items-center p-3 rounded-full cursor-pointer"
-                                            htmlFor="amber"
+                    {loading ? suspense() :
+                        products?.length === 0 ? notFound() :
+                            products.map((product) => (
+                                <TableRow key={product.id}>
+                                    <TableCell className="flex items-center gap-2">
+                                        <img
+                                            src={renderImageDir(product.image)}
+                                            alt="avatar"
+                                            width={40}
+                                            height={40}
+                                        />
+                                        <div className="flex flex-col">
+                                            <div>{product.name}</div>
+                                            <div>{product.reference}</div>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>{product.price}</TableCell>
+                                    <TableCell>
+                                        {product.quantity_available}
+                                    </TableCell>
+                                    <TableCell>
+                                        <span
+                                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColorClass(
+                                                product.status
+                                            )}`}
                                         >
-                                            <input
-                                                checked={selectedProducts.includes(
-                                                    product.id
-                                                )}
-                                                onChange={() =>
-                                                    handleSelectProduct(
+                                            {product.status}
+                                        </span>
+                                    </TableCell>
+
+                                    <TableCell>
+                                        <div className="inline-flex items-center">
+                                            <label
+                                                className="relative flex items-center p-3 rounded-full cursor-pointer"
+                                                htmlFor="amber"
+                                            >
+                                                <input
+                                                    checked={selectedProducts.includes(
                                                         product.id
-                                                    )
-                                                }
-                                                type="checkbox"
-                                                className="before:content[''] peer relative h-5 w-5 cursor-pointer appearance-none rounded-md border border-blue-gray-200 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:border-green-500 checked:bg-green-500 checked:before:bg-green-500 hover:before:opacity-10"
-                                                id="amber"
-                                            />
-                                            <span className="absolute text-white transition-opacity opacity-0 pointer-events-none top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 peer-checked:opacity-100">
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    className="h-3.5 w-3.5"
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor"
-                                                    stroke="currentColor"
-                                                    strokeWidth="1"
-                                                >
-                                                    <path
-                                                        fillRule="evenodd"
-                                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                        clipRule="evenodd"
-                                                    ></path>
-                                                </svg>
-                                            </span>
-                                        </label>
-                                    </div>
-                                </TableCell>
-                            </TableRow>
-                        ))}
+                                                    )}
+                                                    onChange={() =>
+                                                        handleSelectProduct(
+                                                            product.id
+                                                        )
+                                                    }
+                                                    type="checkbox"
+                                                    className="before:content[''] peer relative h-5 w-5 cursor-pointer appearance-none rounded-md border border-blue-gray-200 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:border-green-500 checked:bg-green-500 checked:before:bg-green-500 hover:before:opacity-10"
+                                                    id="amber"
+                                                />
+                                                <span className="absolute text-white transition-opacity opacity-0 pointer-events-none top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 peer-checked:opacity-100">
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        className="h-3.5 w-3.5"
+                                                        viewBox="0 0 20 20"
+                                                        fill="currentColor"
+                                                        stroke="currentColor"
+                                                        strokeWidth="1"
+                                                    >
+                                                        <path
+                                                            fillRule="evenodd"
+                                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                            clipRule="evenodd"
+                                                        ></path>
+                                                    </svg>
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
                 </TableBody>
             </Table>
             {/* <div className="flex justify-end mt-4 px-4">
@@ -307,49 +309,52 @@ function OrderProductsAdd() {
                     Save Selected Products
                 </Button>
             </div> */}
-            <div className="flex justify-between mt-4 px-4">
-                <div className="w-full">
-                    <p className="text-sm w-full text-gray-500">
-                        Showing {products.length} of {totalProducts} products
-                    </p>
-                </div>
-                <Pagination className="flex justify-end">
-                    <PaginationContent>
-                        <PaginationItem>
-                            <PaginationPrevious
-                                href="#"
-                                onClick={(e) => handleChangePage(e, page - 1)}
-                                style={{ color: page > 0 ? "blue" : "gray" }}
-                            />
-                        </PaginationItem>
-                        {[...Array(totalPages)].map((_, index) => (
-                            <PaginationItem key={index}>
-                                <PaginationLink
+            {!loading && products?.length > 0 &&
+                <div className="flex justify-between mt-4 px-4">
+                    <div className="w-full">
+                        <p className="text-sm w-full text-gray-500">
+                            Showing {products.length} of {totalProducts} products
+                        </p>
+                    </div>
+                    <Pagination className="flex justify-end">
+                        <PaginationContent>
+                            <PaginationItem>
+                                <PaginationPrevious
                                     href="#"
-                                    onClick={(e) => handleChangePage(e, index)}
-                                    style={{
-                                        color: index === page ? "red" : "black",
-                                    }}
-                                >
-                                    {index + 1}
-                                </PaginationLink>
+                                    onClick={(e) => handleChangePage(e, page - 1)}
+                                    style={{ color: page > 0 ? "blue" : "gray" }}
+                                />
                             </PaginationItem>
-                        ))}
-                        <PaginationItem>
-                            <PaginationNext
-                                href="#"
-                                onClick={(e) => handleChangePage(e, page + 1)}
-                                style={{
-                                    color:
-                                        page < totalPages - 1 ? "blue" : "gray",
-                                }}
-                            />
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination>
-            </div>
+                            {[...Array(totalPages)].map((_, index) => (
+                                <PaginationItem key={index}>
+                                    <PaginationLink
+                                        href="#"
+                                        onClick={(e) => handleChangePage(e, index)}
+                                        style={{
+                                            color: index === page ? "red" : "black",
+                                        }}
+                                    >
+                                        {index + 1}
+                                    </PaginationLink>
+                                </PaginationItem>
+                            ))}
+                            <PaginationItem>
+                                <PaginationNext
+                                    href="#"
+                                    onClick={(e) => handleChangePage(e, page + 1)}
+                                    style={{
+                                        color:
+                                            page < totalPages - 1 ? "blue" : "gray",
+                                    }}
+                                />
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
+                </div>}
         </>
     );
 }
 
-export default OrderProductsAdd;
+
+const suspense = () => <TableRow className="bg-white hover:bg-white"><TableCell colSpan={5}><Spinner /></TableCell></TableRow>
+const notFound = () => <TableRow className="bg-white hover:bg-white"><TableCell colSpan={5}>No results!</TableCell></TableRow>

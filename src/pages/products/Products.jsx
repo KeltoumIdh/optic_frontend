@@ -44,7 +44,7 @@ export default function Products() {
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
-    
+
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
@@ -254,7 +254,8 @@ export default function Products() {
                                     </Button> */}
                                     </TableCell>
                                 </TableRow>
-                            ))}
+                            ))
+                    }
                 </TableBody>
             </Table>
             {!loading && products?.length > 0 &&
@@ -298,7 +299,8 @@ export default function Products() {
                             </PaginationItem>
                         </PaginationContent>
                     </Pagination>
-                </div>}
+                </div>
+            }
         </>
     );
 }
