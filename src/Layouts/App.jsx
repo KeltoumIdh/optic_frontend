@@ -13,17 +13,13 @@ const App = () => {
   const navigate = useNavigate();
 
   const [open, setOpen] = useState(true);
-  const isLargeScreen = useMediaQuery({ query: "(min-width: 1011px)" });
-  const isMediumScreen = useMediaQuery({
-    query: "(min-width: 768px) and (max-width: 1010px)",
-  });
-  const isSmallScreen = useMediaQuery({ query: "(max-width: 767px)" });
+  const isLargeScreen = useMediaQuery({ query: "(min-width: 1011px)" })
 
   const toggleOpen = () => {
     setOpen(!open);
   };
 
-  const [openMobileSideBar, setOpenMobileSideBar] = useState(true);
+  const [openMobileSideBar, setOpenMobileSideBar] = useState(false);
   const toggleMobileSideBar = () => setOpenMobileSideBar(!openMobileSideBar);
 
   useEffect(() => {
@@ -39,11 +35,9 @@ const App = () => {
   return (
     <div className="flex h-screen transition-all duration-300 ease-in-out ">
       <div className=" border-r ">
-        {isLargeScreen && (
-          <div className="border-r">
-            <SideBar open={open} />
-          </div>
-        )}
+        
+        {/* SideBar for Large Devices */}
+        <SideBar open={open} />
 
         {/* SideBar for Small Devices */}
         {openMobileSideBar && <MobileMenu toggleMobileSideBar={toggleMobileSideBar} />}

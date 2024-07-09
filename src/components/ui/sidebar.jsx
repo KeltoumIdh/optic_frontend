@@ -12,8 +12,9 @@ import {
 } from "lucide-react";
 import { Button } from "./button";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { backEndUrl } from "@/helpers/utils";
+import { useAuth } from "@/hooks/useAuth";
 
 const LINKS = [
     {
@@ -71,7 +72,7 @@ const SideBar = ({ open }) => {
 
     return (
         <div
-            className={`${sideBarStyle} m-2 transition-width  duration-200 ease-linear`}
+            className={`${sideBarStyle} max-lg:hidden m-2 transition-width  duration-200 ease-linear`}
         >
             {open ? (
                 <div className="flex  w-full h-12 items-center justify-center">
@@ -126,7 +127,7 @@ export const MobileMenu = ({ toggleMobileSideBar }) => {
 
     return (
         <>
-            <div onClick={toggleMobileSideBar} className="fixed top-0 left-0 z-[1000] h-full w-full bg-black/40"></div>
+            <div onClick={toggleMobileSideBar} className="lg:hidden fixed top-0 left-0 z-[1000] h-full w-full bg-black/40"></div>
             <div
                 className={`lg:hidden w-[200px] h-dvh overflow-y-auto flex flex-col justify-start items-start gap-5 duration-200 ease-linear bg-white
                 fixed top-0 left-0 z-[1001]
