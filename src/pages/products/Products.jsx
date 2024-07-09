@@ -29,7 +29,7 @@ import Loader from "@/components/loader";
 
 
 function Products() {
-    
+
     const { csrf } = useAuth()
 
     const [products, setProducts] = useState([]);
@@ -114,7 +114,7 @@ function Products() {
     return loading ? <Loader /> : (
         <>
             <div className="flex p-2 justify-between">
-            <h4 className="lg:text-2xl text-lg font-semibold dark:text-gray-300">
+                <h4 className="lg:text-2xl text-lg font-semibold dark:text-gray-300">
                     Products
                 </h4>
                 <button
@@ -225,20 +225,20 @@ function Products() {
                                     </span>
                                 </TableCell>
                                 <TableCell className="max-md:p-2 flex items-center h-full">
-                                    <Button className="bg-blue-400 mr-2 max-md:px-3">
-                                        <Link
-                                            to={`/products/edit/${product.id}`}
-                                        >
-                                            <RiEditFill/>
-                                        </Link>
-                                    </Button>
-                                    <Button className="bg-purple-400 mr-2 max-md:px-3">
-                                        <Link
-                                            to={`/products/details/${product.id}`}
-                                        >
-                                            <BiSolidShow/>
-                                        </Link>
-                                    </Button>
+                                    <Link
+                                        to={`/products/edit/${product.id}`}
+                                    >
+                                        <Button className="bg-blue-400 mr-2 max-md:px-3">
+                                            <RiEditFill />
+                                        </Button>
+                                    </Link>
+                                    <Link
+                                        to={`/products/details/${product.id}`}
+                                    >
+                                        <Button className="bg-purple-400 mr-2 max-md:px-3">
+                                            <BiSolidShow />
+                                        </Button>
+                                    </Link>
                                     {/* <Button
                                         className="bg-red-500"
                                         onClick={() => handleDelete(product.id)}
