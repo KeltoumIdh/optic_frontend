@@ -26,7 +26,7 @@ export default function ProductAdd() {
         image: "",
     });
 
-    const [newImage, setNewImage] = useState({})
+    const [image, setImage] = useState("")
 
 
     const [loading, setLoading] = useState(false);
@@ -55,11 +55,19 @@ export default function ProductAdd() {
 
 
     // Change Product Image
-    const handleFileChange = (event) => {
-        const newImage = event.target.files[0];
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
 
-        if (newImage) setNewImage(newImage);
-    };
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImage(reader.result); // Base64 string
+            };
+            reader.readAsDataURL(file);
+        } else {
+            setImage('')
+        }
+    }
 
     const [isProgress, setInProgress] = useState(false)
 
@@ -80,7 +88,7 @@ export default function ProductAdd() {
             formData.append("price", product.price);
             formData.append("quantity_available", product.quantity_available);
             formData.append("quantity_sold", product.quantity_sold);
-            formData.append("image", newImage);
+            formData.append("image", image);
 
             await csrf();
 
@@ -226,7 +234,7 @@ export default function ProductAdd() {
                         type="file"
                         onChange={handleFileChange}
                         className="w-full md:p-2 px-2 py-1 max-md:text-xs border border-gray-300 rounded"
-                        accept="image/png,image/jpeg,image/jpg"
+                        accept="image/png, image/jpg, image/jpeg"
                     />
                 </div>
 
