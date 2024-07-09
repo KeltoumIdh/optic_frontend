@@ -20,7 +20,7 @@ function OrderConfirmed() {
     const location = useLocation();
     const selectedProducts = location?.state?.selectedProducts;
     const clientId = location.state?.clientId;
-    
+
 
     const [inProgress, setInProgress] = useState(false)
 
@@ -43,9 +43,7 @@ function OrderConfirmed() {
     };
 
     const handleIncrementQuantity = (productId) => {
-        const availableQuantity =
-            products.find((product) => product.id === productId)
-                ?.quantity_available || 0;
+        const availableQuantity = products.find((product) => product.id === productId) ?.quantity_available || 0;
         setQuantities((prevQuantities) => ({
             ...prevQuantities,
             [productId]: Math.min(
@@ -58,7 +56,7 @@ function OrderConfirmed() {
     const handleDecrementQuantity = (productId) => {
         setQuantities((prevQuantities) => ({
             ...prevQuantities,
-            [productId]: Math.max((prevQuantities[productId] || 0) - 1, 0),
+            [productId]: Math.max((prevQuantities[productId] || 0) - 1, 1),
         }));
     };
 
@@ -75,7 +73,7 @@ function OrderConfirmed() {
             [productId]: limitedQuantity,
         }));
     };
-    
+
 
     const handleRemoveProduct = (productId) => {
         setProducts((prevProducts) =>
@@ -182,93 +180,88 @@ function OrderConfirmed() {
                                     </thead>
                                     <tbody>
                                         {products?.length > 0 ? (
-                                            products.map((product) => (
-                                                <tr key={product.id}>
-                                                    <td className="py-4">
-                                                        <div className="flex items-center">
-                                                            <img
-                                                                className="h-16 w-16 mr-4"
-                                                                src={renderImageDir(product.image)}
-                                                                alt=""
-                                                            />
-                                                            <div className="flex flex-col">
-                                                                <span className="font-semibold">
-                                                                    {
-                                                                        product.name
-                                                                    }
-                                                                </span>
-                                                                <span className=" text-gray-500 text-sm">
-                                                                    {
-                                                                        product.reference
-                                                                    }
-                                                                </span>
+                                            products.map((product, i) => {
+                                                console.log(i + "---", product)
+
+                                                const handleChangeQNT = () => {
+                                                    const availableQNT = product.quantity_available;
+                                                }
+
+                                                return (
+                                                    <tr key={product.id}>
+                                                        <td className="py-4">
+                                                            <div className="flex items-center">
+                                                                <img
+                                                                    className="h-16 w-16 mr-4"
+                                                                    src={renderImageDir(product.image)}
+                                                                    alt=""
+                                                                />
+                                                                <div className="flex flex-col">
+                                                                    <span className="font-semibold">{product.name}</span>
+                                                                    <span className=" text-gray-500 text-sm">{product.reference}</span>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    </td>
-                                                    <td className="py-4">
-                                                        {product.price}
-                                                    </td>
-                                                    <td className="py-4">
-                                                        <div className="flex items-center">
-                                                            <button
-                                                                className="border rounded-md py-2 px-4 mr-2"
-                                                                onClick={() => handleDecrementQuantity(product.id)}>
-                                                                -
-                                                            </button>
-                                                            <span className="text-center w-8">
-                                                                <input
-                                                                    className="w-8  text-center "
-                                                                    type="number"
-                                                                    value={quantities[product.id] !== undefined ? quantities[product.id] : 1}
-                                                                    onChange={(e) =>
-                                                                        handleInputChange(product.id, e.target.value !== "" ? parseInt(e.target.value, 10) : "")
-                                                                    }
-                                                                />
-                                                            </span>
-                                                            <button
-                                                                className="border rounded-md py-2 px-4 ml-2"
-                                                                onClick={() => handleIncrementQuantity(product.id)}>
-                                                                +
-                                                            </button>
-                                                        </div>
-                                                    </td>
-                                                    <td className="py-4">
-                                                        {" "}
-                                                        {quantities[
-                                                            product.id
-                                                        ] > 0
-                                                            ? (
-                                                                product.price *
-                                                                quantities[
+                                                        </td>
+                                                        <td className="py-4">
+                                                            {product.price}
+                                                        </td>
+                                                        <td className="py-4">
+                                                            <div className="flex items-center">
+                                                                <button
+                                                                    className="border rounded-md py-2 px-4 mr-2"
+                                                                    onClick={() => {
+                                                                        handleDecrementQuantity(product.id)
+                                                                    }}>
+                                                                    -
+                                                                </button>
+                                                                <span className="text-center w-8 select-none">
+                                                                    {quantities[product.id] !== undefined ? quantities[product.id] : 1}
+                                                                </span>
+                                                                <button
+                                                                    className="border rounded-md py-2 px-4 ml-2"
+                                                                    onClick={() => handleIncrementQuantity(product.id)}>
+                                                                    +
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                        <td className="py-4">
+                                                            {" "}
+                                                            {quantities[
                                                                 product.id
-                                                                ]
-                                                            ).toFixed(2)
-                                                            : product.price}
-                                                    </td>
-                                                    <td className="py-4">
-                                                        <button
-                                                            className="text-red-500 hover:text-red-700"
-                                                            onClick={() =>
-                                                                handleRemoveProduct(
+                                                            ] > 0
+                                                                ? (
+                                                                    product.price *
+                                                                    quantities[
                                                                     product.id
-                                                                )
-                                                            }
-                                                        >
-                                                            <svg
-                                                                className="h-5 w-5"
-                                                                viewBox="0 0 20 20"
-                                                                fill="currentColor"
+                                                                    ]
+                                                                ).toFixed(2)
+                                                                : product.price}
+                                                        </td>
+                                                        <td className="py-4">
+                                                            <button
+                                                                className="text-red-500 hover:text-red-700"
+                                                                onClick={() =>
+                                                                    handleRemoveProduct(
+                                                                        product.id
+                                                                    )
+                                                                }
                                                             >
-                                                                <path
-                                                                    fillRule="evenodd"
-                                                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                                                    clipRule="evenodd"
-                                                                />
-                                                            </svg>
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))
+                                                                <svg
+                                                                    className="h-5 w-5"
+                                                                    viewBox="0 0 20 20"
+                                                                    fill="currentColor"
+                                                                >
+                                                                    <path
+                                                                        fillRule="evenodd"
+                                                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                        clipRule="evenodd"
+                                                                    />
+                                                                </svg>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            })
                                         ) : (
                                             <p className="text-center w-full p-4 ">
                                                 {" "}

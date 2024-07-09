@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import axiosClient from "@/api/axiosClient.jsx";
 import Loader from "@/components/loader";
 import { renderImageDir } from "@/helpers/utils";
+import Spinner from "@/components/Spinner";
 
 function ClientDetails() {
     const [client, setClient] = useState();
@@ -34,7 +35,7 @@ function ClientDetails() {
         getClient();
     }, [id]);
 
-    return loading ? <Loader /> : (
+    return loading ? <Spinner /> : (
         <>
             <div className="pb-14 px-4 md:px-6 2xl:px-20 2xl:container 2xl:mx-auto">
                 <div className="flex justify-start item-start space-y-2 flex-col">
