@@ -24,10 +24,11 @@ import { Button } from "../../components/ui/button";
 import { useAuth } from "@/hooks/useAuth.jsx";
 import axiosClient from "@/api/axiosClient.jsx";
 import Loader from "@/components/loader";
+import Spinner from "@/components/Spinner";
 
 
 
-function Clients() {
+export default function Clients() {
     const [clients, setClients] = useState([]);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [page, setPage] = useState(0);
@@ -102,21 +103,21 @@ function Clients() {
         getClients(page, rowsPerPage, searchQuery, searchStatus);
     }, [page, rowsPerPage, searchQuery, searchStatus]);
 
-    return loading ? <Loader /> : (
+    return (
         <>
             <div className="flex p-2 justify-between">
                 <h4 className="text-2xl font-semibold dark:text-gray-300">
                     Clients
                 </h4>
-                <button
-                    className=" select-none rounded-lg bg-gradient-to-tr from-gray-900 to-gray-800 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:inline-block"
-                    type="button"
-                >
-                    <Link className={"flex items-center"} to={"/clients/add"}>
+                <Link className={"flex items-center"} to={"/clients/add"}>
+                    <button
+                        className=" select-none rounded-lg bg-gradient-to-tr from-gray-900 to-gray-800 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:inline-block"
+                        type="button"
+                    >
                         {" "}
                         Ajouter
-                    </Link>
-                </button>
+                    </button>
+                </Link>
             </div>
             <div className="flex p-2 justify-start space-x-2">
                 {/* <select
@@ -186,62 +187,65 @@ function Clients() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {clients?.length > 0 &&
-                        clients.map((client) => (
-                            <TableRow key={client.id}>
-                                <TableCell className="h-full flex items-center">
-                                    <img
-                                        src={`http://localhost:8000/assets/uploads/clients/${client.image}`}
-                                        alt="avatar"
-                                        width="40"
-                                        height="40"
-                                        className="pr-2"
-                                    />
-                                    {client.name} {client.lname}
-                                </TableCell>
-                                <TableCell className='max-md:p-2'>{client.phone}</TableCell>
-                                <TableCell>{client.city}</TableCell>
-                                <TableCell className='flex justify-center max-md:p-2'>{client.orders_count}</TableCell>
-                                <TableCell className="text-center max-md:p-2">
-                                    {client.has_credit ? (
-                                        <div className="bg-red-100 rounded text-red-800">
-                                            {" "}
-                                            Oui{" "}
-                                        </div>
-                                    ) : (
-                                        <div className="bg-green-100 text-green-800">
-                                            Non{" "}
-                                        </div>
-                                    )}
-                                </TableCell>
-                                <TableCell className='max-md:p-2 flex items-center h-full'>
-                                    <Button className="bg-blue-400 m-1  max-md:px-3">
-                                        <Link
-                                            to={`/clients/edit/${client.id}`}
-                                            className="max-lg:text-xs "
-                                        >
-                                            <RiEditFill/>
-                                        </Link>
-                                    </Button>
-                                    <Button className="bg-purple-400 mx-1 max-lg:text-sm max-md:px-3">
-                                        <Link
-                                            to={`/clients/details/${client.id}`}
-                                            className="max-lg:text-xs "
-                                        >
-                                            <BiSolidShow/>
-                                        </Link>
-                                    </Button>
-                                    {/* <Button
+                    {loading ? suspense() :
+                        clients?.length === 0 ? notFound() :
+                            clients.map((client) => (
+                                <TableRow key={client.id}>
+                                    <TableCell className="h-full flex items-center">
+                                        <img
+                                            src={`http://localhost:8000/assets/uploads/clients/${client.image}`}
+                                            alt="avatar"
+                                            width="40"
+                                            height="40"
+                                            className="pr-2"
+                                        />
+                                        {client.name} {client.lname}
+                                    </TableCell>
+                                    <TableCell className='max-md:p-2'>{client.phone}</TableCell>
+                                    <TableCell>{client.city}</TableCell>
+                                    <TableCell className='flex justify-center max-md:p-2'>{client.orders_count}</TableCell>
+                                    <TableCell className="text-center max-md:p-2">
+                                        {client.has_credit ? (
+                                            <div className="bg-red-100 rounded text-red-800">
+                                                {" "}
+                                                Oui{" "}
+                                            </div>
+                                        ) : (
+                                            <div className="bg-green-100 text-green-800">
+                                                Non{" "}
+                                            </div>
+                                        )}
+                                    </TableCell>
+                                    <TableCell className='max-md:p-2 flex items-center h-full'>
+                                        <Button className="bg-blue-400 m-1  max-md:px-3">
+                                            <Link
+                                                to={`/clients/edit/${client.id}`}
+                                                className="max-lg:text-xs "
+                                            >
+                                                <RiEditFill />
+                                            </Link>
+                                        </Button>
+                                        <Button className="bg-purple-400 mx-1 max-lg:text-sm max-md:px-3">
+                                            <Link
+                                                to={`/clients/details/${client.id}`}
+                                                className="max-lg:text-xs "
+                                            >
+                                                <BiSolidShow />
+                                            </Link>
+                                        </Button>
+                                        {/* <Button
                                         className="bg-red-500 max-lg:text-xs m-1 max-lg:p-2"
                                         onClick={() => handleDelete(client.id)}
                                     >
                                         Supprimer
                                     </Button> */}
-                                </TableCell>
-                            </TableRow>
-                        ))}
+                                    </TableCell>
+                                </TableRow>
+                            ))}
                 </TableBody>
             </Table>
+
+            {!loading && clients?.length > 0 &&
             <div className="flex justify-between mt-4 px-4">
                 <div className="w-full">
                     <p className="text-sm w-full text-gray-500">
@@ -282,9 +286,11 @@ function Clients() {
                         </PaginationItem>
                     </PaginationContent>
                 </Pagination>
-            </div>
+            </div>}
         </>
     );
 }
 
-export default Clients;
+
+const suspense = () => <TableRow className="bg-white hover:bg-white"><TableCell colSpan={5}><Spinner /></TableCell></TableRow>
+const notFound = () => <TableRow className="bg-white hover:bg-white"><TableCell colSpan={5}>No results!</TableCell></TableRow>

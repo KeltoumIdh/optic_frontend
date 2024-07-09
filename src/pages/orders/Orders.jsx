@@ -185,7 +185,7 @@ function Orders() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {orders?.length > 0 &&
+                            {orders?.length === 0 ? <TableRow className="bg-white hover:bg-white"><TableCell colSpan={5}>No results!</TableCell></TableRow> :
                                 orders.map((order) => (
                                     <TableRow key={order.id} >
                                         <TableCell className="flex items-center max-md:p-2 w-fit">
@@ -238,47 +238,49 @@ function Orders() {
                                 ))}
                         </TableBody>
                     </Table>
-                    <div className="flex justify-between md:mt-4 md:px-4 md:text-xs">
-                        <div className="w-full">
-                            <p className="text-sm w-full text-gray-500">
-                                Affichage de {orders.length} sur {totalOrders} commandes
-                            </p>
-                        </div>
-                        <Pagination className="flex justify-end">
-                            <PaginationContent>
-                                <PaginationItem>
-                                    <PaginationPrevious
-                                        href="#"
-                                        onClick={(e) => handleChangePage(e, page - 1)}
-                                        style={{ color: page > 0 ? "blue" : "gray" }}
-                                    />
-                                </PaginationItem>
-                                {[...Array(totalPages)].map((_, index) => (
-                                    <PaginationItem key={index}>
-                                        <PaginationLink
+
+                    {orders?.length > 0 &&
+                        <div className="flex justify-between md:mt-4 md:px-4 md:text-xs">
+                            <div className="w-full">
+                                <p className="text-sm w-full text-gray-500">
+                                    Affichage de {orders.length} sur {totalOrders} commandes
+                                </p>
+                            </div>
+                            <Pagination className="flex justify-end">
+                                <PaginationContent>
+                                    <PaginationItem>
+                                        <PaginationPrevious
                                             href="#"
-                                            onClick={(e) => handleChangePage(e, index)}
-                                            style={{
-                                                color: index === page ? "red" : "black",
-                                            }}
-                                        >
-                                            {index + 1}
-                                        </PaginationLink>
+                                            onClick={(e) => handleChangePage(e, page - 1)}
+                                            style={{ color: page > 0 ? "blue" : "gray" }}
+                                        />
                                     </PaginationItem>
-                                ))}
-                                <PaginationItem>
-                                    <PaginationNext
-                                        href="#"
-                                        onClick={(e) => handleChangePage(e, page + 1)}
-                                        style={{
-                                            color:
-                                                page < totalPages - 1 ? "blue" : "gray",
-                                        }}
-                                    />
-                                </PaginationItem>
-                            </PaginationContent>
-                        </Pagination>
-                    </div>
+                                    {[...Array(totalPages)].map((_, index) => (
+                                        <PaginationItem key={index}>
+                                            <PaginationLink
+                                                href="#"
+                                                onClick={(e) => handleChangePage(e, index)}
+                                                style={{
+                                                    color: index === page ? "red" : "black",
+                                                }}
+                                            >
+                                                {index + 1}
+                                            </PaginationLink>
+                                        </PaginationItem>
+                                    ))}
+                                    <PaginationItem>
+                                        <PaginationNext
+                                            href="#"
+                                            onClick={(e) => handleChangePage(e, page + 1)}
+                                            style={{
+                                                color:
+                                                    page < totalPages - 1 ? "blue" : "gray",
+                                            }}
+                                        />
+                                    </PaginationItem>
+                                </PaginationContent>
+                            </Pagination>
+                        </div>}
                 </>}
         </>
     );
