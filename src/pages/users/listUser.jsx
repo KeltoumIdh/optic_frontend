@@ -67,7 +67,7 @@ export const DataTableDemo = () => {
 
 
     // only owners can edit or delete other users
-    const isOwner = authUser?.data?.role === "owner";
+    const isOwner = authUser?.data?.role === "owner"; 
 
 
     return loading ? <Spinner /> : (

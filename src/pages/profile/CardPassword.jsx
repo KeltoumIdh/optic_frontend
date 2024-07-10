@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import axios from "axios";
 import { axiosUser } from "../../api/axios";
 import { useToast } from "../../components/ui/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 
 export const Update = () => {
     const {toast} = useToast()
@@ -17,6 +18,8 @@ export const Update = () => {
         password: z.string().min(8).max(30),
       
     });
+
+    const { authUser } = useAuth()
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -48,7 +51,10 @@ export const Update = () => {
         }
     };
 
-    return (
+    // only owners can edit or delete other users
+    const isOwner = authUser?.data?.role === "owner";
+
+    return !isOwner ? null : (
         <div className="w-1/2 max-lg:w-full mt-2 h-full">
             <Card className="h-full">
                 <CardHeader>
