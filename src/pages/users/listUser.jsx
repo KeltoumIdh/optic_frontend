@@ -28,24 +28,24 @@ export const DataTableDemo = () => {
 
     const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                setLoading(true)
-                await csrf();
-                const response = await axiosClient.get("/api/users");
-                if (response.status === 200) {
-                    setUsers(response.data);
-                } else {
-                    throw new Error("Failed to fetch users");
-                }
-            } catch (error) {
-                console.error("Error fetching users:", error);
-            } finally {
-                setLoading(false)
+    const fetchUsers = async () => {
+        try {
+            setLoading(true)
+            await csrf();
+            const response = await axiosClient.get("/api/users");
+            if (response.status === 200) {
+                setUsers(response.data);
+            } else {
+                throw new Error("Failed to fetch users");
             }
-        };
+        } catch (error) {
+            console.error("Error fetching users:", error);
+        } finally {
+            setLoading(false)
+        }
+    };
 
+    useEffect(() => {
         fetchUsers();
     }, []);
 
@@ -59,6 +59,9 @@ export const DataTableDemo = () => {
                     title: "Success",
                     description: "User deleted successfully!",
                 });
+                
+                // re-fetch users
+                fetchUsers()
             }
         } catch (error) {
             console.error("Error deleting user:", error);

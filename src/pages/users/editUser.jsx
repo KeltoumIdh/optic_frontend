@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth.jsx";
 import axiosClient from "@/api/axiosClient.jsx";
 import Loader from "@/components/loader";
 import Spinner from "@/components/Spinner";
+import { Loader2 } from "lucide-react";
 
 
 const EditUser = () => {
@@ -47,8 +48,10 @@ const EditUser = () => {
     fetchUser();
   }, [id]);
 
+  const [isProgress, setInProgress] = useState(false)
   const updateUser = async () => {
     try {
+      setInProgress(true)
       await csrf();
       const response = await axiosClient.put(`/api/users/update/${id}`, userData);
       if (response.status === 200) {
@@ -60,6 +63,8 @@ const EditUser = () => {
       }
     } catch (error) {
       console.error("Error updating user:", error);
+    } finally {
+      setInProgress(false)
     }
   };
 
@@ -131,7 +136,7 @@ const EditUser = () => {
         />
       </div>
       <div className="py-4">
-        <Button onClick={updateUser}>Update User</Button>
+        <Button onClick={updateUser}>Update User {isProgress && <Loader2 className="animate-spin ml-2" />}</Button>
       </div>
     </div>
   );
