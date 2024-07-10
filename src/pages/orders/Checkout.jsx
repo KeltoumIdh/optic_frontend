@@ -670,8 +670,9 @@ function Checkout() {
                                     </div>
                                     <button
                                         type="button"
+                                        disabled={inProgress}
                                         onClick={handleCheckout}
-                                        className="w-full py-2 hover:bg-black hover:text-white font-semibold border rounded flex items-center gap-2 justify-center"
+                                        className={`w-full py-2 hover:text-white font-semibold border rounded flex items-center gap-2 justify-center ${inProgress ? 'bg-black' : 'hover:bg-black'}`}
                                     >
                                         <span>checkout</span>
                                         {inProgress && <div className="animate-spin"><Loader /></div>}
