@@ -57,7 +57,7 @@ function OrderDetails() {
         getOrder();
     }, [id]);
 
-    return isLoading || isProgress ? <Spinner /> : (
+    return isProgress ? <Spinner /> : (
         <>
             <div
                 id="pdfElement"
@@ -99,15 +99,9 @@ function OrderDetails() {
                                     <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
                                 </svg>
                                 <span>
-                                    {!isLoading ? (
                                         <span className="md:block hidden">
-                                            Download
+                                            {!isLoading ? "Download" : "Loading..."}
                                         </span>
-                                    ) : (
-                                        <Loader
-                                            className={"mx-2 my-2 animate-spin"}
-                                        />
-                                    )}
                                 </span>
                             </button>
                             {/* <button className="bg-orange-500 hover:bg-orange-700 text-white text-sm font-bold py-2 px-4 rounded">
@@ -169,11 +163,10 @@ function OrderDetails() {
                                                         {p.price} dh
                                                     </p>
                                                     <p className="text-base dark:text-white  leading-6 text-gray-800">
-                                                        x{p.quantity}
+                                                        x{p.quantity ?? 0}
                                                     </p>
                                                     <p className="text-base  text-right text-green-700 font-bold xl:text-lg  leading-6 ">
-                                                        {p.price * p.quantity}{" "}
-                                                        dh
+                                                        {p?.price * (p?.quantity ? p?.quantity : 0)} dh
                                                     </p>
                                                 </div>
                                             </div>
@@ -229,9 +222,9 @@ function OrderDetails() {
                             </h3>
                             <div className="flex flex-col md:flex-row  xl:flex-col justify-start items-stretch h-full w-full md:space-x-6 lg:space-x-8 xl:space-x-0">
                                 <div className="flex-col justify-between items-center flex-shrink-0">
-                                    <div className="flex justify-start w-full md:justify-start items-center space-x-4 py-4  border-gray-200">
+                                    <div className="flex justify-start w-full md:justify-start items-start space-x-4 py-4  border-gray-200">
                                         <img
-                                            src={`${backEndUrl}/assets/uploads/clients/${order?.client?.image}`}
+                                            src={renderImageDir(order?.client?.image)}
                                             alt="avatar"
                                             className="w-10"
                                         />
