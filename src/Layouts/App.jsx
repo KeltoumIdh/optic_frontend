@@ -35,7 +35,7 @@ const App = () => {
   return (
     <div className="flex h-screen transition-all duration-300 ease-in-out ">
       <div className=" border-r ">
-        
+
         {/* SideBar for Large Devices */}
         <SideBar open={open} />
 

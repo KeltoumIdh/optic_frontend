@@ -62,6 +62,7 @@ const LINKS = [
 ];
 
 const SideBar = ({ open }) => {
+    const { authUser } = useAuth();
     const { pathname } = useLocation();
     const navigate = useNavigate();
     const sideBarStyle = useMemo(() => {
@@ -69,6 +70,10 @@ const SideBar = ({ open }) => {
             ? `w-[200px] flex flex-col justify-start items-start gap-5`
             : `w-[50px] flex flex-col justify-center items-center gap-5`;
     }, [open]);
+
+
+    const isOwner = authUser?.data?.role === "owner";
+
 
     return (
         <div
@@ -92,19 +97,22 @@ const SideBar = ({ open }) => {
                 />
             )}
             <div className="flex flex-col justify-start items-start gap-5 w-full">
-                {LINKS.map((link) => (
-                    <Button
-                        key={link.id}
-                        variant={`${pathname === link.path ? "default" : "ghost"}`}
-                        className="text-md gap-2 flex justify-start items-center w-full"
-                        onClick={() => navigate(link.path)}
-                    >
-                        <link.icon size={25} strokeWidth={1.25} />
-                        <span className={`${!open ? "hidden" : "block"}`}>
-                            {link.label}
-                        </span>
-                    </Button>
-                ))}
+                {LINKS.map((link) => {
+                    if (!isOwner && link.id === 5) return null;
+                    return (
+                        <Button
+                            key={link.id}
+                            variant={`${pathname === link.path ? "default" : "ghost"}`}
+                            className="text-md gap-2 flex justify-start items-center w-full"
+                            onClick={() => navigate(link.path)}
+                        >
+                            <link.icon size={25} strokeWidth={1.25} />
+                            <span className={`${!open ? "hidden" : "block"}`}>
+                                {link.label}
+                            </span>
+                        </Button>
+                    )
+                })}
             </div>
         </div>
     );
@@ -115,6 +123,7 @@ export default SideBar;
 
 
 export const MobileMenu = ({ toggleMobileSideBar }) => {
+    const { authUser } = useAuth();
     const { pathname } = useLocation();
     const navigate = useNavigate();
 
@@ -124,6 +133,8 @@ export const MobileMenu = ({ toggleMobileSideBar }) => {
         navigate(path)
         toggleMobileSideBar()
     }
+
+    const isOwner = authUser?.data?.role === "owner";
 
     return (
         <>
@@ -142,17 +153,20 @@ export const MobileMenu = ({ toggleMobileSideBar }) => {
                         />
                     </div>
                     <div className="w-full flex flex-col justify-start items-start gap-5">
-                        {LINKS.map((link) => (
-                            <Button
-                                key={link.id}
-                                variant={`${pathname === link.path ? "default" : "ghost"}`}
-                                className="text-sm gap-2 flex justify-start items-center w-full "
-                                onClick={() => jump(link.path)}
-                            >
-                                {link.icon && <link.icon size={20} />}
-                                <span>{link.label}</span>
-                            </Button>
-                        ))}
+                        {LINKS.map((link) => {
+                            if (!isOwner && link.id === 5) return null;
+                            return (
+                                <Button
+                                    key={link.id}
+                                    variant={`${pathname === link.path ? "default" : "ghost"}`}
+                                    className="text-sm gap-2 flex justify-start items-center w-full "
+                                    onClick={() => jump(link.path)}
+                                >
+                                    {link.icon && <link.icon size={20} />}
+                                    <span>{link.label}</span>
+                                </Button>
+                            )
+                        })}
                     </div>
                 </div>
             </div>
