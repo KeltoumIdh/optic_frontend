@@ -90,7 +90,7 @@ function Checkout() {
                     const updatedQuantitySold = productData?.data?.quantity_sold ?? 0 + product?.quantity ?? 0;
 
                     const productValues = productData?.data;
-                    
+
                     delete productValues.image;
 
                     await axiosClient.post(`/api/products/update/${product.product_id}`, {
@@ -117,7 +117,7 @@ function Checkout() {
             setInProgress(false)
         }
     };
-    
+
     const downloadInvoice = async (orderId) => {
         try {
             await csrf();
@@ -399,11 +399,19 @@ function Checkout() {
                                                 className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50  focus:outline-none  "
                                                 id="file_input"
                                                 type="file"
-                                                onChange={(e) =>
-                                                    setFile(
-                                                        e.target.files[0].name
-                                                    )
-                                                }
+                                                accept="image/png, image/jpg, image/jpeg"
+                                                onChange={(e) => {
+                                                    const file = e.target.files[0];
+                                                    if (file) {
+                                                        const reader = new FileReader();
+                                                        reader.onloadend = () => {
+                                                            setFile(reader.result); // Base64 string
+                                                        };
+                                                        reader.readAsDataURL(file);
+                                                    } else {
+                                                        setFile('')
+                                                    }
+                                                }}
                                             />
                                         </div>
                                     </>
@@ -484,11 +492,19 @@ function Checkout() {
                                                 className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50  focus:outline-none  "
                                                 id="file_input"
                                                 type="file"
-                                                onChange={(e) =>
-                                                    setFile(
-                                                        e.target.files[0].name
-                                                    )
-                                                }
+                                                accept="image/png, image/jpg, image/jpeg"
+                                                onChange={(e) => {
+                                                    const file = e.target.files[0];
+                                                    if (file) {
+                                                        const reader = new FileReader();
+                                                        reader.onloadend = () => {
+                                                            setFile(reader.result); // Base64 string
+                                                        };
+                                                        reader.readAsDataURL(file);
+                                                    } else {
+                                                        setFile('')
+                                                    }
+                                                }}
                                             />
                                         </div>
                                         <div className="flex gap-10">
@@ -576,9 +592,9 @@ function Checkout() {
                                         <h3>
                                             {cart.name} ({cart.reference})
                                             {cart.quantity &&
-                                            <span className="text-base pl-1 text-violet-700">
-                                                x {cart.quantity}
-                                            </span>}
+                                                <span className="text-base pl-1 text-violet-700">
+                                                    x {cart.quantity}
+                                                </span>}
                                         </h3>
                                         <div className="text-right">
                                             <span className="block">
