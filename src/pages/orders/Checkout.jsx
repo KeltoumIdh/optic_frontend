@@ -82,28 +82,6 @@ function Checkout() {
                 client_traita: traitaClient,
                 traita_date: traitaDate,
             });
-            await Promise.all(cart.productsCart.map(async (product) => {
-                try {
-                    await csrf();
-                    const productData = await axiosClient.get(`/api/products/get/${product.product_id}`);
-                    const updatedQuantityAvailable = productData?.data?.quantity_available ?? 0 - product?.quantity ?? 0;
-                    const updatedQuantitySold = productData?.data?.quantity_sold ?? 0 + product?.quantity ?? 0;
-
-                    const productValues = productData?.data;
-
-                    delete productValues.image;
-
-                    await axiosClient.post(`/api/products/update/${product.product_id}`, {
-                        ...productValues,
-                        quantity_available: updatedQuantityAvailable,
-                        quantity_sold: updatedQuantitySold,
-                    });
-
-                } catch (error) {
-                    console.error(`Error updating product ${product.product_id} quantity:`, error);
-                    throw error; // Rethrow the error to stop the execution of further updates
-                }
-            }));
 
             toast({
                 title: "Success",
