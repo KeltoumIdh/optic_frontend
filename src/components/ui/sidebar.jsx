@@ -25,13 +25,13 @@ const LINKS = [
     },
     {
         id: 2,
-        label: "Products",
+        label: "Produits",
         path: "/products",
         icon: Glasses,
     },
     {
         id: 3,
-        label: "Orders",
+        label: "Commandes",
         path: "/orders",
         icon: Mailbox,
     },
@@ -55,7 +55,7 @@ const LINKS = [
     },
     {
         id: 7,
-        label: "Check ",
+        label: "Banque ",
         path: "/check/list",
         icon: Banknote,
     },
@@ -145,7 +145,7 @@ export const MobileMenu = ({ toggleMobileSideBar }) => {
                 `}
             >
                 <div className="w-full px-2">
-                    <div className="flex items-center p-2 w-full h-[100px]">
+                    <div className="flex items-center justify-center p-2 w-full h-[100px]">
                         <img
                             src={`${backEndUrl}/assets/logo/logo.png`}
                             className="h-full w-auto"

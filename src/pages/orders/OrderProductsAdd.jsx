@@ -151,8 +151,8 @@ export default function OrderProductsAdd() {
                             />
                         </svg>
                     </Link>
-                    <h4 className="text-2xl font-semibold dark:text-gray-300">
-                        Select the products for the Order for {client?.name}
+                    <h4 className="lg:text-2xl font-semibold dark:text-gray-300">
+                    Sélectionnez les produits pour le client <span className="underline">{client?.name}</span>
                     </h4>
                 </div>
                 <button
@@ -160,7 +160,7 @@ export default function OrderProductsAdd() {
                     className=" select-none rounded-lg bg-gradient-to-tr from-gray-900 to-gray-800 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:inline-block"
                     type="button"
                 >
-                    Save Selected Products
+                    Suivant
                 </button>
             </div>
             <div className="flex p-2 justify-start space-x-2">
@@ -222,9 +222,9 @@ export default function OrderProductsAdd() {
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>Product</TableHead>
-                        <TableHead>Price</TableHead>
-                        <TableHead>Quantity</TableHead>
+                        <TableHead>Produit</TableHead>
+                        <TableHead>Prix</TableHead>
+                        <TableHead>Quantité</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Actions</TableHead>
                     </TableRow>
@@ -311,10 +311,10 @@ export default function OrderProductsAdd() {
                 </Button>
             </div> */}
             {!loading && products?.length > 0 &&
-                <div className="flex justify-between mt-4 px-4">
+                <div className="flex justify-between mt-4 lg:px-4">
                     <div className="w-full">
                         <p className="text-sm w-full text-gray-500">
-                            Showing {products.length} of {totalProducts} products
+                            Showing {products.length} of {totalProducts} produits
                         </p>
                     </div>
                     <Pagination className="flex justify-end">

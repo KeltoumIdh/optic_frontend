@@ -121,7 +121,7 @@ export default function Products() {
         <>
             <div className="flex p-2 justify-between">
                 <h4 className="lg:text-2xl text-lg font-semibold dark:text-gray-300">
-                    Products
+                    Les Produits
                 </h4>
                 <button
                     className=" select-none rounded-lg bg-gradient-to-tr from-gray-900 to-gray-800 lg:py-2 lg:px-4 px-2 text-center align-middle font-sans md:text-xs text-[10px] font-bold uppercase text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none inline-block"
@@ -193,9 +193,9 @@ export default function Products() {
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>Product</TableHead>
-                        <TableHead>Price</TableHead>
-                        <TableHead>Quantity</TableHead>
+                        <TableHead>Produit</TableHead>
+                        <TableHead>Prix</TableHead>
+                        <TableHead>Quantité</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Actions</TableHead>
                     </TableRow>
@@ -259,10 +259,10 @@ export default function Products() {
                 </TableBody>
             </Table>
             {!loading && products?.length > 0 &&
-                <div className="flex justify-between mt-4 px-4">
+                <div className="flex justify-between mt-4 lg:px-4">
                     <div className="w-full">
                         <p className="text-sm w-full text-gray-500">
-                            Showing {products.length} of {totalProducts} products
+                            Showing {products.length} of {totalProducts} produits
                         </p>
                     </div>
                     <Pagination className="flex justify-end">

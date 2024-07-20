@@ -68,7 +68,7 @@ export const FactureTable = () => {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Name</TableHead>
+                            <TableHead>Nom</TableHead>
                             <TableHead>
                                 <Button variant="ghost">
                                     phone{" "}
@@ -76,7 +76,7 @@ export const FactureTable = () => {
                                 </Button>
                             </TableHead>
                             <TableHead>méthode de payement</TableHead>
-                            <TableHead>payement status </TableHead>
+                            <TableHead>status de payement </TableHead>
                             <TableHead>Facture file </TableHead>
                             <TableHead>Actions </TableHead>
                         </TableRow>
@@ -95,7 +95,7 @@ export const FactureTable = () => {
                                         className="bg-green-400 mr-2"
                                         onClick={() => showPDF(`${backEndUrl}/assets/uploads/pdf/${client.invoice}`)}
                                     >
-                                        Show PDF
+                                        Afficher PDF
                                     </Button>
                                 </TableCell>
                                 <TableHead>
@@ -118,10 +118,10 @@ export const FactureTable = () => {
                 </div>
                 <div className="space-x-2">
                     <Button variant="outline" size="sm">
-                        Previous
+                    Précédent
                     </Button>
                     <Button variant="outline" size="sm">
-                        Next
+                    Suivant
                     </Button>
                 </div>
             </div>

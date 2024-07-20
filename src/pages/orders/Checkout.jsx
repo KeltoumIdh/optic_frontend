@@ -179,8 +179,8 @@ function Checkout() {
                                         />
                                     </svg>
                                 </Link>
-                                <h1 className="text-2xl font-semibold">
-                                    Confirm the order
+                                <h1 className="lg:text-2xl font-semibold">
+                                Confirmer la commande
                                 </h1>
                                 {/* <button
                                     onClick={() => downloadInvoice(13)}
@@ -314,8 +314,8 @@ function Checkout() {
                                 )}
                             </form>
 
-                            <p className="mt-2 text-lg font-medium">
-                                Payement Methods
+                            <p className="mt-2 lg:text-lg font-medium">
+                            méthodes de payement
                             </p>
                             <form className="mt-5 w-full pr-4 grid gap-6">
                                 <div
@@ -393,7 +393,7 @@ function Checkout() {
                                                 htmlFor="checkreference"
                                                 className="block text-sm font-medium text-gray-700"
                                             >
-                                                Upload check file:
+                                                Téléchargez le fichier check:
                                             </label>
                                             <input
                                                 className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50  focus:outline-none  "
@@ -438,7 +438,7 @@ function Checkout() {
                                         />
                                         <div className="ml-4">
                                             <span className="mt-2 font-semibold">
-                                                Traita
+                                                Traite
                                             </span>
                                         </div>
                                     </label>
@@ -486,7 +486,7 @@ function Checkout() {
                                                 htmlFor="checkreference"
                                                 className="block text-sm font-medium text-gray-700"
                                             >
-                                                Upload traita file:
+                                                Téléchargez le fichier traite:
                                             </label>
                                             <input
                                                 className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50  focus:outline-none  "
@@ -549,7 +549,7 @@ function Checkout() {
                                                     className="mt-px font-light text-gray-700 cursor-pointer select-none"
                                                     htmlFor="traitaForClient"
                                                 >
-                                                    le traita pas de client
+                                                    la traite pas de client
                                                     initial
                                                 </label>
                                             </div>
@@ -580,8 +580,8 @@ function Checkout() {
                             </form>
                         </div>
                         <div className="flex flex-col lg:w-1/2 p-6 space-y-4 bg-gray-300 divide-y  sm:px-10">
-                            <h2 className="text-2xl font-semibold">
-                                Order items
+                            <h2 className="lg:text-2xl font-semibold">
+                            Items commandés
                             </h2>
                             {cart?.productsCart?.map((cart, index) => (
                                 <ul
@@ -610,7 +610,7 @@ function Checkout() {
 
                             <div className="pt-4 space-y-2">
                                 <div>
-                                    <h2 className="text-xl font-semibold">
+                                    <h2 className="lg:text-xl font-semibold">
                                         Payment information
                                     </h2>
                                     <div className="items-center lg:space-x-2 text-xs">
@@ -674,7 +674,7 @@ function Checkout() {
                                         onClick={handleCheckout}
                                         className={`w-full py-2 hover:text-white font-semibold border rounded flex items-center gap-2 justify-center ${inProgress ? 'bg-black' : 'hover:bg-black'}`}
                                     >
-                                        <span>checkout</span>
+                                        <span>Commander</span>
                                         {inProgress && <div className="animate-spin"><Loader /></div>}
                                     </button>
                                 </div>

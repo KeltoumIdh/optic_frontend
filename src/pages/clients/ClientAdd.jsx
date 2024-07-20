@@ -30,7 +30,7 @@ export default function ClientAdd() {
 
     // state to store image Obj
     const [image, setImage] = useState({})
-    
+
     const handleFileChange = (e) => {
         const file = e.target.files[0];
 
@@ -45,8 +45,8 @@ export default function ClientAdd() {
         }
     }
 
-    
-    
+
+
     const onSubmit = async (values) => {
         // setIsSubmitting(true);
 
@@ -140,14 +140,14 @@ export default function ClientAdd() {
                         control={form.control}
                         name="name"
                         render={({ field }) => (
-                            <Input placeholder="Name" {...field} />
+                            <Input placeholder="Nom" {...field} />
                         )}
                     />
                     <FormField
                         control={form.control}
                         name="lname"
                         render={({ field }) => (
-                            <Input placeholder="Last Name" {...field} />
+                            <Input placeholder="Nom de famille" {...field} />
                         )}
                     />
                     <FormField
@@ -162,7 +162,7 @@ export default function ClientAdd() {
                         control={form.control}
                         name="city"
                         render={({ field }) => (
-                            <Input placeholder="City" {...field} />
+                            <Input placeholder="Ville" {...field} />
                         )}
                     />
                     <FormField
@@ -172,7 +172,7 @@ export default function ClientAdd() {
                             <Input placeholder="Address" {...field} />
                         )}
                     />
-                    <div className="grid w-full max-w-sm items-center gap-1.5">
+                    <div className="grid w-full max-w-sm items-center gap-1.5 p-2 mb-2">
                         <label htmlFor="image" className="block mb-1">
                             Image
                         </label>
@@ -185,11 +185,11 @@ export default function ClientAdd() {
                             accept="image/png, image/jpg, image/jpeg"
                         />
                     </div>
-                    <Button type="submit" disabled={isSubmitting}>
+                    <Button className='m-2' type="submit" disabled={isSubmitting}>
                         {isSubmitting && (
                             <Loader className="mx-2 my-2 animate-spin" />
                         )}
-                        Create
+                        Créer
                     </Button>
                 </form>
             </Form>

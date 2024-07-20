@@ -209,7 +209,7 @@ export default function ClientEdit() {
                         />
                     </div>
                 </div>
-                <div className="grid w-full max-w-sm items-center gap-1.5">
+                <div className="grid w-full max-w-sm items-center gap-1.5 p-2 mb-2">
                     <label htmlFor="image" className="block mb-1">
                         Image
                     </label>
@@ -221,9 +221,9 @@ export default function ClientEdit() {
                         accept="image/png, image/jpg, image/jpeg"
                     />
                 </div>
-                <Button type="submit" disabled={isProgress}>
+                <Button type="submit" className='m-2' disabled={isProgress}>
                     {isProgress && (
-                        <Loader className="mx-2 my-2 animate-spin" />
+                        <Loader className="mx-2 my-2 animate-spin " />
                     )}
                     Modifier
                 </Button>

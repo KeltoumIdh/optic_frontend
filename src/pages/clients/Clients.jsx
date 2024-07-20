@@ -247,7 +247,7 @@ export default function Clients() {
             </Table>
 
             {!loading && clients?.length > 0 &&
-            <div className="flex justify-between mt-4 px-4">
+            <div className="flex justify-between mt-4 lg:px-4">
                 <div className="w-full">
                     <p className="text-sm w-full text-gray-500">
                         Showing {clients.length} of {totalClients} clients

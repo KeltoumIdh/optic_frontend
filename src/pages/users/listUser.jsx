@@ -59,7 +59,7 @@ export const DataTableDemo = () => {
                     title: "Success",
                     description: "User deleted successfully!",
                 });
-                
+
                 // re-fetch users
                 fetchUsers()
             }
@@ -70,14 +70,14 @@ export const DataTableDemo = () => {
 
 
     // only owners can edit or delete other users
-    const isOwner = authUser?.data?.role === "owner"; 
+    const isOwner = authUser?.data?.role === "owner";
 
 
     return loading ? <Spinner /> : (
         <div className="w-full">
             <div className="flex p-2 justify-between">
                 <h4 className="text-2xl font-semibold dark:text-gray-300">
-                    Users
+                    les Utilisateurs
                 </h4>
                 <Link className={"flex items-center"} to={"/user/add"}>
                     <button
@@ -93,7 +93,7 @@ export const DataTableDemo = () => {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Name</TableHead>
+                            <TableHead>Nom</TableHead>
                             <TableHead>
                                 <Button variant="ghost">
                                     Email{" "}
@@ -113,14 +113,14 @@ export const DataTableDemo = () => {
                                 <TableCell>{user.role}</TableCell>
                                 <TableCell className="text-right">
                                     {isOwner
-                                        ? <Link to={`/user/edit/${user.id}`}><Button className="bg-blue-400 mr-2">Edit</Button></Link>
-                                        : <Button disabled={!isOwner} className="bg-blue-400 mr-2">Edit</Button>
+                                        ? <Link to={`/user/edit/${user.id}`}><Button className="bg-blue-400 mr-2">Modifier</Button></Link>
+                                        : <Button disabled={!isOwner} className="bg-blue-400 mr-2">Modifier</Button>
                                     }
                                     <Button
                                         disabled={!isOwner}
                                         className="bg-red-500"
                                         onClick={() => deleteUser(user.id)}>
-                                        Delete
+                                        Supprimer
                                     </Button>
                                 </TableCell>
                             </TableRow>
@@ -134,10 +134,10 @@ export const DataTableDemo = () => {
                 </div>
                 <div className="space-x-2">
                     <Button variant="outline" size="sm">
-                        Previous
+                    Précédent
                     </Button>
                     <Button variant="outline" size="sm">
-                        Next
+                    Suivant
                     </Button>
                 </div>
             </div>

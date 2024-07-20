@@ -55,7 +55,7 @@ export const DataTable = () => {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Name</TableHead>
+                            <TableHead>Nom</TableHead>
                             <TableHead>
                                 <Button variant="ghost">
                                     phone{" "}
@@ -65,7 +65,7 @@ export const DataTable = () => {
                             <TableHead>méthode de payement</TableHead>
                             <TableHead>payement status </TableHead>
                             <TableHead>reste prix </TableHead>
-                            <TableHead>file </TableHead>
+                            <TableHead>fichier </TableHead>
                             <TableHead>Actions</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -98,10 +98,10 @@ export const DataTable = () => {
                 </div>
                 <div className="space-x-2">
                     <Button variant="outline" size="sm">
-                        Previous
+                    Précédent
                     </Button>
                     <Button variant="outline" size="sm">
-                        Next
+                    Suivant
                     </Button>
                 </div>
             </div>

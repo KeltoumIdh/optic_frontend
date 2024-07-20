@@ -117,14 +117,14 @@ export const FourCard = () => {
             <Link to="/orders" className='group'>
                 <Card className="h-[100%] w-[100%]">
                     <CardHeader className="flex flex-row justify-between items-center">
-                        <h2 className="text-xl group-hover:underline">Orders</h2>
+                        <h2 className="text-xl group-hover:underline">Commandes</h2>
                         <Mailbox strokeWidth={1.5} />
                     </CardHeader>
                     <CardContent className="flex flex-row justify-between items-center">
                         <div>
-                            <p className="text-lg">Total Orders</p>
+                            <p className="text-lg">Total Commandes</p>
                             <CardDescription>
-                                {totalO} Order
+                                {totalO} Commande
                             </CardDescription>
                         </div>
                     </CardContent>
@@ -134,15 +134,15 @@ export const FourCard = () => {
             <Link to="/products" className='group'>
                 <Card className="h-[100%] w-[100%]">
                     <CardHeader className="flex flex-row justify-between items-center">
-                        <h2 className="text-xl group-hover:underline">Products</h2>
+                        <h2 className="text-xl group-hover:underline">Produits</h2>
                         <Glasses strokeWidth={1.5} />
                     </CardHeader>
                     <CardContent className="flex flex-row justify-between items-center">
                         <div>
-                            <p className="text-lg">Total Products</p>
+                            <p className="text-lg">Total Produits</p>
 
                             <CardDescription>
-                                {totalP} Product
+                                {totalP} Produit
                             </CardDescription>
                         </div>
 
