@@ -43,13 +43,10 @@ function OrderConfirmed() {
     };
 
     const handleIncrementQuantity = (productId) => {
-        const availableQuantity = products.find((product) => product.id === productId) ?.quantity_available || 0;
+        const availableQuantity = products.find((product) => product.id === productId)?.quantity_available || 0;
         setQuantities((prevQuantities) => ({
             ...prevQuantities,
-            [productId]: Math.min(
-                (prevQuantities[productId] || 0) + 1,
-                availableQuantity
-            ),
+            [productId]: Math.min((prevQuantities[productId] || 1) + 1, availableQuantity),
         }));
     };
 
@@ -100,12 +97,10 @@ function OrderConfirmed() {
             client_id: clientId,
             productsCart: selectedProducts.map((productId) => ({
                 product_id: productId,
-                quantity: quantities[productId],
-                reference: products.find((product) => product.id === productId)
-                    .reference,
-                name: products.find((product) => product.id === productId).name,
-                price: products.find((product) => product.id === productId)
-                    .price,
+                quantity: quantities[productId] || 1,
+                reference: products?.find((product) => product.id === productId)?.reference || "",
+                name: products?.find((product) => product.id === productId)?.name || "",
+                price: products?.find((product) => product.id === productId)?.price || "",
             })),
             total_price: totalPrice,
         };
@@ -220,16 +215,7 @@ function OrderConfirmed() {
                                                         </td>
                                                         <td className="py-4">
                                                             {" "}
-                                                            {quantities[
-                                                                product.id
-                                                            ] > 0
-                                                                ? (
-                                                                    product.price *
-                                                                    quantities[
-                                                                    product.id
-                                                                    ]
-                                                                ).toFixed(2)
-                                                                : product.price}
+                                                            {quantities[product.id] > 0 ? (product.price * quantities[product.id]).toFixed(2) : product.price}
                                                         </td>
                                                         <td className="py-4">
                                                             <button
