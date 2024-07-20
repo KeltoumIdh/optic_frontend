@@ -48,7 +48,7 @@ export default function ClientAdd() {
 
 
     const onSubmit = async (values) => {
-        // setIsSubmitting(true);
+        setIsSubmitting(true);
 
         // re-arrange data
         const formData = new FormData();

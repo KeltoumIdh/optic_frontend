@@ -59,6 +59,7 @@ export default function OrderEdit() {
         setValue("paid_price", response.data.paid_price);
         setValue("remain_price", response.data.remain_price);
         setValue("total_price", response.data.total_price);
+        setValue("status", response.data.order_status);
         // setValue("payement_file", response.data.payement_file);
         setIsCredit(response.data.is_credit);
       } catch (error) {
@@ -96,6 +97,7 @@ export default function OrderEdit() {
       payment_method: e?.target?.payment_method?.value,
       payement_file: file,
       date_fin_credit: e?.target?.date_fin_credit?.value ?? "",
+      status: e?.target?.status?.value ?? "",
     };
 
     try {
@@ -154,6 +156,26 @@ export default function OrderEdit() {
           className="space-y-3 p-2"
           encType="multipart/form-data"
         >
+          <FormField
+            control={form.control}
+            name="status"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Status</FormLabel>
+                <FormControl>
+                  <select
+                    {...field}
+                    className="border rounded-md w-full py-2 px-3 bg-white"
+                  >
+                    <option value="pending">Pending</option>
+                    <option value="completed">Completed</option>
+                    <option value="filed">Failed</option>
+                  </select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="payment_method"

@@ -49,7 +49,9 @@ export default function OrderProductsAdd() {
     const [client, setClient] = useState();
     const navigate = useNavigate();
     const [selectedProducts, setSelectedProducts] = useState([]);
-    const handleSelectProduct = (productId) => {
+    const handleSelectProduct = (productId, availableQNT = 0) => {
+        if (availableQNT === 0) return;
+
         const isSelected = selectedProducts.includes(productId);
         if (isSelected) {
             setSelectedProducts((prevSelected) =>
@@ -232,74 +234,74 @@ export default function OrderProductsAdd() {
                 <TableBody>
                     {loading ? suspense() :
                         products?.length === 0 ? notFound() :
-                            products.map((product) => (
-                                <TableRow key={product.id}>
-                                    <TableCell className="flex items-center gap-2">
-                                        <img
-                                            src={renderImageDir(product.image)}
-                                            alt="avatar"
-                                            width={40}
-                                            height={40}
-                                        />
-                                        <div className="flex flex-col">
-                                            <div>{product.name}</div>
-                                            <div>{product.reference}</div>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>{product.price}</TableCell>
-                                    <TableCell>
-                                        {product.quantity_available}
-                                    </TableCell>
-                                    <TableCell>
-                                        <span
-                                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColorClass(
-                                                product.status
-                                            )}`}
-                                        >
-                                            {product.status}
-                                        </span>
-                                    </TableCell>
-
-                                    <TableCell>
-                                        <div className="inline-flex items-center">
-                                            <label
-                                                className="relative flex items-center p-3 rounded-full cursor-pointer"
-                                                htmlFor="amber"
+                            products.map((product) => {
+                                const QNT = product.quantity_available;
+                                return (
+                                    <TableRow key={product.id}>
+                                        <TableCell className="flex items-center gap-2">
+                                            <img
+                                                src={renderImageDir(product.image)}
+                                                alt="avatar"
+                                                width={40}
+                                                height={40}
+                                            />
+                                            <div className="flex flex-col">
+                                                <div>{product.name}</div>
+                                                <div>{product.reference}</div>
+                                            </div>
+                                        </TableCell>
+                                        <TableCell>{product.price}</TableCell>
+                                        <TableCell>
+                                            {QNT}
+                                        </TableCell>
+                                        <TableCell>
+                                            <span
+                                                className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColorClass(
+                                                    product.status
+                                                )}`}
                                             >
-                                                <input
-                                                    checked={selectedProducts.includes(
-                                                        product.id
-                                                    )}
-                                                    onChange={() =>
-                                                        handleSelectProduct(
-                                                            product.id
-                                                        )
-                                                    }
-                                                    type="checkbox"
-                                                    className="before:content[''] peer relative h-5 w-5 cursor-pointer appearance-none rounded-md border border-blue-gray-200 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:border-green-500 checked:bg-green-500 checked:before:bg-green-500 hover:before:opacity-10"
-                                                    id="amber"
-                                                />
-                                                <span className="absolute text-white transition-opacity opacity-0 pointer-events-none top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 peer-checked:opacity-100">
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        className="h-3.5 w-3.5"
-                                                        viewBox="0 0 20 20"
-                                                        fill="currentColor"
-                                                        stroke="currentColor"
-                                                        strokeWidth="1"
-                                                    >
-                                                        <path
-                                                            fillRule="evenodd"
-                                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                            clipRule="evenodd"
-                                                        ></path>
-                                                    </svg>
-                                                </span>
-                                            </label>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                                                {product.status}
+                                            </span>
+                                        </TableCell>
+
+                                        <TableCell>
+                                            <div className="inline-flex items-center">
+                                                <label
+                                                    className="relative flex items-center p-3 rounded-full cursor-pointer"
+                                                    htmlFor="amber"
+                                                >
+                                                    <input
+                                                        disabled={QNT === 0}
+                                                        checked={selectedProducts.includes(product.id)}
+                                                        onChange={() => handleSelectProduct(product.id, QNT)}
+                                                        type="checkbox"
+                                                        className={`before:content[''] peer relative h-5 w-5  appearance-none rounded-md border border-blue-gray-200 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:border-green-500 checked:bg-green-500 checked:before:bg-green-500 hover:before:opacity-10
+                                                            ${QNT === 0 ? 'cursor-not-allowed' : 'cursor-pointer'}
+                                                        `}
+                                                        id="amber"
+                                                    />
+                                                    <span className="absolute text-white transition-opacity opacity-0 pointer-events-none top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 peer-checked:opacity-100">
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            className="h-3.5 w-3.5"
+                                                            viewBox="0 0 20 20"
+                                                            fill="currentColor"
+                                                            stroke="currentColor"
+                                                            strokeWidth="1"
+                                                        >
+                                                            <path
+                                                                fillRule="evenodd"
+                                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                                clipRule="evenodd"
+                                                            ></path>
+                                                        </svg>
+                                                    </span>
+                                                </label>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                )
+                            })}
                 </TableBody>
             </Table>
             {/* <div className="flex justify-end mt-4 px-4">
