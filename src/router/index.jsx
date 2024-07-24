@@ -5,6 +5,7 @@ import NotFound from "../pages/NotFound";
 import Layout from "../Layouts/Layout";
 import App from "../Layouts/App";
 import Clients from "../pages/clients/Clients";
+import Activities from "../pages/Activities";
 import ClientAdd from "../pages/clients/ClientAdd";
 import ClientEdit from "../pages/clients/ClientEdit";
 import Products from "../pages/products/Products";
@@ -125,6 +126,10 @@ export const router = createBrowserRouter([
             {
                 path: '/Facture/list',
                 element: <FactureTable/>,
+            },
+            {
+                path: '/activities',
+                element: <Activities/>,
             },
             {
                 path: '*',

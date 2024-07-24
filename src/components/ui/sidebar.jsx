@@ -59,6 +59,12 @@ const LINKS = [
         path: "/check/list",
         icon: Banknote,
     },
+    {
+        id: 8,
+        label: "Activities",
+        path: "/activities",
+        icon: Files
+    },
 ];
 
 const SideBar = ({ open }) => {
@@ -98,7 +104,7 @@ const SideBar = ({ open }) => {
             )}
             <div className="flex flex-col justify-start items-start gap-5 w-full">
                 {LINKS.map((link) => {
-                    if (!isOwner && link.id === 5) return null;
+                    if (!isOwner && (link.id === 5 || link.id === 8)) return null;
                     return (
                         <Button
                             key={link.id}
