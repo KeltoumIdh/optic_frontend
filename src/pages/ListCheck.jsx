@@ -16,6 +16,7 @@ import { useToast } from "../components/ui/use-toast";
 import { BiSolidShow } from "react-icons/bi";
 import { useAuth } from "@/hooks/useAuth";
 import axiosClient from "@/api/axiosClient";
+import Spinner from "@/components/Spinner";
 
 
 export const DataTable = () => {
@@ -25,9 +26,12 @@ export const DataTable = () => {
 
     const { csrf } = useAuth();
 
+    const [loading, setLoading] = useState(false)
+
     useEffect(() => {
         const fetchClients = async () => {
             try {
+                setLoading(true)
                 await csrf();
                 const response = await axiosClient.get("/api/order/check");
                 if (response.status === 200) {
@@ -38,6 +42,8 @@ export const DataTable = () => {
                 }
             } catch (error) {
                 console.error("Error fetching clients:", error);
+            } finally {
+                setLoading(false)
             }
         };
 
@@ -48,7 +54,7 @@ export const DataTable = () => {
         <div className="w-full">
             <div className="flex p-2 justify-between">
                 <h4 className="text-2xl font-semibold dark:text-gray-300">
-                 Banque
+                    Banque
                 </h4>
             </div>
             <div className="rounded-md border">
@@ -65,30 +71,36 @@ export const DataTable = () => {
                             <TableHead>méthode de payement</TableHead>
                             <TableHead>payement status </TableHead>
                             <TableHead>reste prix </TableHead>
+                            <TableHead>Status</TableHead>
                             <TableHead>fichier </TableHead>
                             <TableHead>Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {clients.map((client) => (
-                            <TableRow key={client.id}>
-                                <TableCell>
-                                    {client.name} {client.lname}
-                                </TableCell>
-                                <TableCell>{client.phone}</TableCell>
-                                <TableCell>{client.payment_method}</TableCell>
-                                <TableCell>{client.payment_status}</TableCell>
-                                <TableCell>{client.remain_price}</TableCell>
-                                <TableCell>{client.payment_file}</TableCell>
-                                <TableHead>  <Button className="bg-purple-400 mr-2">
-                                        <Link
-                                            to={`/orders/details/${client.id}`}
-                                        >
-                                            <BiSolidShow/>
-                                        </Link>
-                                    </Button></TableHead>
-                            </TableRow>
-                        ))}
+                        {loading ? suspense() :
+                            clients?.length === 0 ? notFound() :
+                                clients.map((client) => (
+                                    <TableRow key={client.id}>
+                                        <TableCell>
+                                            {client.name} {client.lname}
+                                        </TableCell>
+                                        <TableCell>{client.phone}</TableCell>
+                                        <TableCell>{client.payment_method}</TableCell>
+                                        <TableCell>{client.payment_status}</TableCell>
+                                        <TableCell>{client.remain_price}</TableCell>
+                                        <TableCell>{client.order_status}</TableCell>
+                                        <TableCell>{client.payment_file}</TableCell>
+                                        <TableHead>
+                                            <Link
+                                                to={`/orders/details/${client.id}`}
+                                            >
+                                                <Button className="bg-purple-400 mr-2">
+                                                    <BiSolidShow />
+                                                </Button>
+                                            </Link>
+                                        </TableHead>
+                                    </TableRow>
+                                ))}
                     </TableBody>
                 </Table>
             </div>
@@ -98,13 +110,18 @@ export const DataTable = () => {
                 </div>
                 <div className="space-x-2">
                     <Button variant="outline" size="sm">
-                    Précédent
+                        Précédent
                     </Button>
                     <Button variant="outline" size="sm">
-                    Suivant
+                        Suivant
                     </Button>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
+
+
+
+const suspense = () => <TableRow className="bg-white hover:bg-white"><TableCell colSpan={8}><Spinner /></TableCell></TableRow>
+const notFound = () => <TableRow className="bg-white hover:bg-white"><TableCell colSpan={8}>No results!</TableCell></TableRow>
