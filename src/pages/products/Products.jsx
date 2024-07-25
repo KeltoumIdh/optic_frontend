@@ -207,7 +207,7 @@ export default function Products() {
                                 <TableRow key={product.id}>
                                     <TableCell className="flex items-center max-md:p-2">
                                         <img
-                                            src={renderImageDir(product.image)}
+                                            src={renderImageDir(product?.image || "")}
                                             alt="avatar"
                                             width="40px"
                                             height="40px"
