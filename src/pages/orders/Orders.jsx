@@ -180,7 +180,7 @@ function Orders() {
                                 <TableHead>Prix</TableHead>
                                 <TableHead>Prix restant</TableHead>
                                 <TableHead>Crédit</TableHead>
-                                <TableHead>Statut</TableHead>
+                                <TableHead>Statut de la commande</TableHead>
                                 <TableHead>Actions</TableHead>
                             </TableRow>
                         </TableHeader>

@@ -126,7 +126,7 @@ export default function OrderEdit() {
     setShowSuccessPopup(false);
   };
 
-  return isLoading ? <Spinner/> : (
+  return isLoading ? <Spinner /> : (
     <>
       <div className="flex items-center p-2">
         <Link to={"/orders"} className="mr-2">
@@ -167,9 +167,9 @@ export default function OrderEdit() {
                     {...field}
                     className="border rounded-md w-full py-2 px-3 bg-white"
                   >
-                    <option value="pending">Pending</option>
-                    <option value="completed">Completed</option>
-                    <option value="filed">Failed</option>
+                    <option value="in_delivery">In Delivery</option>
+                    <option value="delivered">Delivered</option>
+                    <option value="canceled">Canceled</option>
                   </select>
                 </FormControl>
                 <FormMessage />
@@ -208,6 +208,7 @@ export default function OrderEdit() {
                   <FormLabel>Date de fin de crédit</FormLabel>
                   <FormControl>
                     <input
+                      id="_date"
                       type="date"
                       {...field}
                       className="border rounded-md md:w-1/3 py-2 px-3 text-black"

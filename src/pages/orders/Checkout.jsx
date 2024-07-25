@@ -61,9 +61,7 @@ function Checkout() {
     const [prixReste, setPrixReste] = useState(calculateRestPrice());
     const handleCheckout = async () => {
         try {
-            setInProgress(true)
-            await csrf();
-            const response = await axiosClient.post("/api/add-order", {
+            const formData = {
                 client_id: clientId,
                 cart: cart,
                 isCredit: etatPayment === "credit" ? true : false,
@@ -81,7 +79,11 @@ function Checkout() {
                 file: file,
                 client_traita: traitaClient,
                 traita_date: traitaDate,
-            });
+            };
+            
+            setInProgress(true)
+            await csrf();
+            const response = await axiosClient.post("/api/add-order", formData);
 
             toast({
                 title: "Success",
