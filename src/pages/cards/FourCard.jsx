@@ -14,7 +14,9 @@ import { Link } from "react-router-dom"
 
 export const FourCard = () => {
 
-    const { csrf } = useAuth();
+    const { csrf, authUser } = useAuth();
+
+    const isOwner = authUser?.data?.role === "owner";
 
 
     const [totalP, setTotalP] = useState(0);
@@ -150,7 +152,7 @@ export const FourCard = () => {
                 </Card>
             </Link>
 
-            <Link to="/user/list" className='group'>
+            <Link to={isOwner ? "/user/list" : "#"} className='group'>
                 <Card className="h-[100%] w-[100%]">
                     <CardHeader className="flex flex-row justify-between items-center">
                         <h2 className="text-xl group-hover:underline">Users</h2>
