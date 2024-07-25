@@ -17,6 +17,7 @@ import { BiSolidShow } from "react-icons/bi";
 import { useAuth } from "@/hooks/useAuth";
 import axiosClient from "@/api/axiosClient";
 import Spinner from "@/components/Spinner";
+import { backEndUrl } from "@/helpers/utils";
 
 
 export const DataTable = () => {
@@ -49,6 +50,10 @@ export const DataTable = () => {
 
         fetchClients();
     }, []);
+
+    const showFile = (url) => {
+        window.open(url, '_blank');
+    };
 
     return (
         <div className="w-full">
@@ -89,7 +94,23 @@ export const DataTable = () => {
                                         <TableCell>{client.payment_status}</TableCell>
                                         <TableCell>{client.remain_price}</TableCell>
                                         <TableCell>{client.order_status}</TableCell>
-                                        <TableCell>{client.payment_file}</TableCell>
+                                        <TableCell>
+                                            {client.payement_file ? (
+                                                <Button
+                                                    className="bg-green-400 mr-2"
+                                                    onClick={() => showFile(`${backEndUrl}${client.payement_file}`)}
+                                                >
+                                                    Afficher le fichier
+                                                </Button>
+                                            ) : (
+                                                <Button
+                                                    className="bg-green-400 mr-2 opacity-95"
+                                                    disabled={true}
+                                                >
+                                                    Afficher le fichier
+                                                </Button>
+                                            )}
+                                        </TableCell>
                                         <TableHead>
                                             <Link
                                                 to={`/orders/details/${client.id}`}
