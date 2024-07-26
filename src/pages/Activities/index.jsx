@@ -44,7 +44,7 @@ export default function Activities() {
             setLoading(true)
 
             await csrf();
-            
+
             const res = await axiosClient.get("/api/getAllActivities");
 
             const data = res.data?.data ?? [];
@@ -63,7 +63,32 @@ export default function Activities() {
 
     useEffect(() => {
         getClients()
-    },[])
+    }, [])
+
+
+    const renderActivityType = (type) => {
+        switch (type) {
+            case "new_user_created": return type + ' ' + "mssg";
+            case "user_updated": return type + ' ' + "mssg";
+            case "user_deleted": return type + ' ' + "mssg";
+            case "password_updated": return type + ' ' + "mssg";
+
+            case "new_product_created": return type + ' ' + "mssg";
+            case "product_updated": return type + ' ' + "mssg";
+            case "product_deleted": return type + ' ' + "mssg";
+
+            case "new_client_created": return type + ' ' + "mssg";
+            case "client_updated": return type + ' ' + "mssg";
+            case "client_deleted": return type + ' ' + "mssg";
+
+            case "new_order": return type + ' ' + "mssg";
+            case "order_updated": return type + ' ' + "mssg";
+
+            case "unknown": return type + ' ' + "mssg";
+
+            default: return "##"
+        }
+    }
 
     return (
         <div>
@@ -79,6 +104,7 @@ export default function Activities() {
                         <TableHead>Id</TableHead>
                         <TableHead>User</TableHead>
                         <TableHead>Type</TableHead>
+                        <TableHead>Details</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -97,20 +123,21 @@ export default function Activities() {
                                             </span>
                                         </div>
                                     </TableCell>
-                                    <TableCell>{client.type}</TableCell>
+                                    <TableCell>{renderActivityType(client.type)}</TableCell>
+                                    <TableCell>{JSON.stringify(client.details)}</TableCell>
                                 </TableRow>
                             ))}
                 </TableBody>
             </Table>
 
             {!loading && clients?.length > 0 &&
-            <div className="flex justify-between mt-4 lg:px-4">
-                <div className="w-full">
-                    <p className="text-sm w-full text-gray-500">
-                        Showing {clients.length} of {totalClients} clients
-                    </p>
-                </div>
-            </div>}
+                <div className="flex justify-between mt-4 lg:px-4">
+                    <div className="w-full">
+                        <p className="text-sm w-full text-gray-500">
+                            Showing {clients.length} of {totalClients} clients
+                        </p>
+                    </div>
+                </div>}
         </div>
     );
 }
