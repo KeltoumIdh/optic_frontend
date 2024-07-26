@@ -35,27 +35,52 @@ export const FactureTable = () => {
     const [loading, setLoading] = useState(false);
 
 
+    const fetchClients = async () => {
+        try {
+            setLoading(true)
+            await csrf()
+            const response = await axiosClient.get("/api/order/facture");
+            if (response.status === 200) {
+                setClients(response.data);
+            } else {
+                throw new Error("Failed to fetch clients");
+            }
+        } catch (error) {
+            console.error("Error fetching clients:", error);
+        } finally {
+            setLoading(false)
+        }
+    };
 
     useEffect(() => {
-        const fetchClients = async () => {
-            try {
-                setLoading(true)
-                await csrf()
-                const response = await axiosClient.get("/api/order/facture");
-                if (response.status === 200) {
-                    setClients(response.data);
-                } else {
-                    throw new Error("Failed to fetch clients");
-                }
-            } catch (error) {
-                console.error("Error fetching clients:", error);
-            } finally {
-                setLoading(false)
-            }
-        };
 
         fetchClients();
     }, []);
+
+
+    // create a pdf file
+    const [isLoading, setIsLoading] = useState('');
+    const handleCreateAPdfFile = async (id) => {
+        try {
+            setIsLoading(id);
+            await csrf();
+
+            const { data: filePath } = await axiosClient.post(`/api/download-invoice/${id}`);
+
+            const alink = document.createElement("a");
+            alink.href = filePath ?? "";
+            alink.setAttribute("target", "_blank");
+            document.body.appendChild(alink);
+            alink.click();
+
+            fetchClients() // refresh
+
+        } catch (err) {
+            console.log("err", err);
+        } finally {
+            setIsLoading('');
+        }
+    }
 
     return loading ? <Spinner /> : (
         <div className="w-full">
@@ -91,12 +116,21 @@ export const FactureTable = () => {
                                 <TableCell>{client.payment_method}</TableCell>
                                 <TableCell>{client.payment_status}</TableCell>
                                 <TableCell>
-                                    <Button
-                                        className="bg-green-400 mr-2"
-                                        onClick={() => showPDF(`${backEndUrl}/assets/uploads/pdf/${client.invoice}`)}
-                                    >
-                                        Afficher PDF
-                                    </Button>
+                                    {client.invoice ? (
+                                        <Button
+                                            className="bg-green-500 mr-2"
+                                            onClick={() => showPDF(`${backEndUrl}/assets/uploads/pdf/${client.invoice}`)}
+                                        >
+                                            Afficher PDF
+                                        </Button>
+                                    ) : (
+                                        <Button
+                                            className="bg-green-500 mr-2"
+                                            onClick={() => handleCreateAPdfFile(client.id)}
+                                        >
+                                            {Number(isLoading) === Number(client.id) ? 'Loading...' : `Générer un PDF`}
+                                        </Button>
+                                    )}
                                 </TableCell>
                                 <TableHead>
                                     <Link
@@ -118,10 +152,10 @@ export const FactureTable = () => {
                 </div>
                 <div className="space-x-2">
                     <Button variant="outline" size="sm">
-                    Précédent
+                        Précédent
                     </Button>
                     <Button variant="outline" size="sm">
-                    Suivant
+                        Suivant
                     </Button>
                 </div>
             </div>
