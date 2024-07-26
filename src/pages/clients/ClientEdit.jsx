@@ -27,7 +27,7 @@ export default function ClientEdit() {
         image: "",
     });
 
-    const [newImage, setNewImage] = useState({})
+    const [newImage, setNewImage] = useState("")
 
     useEffect(() => {
         const fetchClient = async () => {
@@ -87,7 +87,7 @@ export default function ClientEdit() {
             formData.append("phone", clientData.phone);
             formData.append("city", clientData.city);
             formData.append("address", clientData.address);
-            formData.append("image", newImage);
+            formData.append("image", newImage ?? "");
 
             await csrf();
 
