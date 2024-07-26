@@ -3,10 +3,11 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button } from "../../components/ui/button.jsx";
 import ClientApi from "../../services/Api/Clients/ClientApi.jsx";
 import { useToast } from "../../components/ui/use-toast.js";
-import { Loader } from "lucide-react";
+import { Edit2, Loader } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import axiosClient from "@/api/axiosClient.jsx";
 import Loader2 from "@/components/loader";
+import { renderImageDir } from "@/helpers/utils.jsx";
 
 export default function ClientEdit() {
     const { id } = useParams();
@@ -28,6 +29,7 @@ export default function ClientEdit() {
     });
 
     const [newImage, setNewImage] = useState("")
+    const [imagePreview, setImagePreview] = useState("")
 
     useEffect(() => {
         const fetchClient = async () => {
@@ -37,6 +39,7 @@ export default function ClientEdit() {
                 const response = await axiosClient.post(`/api/clients/edit/${id}`);
                 if (response.status === 200) {
                     setClientData(response.data);
+                    setImagePreview(renderImageDir(response?.data?.image ?? ""))
                 } else {
                     throw new Error("Failed to fetch client data");
                 }
@@ -64,10 +67,12 @@ export default function ClientEdit() {
             const reader = new FileReader();
             reader.onloadend = () => {
                 setNewImage(reader.result); // Base64 string
+                setImagePreview(reader.result); // Base64 string
             };
             reader.readAsDataURL(file);
         } else {
             setNewImage('')
+            setImagePreview(renderImageDir(clientData?.image ?? ""))
         }
     }
 
@@ -209,16 +214,22 @@ export default function ClientEdit() {
                         />
                     </div>
                 </div>
-                <div className="grid w-full max-w-sm items-center gap-1.5 p-2 mb-2">
-                    <label htmlFor="image" className="block mb-1">
-                        Image
+                <div className="grid w-full max-w-sm items-center gap-1.5">
+                    <label htmlFor="__img" className="block mb-1 max-md:text-sm">
+                        <span>Image</span>
+                        <div className="max-w-[200px] cursor-pointer hover:opacity-95 rounded relative">
+                            <img src={imagePreview} alt="" className="w-full h-auto rounded" />
+                            <span className="border rounded bg-black/20 absolute bottom-2 right-2 hover:bg-black/50 text-white p-2"><Edit2 className="w-4 h-4" /></span>
+                        </div>
                     </label>
                     <input
+                        id="__img"
                         name="image"
                         type="file"
                         onChange={handleFileChange}
-                        className="w-full p-2 border border-gray-300 rounded"
+                        className="w-full md:p-2 px-2 py-1 max-md:text-xs border border-gray-300 rounded"
                         accept="image/png, image/jpg, image/jpeg"
+                        hidden
                     />
                 </div>
                 <Button type="submit" className='m-2' disabled={isProgress}>

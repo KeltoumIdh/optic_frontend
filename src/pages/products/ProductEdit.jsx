@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button } from "../../components/ui/button.jsx";
-import { Loader } from "lucide-react";
+import { Edit, Edit2, Loader } from "lucide-react";
 import { useToast } from "../../components/ui/use-toast.js";
 import { axiosProduct } from "../../api/axios.js";
 import { useAuth } from "@/hooks/useAuth";
 import axiosClient from "@/api/axiosClient";
 import Spinner from "@/components/Spinner.jsx";
+import { renderImageDir } from "@/helpers/utils.jsx";
 
 
 export default function ProductAdd() {
@@ -28,6 +29,7 @@ export default function ProductAdd() {
     });
 
     const [image, setImage] = useState("")
+    const [imagePreview, setImagePreview] = useState("")
 
 
     const [loading, setLoading] = useState(false);
@@ -39,6 +41,7 @@ export default function ProductAdd() {
             const response = await axiosClient.post(`/api/products/edit/${id}`);
             if (response.status === 200) {
                 setproduct(response.data);
+                setImagePreview(renderImageDir(response?.data?.image ?? ""))
             } else {
                 throw new Error("Failed to fetch Product data");
             }
@@ -63,10 +66,12 @@ export default function ProductAdd() {
             const reader = new FileReader();
             reader.onloadend = () => {
                 setImage(reader.result); // Base64 string
+                setImagePreview(reader.result); // Base64 string
             };
             reader.readAsDataURL(file);
         } else {
             setImage('')
+            setImagePreview(renderImageDir(product?.image ?? ""))
         }
     }
 
@@ -154,7 +159,7 @@ export default function ProductAdd() {
                         onChange={handleChange}
                         name="name"
                         className="w-full md:p-2 px-2 py-1 max-md:text-xs border border-gray-300 rounded"
-                        />
+                    />
 
                     {/* <span className="text-red-500">
                         {errors.name && errors.name.message}
@@ -171,7 +176,7 @@ export default function ProductAdd() {
                         onChange={handleChange}
                         name="reference"
                         className="w-full md:p-2 px-2 py-1 max-md:text-xs border border-gray-300 rounded"
-                        />
+                    />
                     <span className="text-red-500">
                         {/* {errors.reference && errors.reference.message} */}
                     </span>
@@ -188,7 +193,7 @@ export default function ProductAdd() {
                         onChange={handleChange}
                         name="price"
                         className="w-full md:p-2 px-2 py-1 max-md:text-xs border border-gray-300 rounded"
-                        />
+                    />
                     <span className="text-red-500">
                         {/* {errors.price && errors.price.message} */}
                     </span>
@@ -204,7 +209,7 @@ export default function ProductAdd() {
                         onChange={handleChange}
                         name="quantity_available"
                         className="w-full md:p-2 px-2 py-1 max-md:text-xs border border-gray-300 rounded"
-                        />
+                    />
                     <span className="text-red-500">
                         {/* {errors.quantity && errors.quantity.message} */}
                     </span>
@@ -220,22 +225,28 @@ export default function ProductAdd() {
                         onChange={handleChange}
                         name="message"
                         className="w-full md:p-2 px-2 py-1 max-md:text-xs border border-gray-300 rounded"
-                        />
+                    />
                     <span className="text-red-500">
                         {/* {errors.message && errors.message.message} */}
                     </span>
                 </div>
 
                 <div className="grid w-full max-w-sm items-center gap-1.5">
-                    <label htmlFor="image" className="block mb-1 max-md:text-sm">
-                        Image
+                    <label htmlFor="__img" className="block mb-1 max-md:text-sm">
+                        <span>Image</span>
+                        <div className="max-w-[200px] cursor-pointer hover:opacity-95 rounded relative">
+                            <img src={imagePreview} alt="" className="w-full h-auto rounded" />
+                            <span className="border rounded bg-black/20 absolute bottom-2 right-2 hover:bg-black/50 text-white p-2"><Edit2 className="w-4 h-4" /></span>
+                        </div>
                     </label>
                     <input
+                        id="__img"
                         name="image"
                         type="file"
                         onChange={handleFileChange}
                         className="w-full md:p-2 px-2 py-1 max-md:text-xs border border-gray-300 rounded"
                         accept="image/png, image/jpg, image/jpeg"
+                        hidden
                     />
                 </div>
 
