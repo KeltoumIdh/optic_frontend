@@ -43,6 +43,8 @@ export default function OrderProductsAdd() {
     const [totalProducts, setTotalProducts] = useState(0);
     const [searchQuery, setSearchQuery] = useState("");
     const [searchStatus, setSearchStatus] = useState("");
+    console.log(products);
+    console.log(searchQuery);
 
     // const { clientId } = useParams();
     // const clientId = window.location.pathname.split('/').pop();
@@ -85,7 +87,6 @@ export default function OrderProductsAdd() {
     };
 
     const [loading, setLoading] = useState(false);
-
     const getProducts = async (page, perPage, query = "", status = "") => {
         try {
             setLoading(true)
@@ -177,12 +178,12 @@ export default function OrderProductsAdd() {
                 </select>
 
                 <form className="lg:w-1/2 w-full ">
-                    <label
+                    {/* <label
                         htmlFor="default-search"
                         className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
                     >
                         Search
-                    </label>
+                    </label> */}
                     <div className="relative">
                         <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
                             <svg

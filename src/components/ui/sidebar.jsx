@@ -160,7 +160,7 @@ export const MobileMenu = ({ toggleMobileSideBar }) => {
                     </div>
                     <div className="w-full flex flex-col justify-start items-start gap-5">
                         {LINKS.map((link) => {
-                            if (!isOwner && link.id === 5) return null;
+                            if (!isOwner && (link.id === 5 || link.id === 8)) return null;
                             return (
                                 <Button
                                     key={link.id}

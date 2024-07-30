@@ -167,9 +167,9 @@ export default function OrderEdit() {
                     {...field}
                     className="border rounded-md w-full py-2 px-3 bg-white"
                   >
-                    <option value="in_delivery">In Delivery</option>
-                    <option value="delivered">Delivered</option>
-                    <option value="canceled">Canceled</option>
+                    <option value="in_delivery">En livraison</option>
+                    <option value="delivered">Livré</option>
+                    <option value="canceled">Annulé</option>
                   </select>
                 </FormControl>
                 <FormMessage />

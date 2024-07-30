@@ -107,7 +107,7 @@ export default function Clients() {
     return (
         <>
             <div className="flex p-2 justify-between">
-                <h4 className="text-2xl font-semibold dark:text-gray-300">
+                <h4 className="md:text-2xl font-semibold dark:text-gray-300">
                     Clients
                 </h4>
                 <Link className={"flex items-center"} to={"/clients/add"}>

@@ -10,13 +10,12 @@ import Loader from "@/components/loader";
 import Spinner from "@/components/Spinner";
 import { Loader2 } from "lucide-react";
 
-
 const EditUser = () => {
   const { id } = useParams();
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const { csrf } = useAuth()
+  const { csrf } = useAuth();
 
   const [loading, setLoading] = useState(false);
 
@@ -30,7 +29,7 @@ const EditUser = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        setLoading(true)
+        setLoading(true);
         await csrf();
         const response = await axiosClient.get(`/api/users/edit/${id}`);
         if (response.status === 200) {
@@ -41,30 +40,33 @@ const EditUser = () => {
       } catch (error) {
         console.error("Error fetching user data:", error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     };
 
     fetchUser();
   }, [id]);
 
-  const [isProgress, setInProgress] = useState(false)
+  const [isProgress, setInProgress] = useState(false);
   const updateUser = async () => {
     try {
-      setInProgress(true)
+      setInProgress(true);
       await csrf();
-      const response = await axiosClient.put(`/api/users/update/${id}`, userData);
+      const response = await axiosClient.put(
+        `/api/users/update/${id}`,
+        userData
+      );
       if (response.status === 200) {
         toast({
           title: "Success",
           description: "User updated successfully!",
         });
-        navigate('/user/list')
+        navigate("/user/list");
       }
     } catch (error) {
       console.error("Error updating user:", error);
     } finally {
-      setInProgress(false)
+      setInProgress(false);
     }
   };
 
@@ -76,9 +78,11 @@ const EditUser = () => {
     }));
   };
 
-  return loading ? <Spinner /> : (
+  return loading ? (
+    <Spinner />
+  ) : (
     <div className="w-full">
-      <div className="flex items-center p-2">
+      <div className="flex items-center py-2">
         <Link to={"/user/list"} className="mr-2">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -86,7 +90,7 @@ const EditUser = () => {
             viewBox="0 0 24 24"
             strokeWidth="1.5"
             stroke="currentColor"
-            className="w-6 h-6"
+            className="md:w-6 w-4 md:h-6"
           >
             <path
               strokeLinecap="round"
@@ -95,8 +99,8 @@ const EditUser = () => {
             />
           </svg>
         </Link>
-        <h2 className="text-2xl font-semibold dark:text-gray-300">
-          Modifier user
+        <h2 className="md:text-2xl font-semibold dark:text-gray-300">
+          Modifier utilisateur
         </h2>
       </div>
       <div>
@@ -117,7 +121,7 @@ const EditUser = () => {
           onChange={handleChange}
         />
       </div>
-      <div>
+      {/* <div>
         <label>Role</label>
         <Input
           type="text"
@@ -125,6 +129,13 @@ const EditUser = () => {
           value={userData.role}
           onChange={handleChange}
         />
+      </div> */}
+      <div className="py-2">
+        <label>Rôle</label>
+        <select name="role" value={userData.role} onChange={handleChange} className="px-2 py-1 mx-2 bg-white">
+          <option value="owner">Owner</option>
+          <option value="admin">Admin</option>
+        </select>
       </div>
       <div>
         <label>Password</label>
@@ -136,7 +147,9 @@ const EditUser = () => {
         />
       </div>
       <div className="py-4">
-        <Button onClick={updateUser}>Update User {isProgress && <Loader2 className="animate-spin ml-2" />}</Button>
+        <Button onClick={updateUser}>
+          Modifier {isProgress && <Loader2 className="animate-spin ml-2" />}
+        </Button>
       </div>
     </div>
   );

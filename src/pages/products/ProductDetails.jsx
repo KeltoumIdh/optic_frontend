@@ -8,14 +8,14 @@ import { renderImageDir } from "@/helpers/utils";
 
 
 function ProductDetails() {
-    
+
     const { csrf } = useAuth()
 
     const [loading, setLoading] = useState(false);
-    
+
     const [product, setProduct] = useState();
     const [orders, setOrders] = useState();
-    
+
     const { id } = useParams();
 
     const getProduct = async () => {
@@ -72,7 +72,7 @@ function ProductDetails() {
                 <div className="mt-5 flex flex-col xl:flex-row jusitfy-center items-stretch w-full xl:space-x-8 space-y-4 md:space-y-6 xl:space-y-0">
                     <div className="flex flex-col justify-start items-start w-full space-y-4 md:space-y-6 xl:space-y-8">
                         <div className="flex flex-col justify-start items-start dark:bg-gray-800 bg-gray-50 px-4 py-4 md:py-4 md:p-4 xl:p-4 w-full">
-                            <div className="max-md:mt-4 flex flex-col md:flex-row justify-start max-md:justify-center items-start md:items-center md:space-x-6 xl:space-x-8 w-full">
+                            <div className="max-md:mt-4 flex flex-col md:flex-row justify-start max-md:justify-center md:items-center items-center md:space-x-6 xl:space-x-8 w-full">
                                 <div className="max-md:pb-4 w-44 md:w-48 ">
                                     <img
                                         className="w-full hidden r md:block  "

@@ -30,7 +30,7 @@ export function ListCard() {
   React.useEffect(() => {
     const fetchClients = async () => {
       try {
-        setisLoading(true) 
+        setisLoading(true)
         await csrf();
         const response = await axiosClient.get("/api/credit/clients");
         if (response.status === 200) {
@@ -67,7 +67,7 @@ export function ListCard() {
     <ScrollArea className="h-72 w-100 rounded-md border">
       <div className="p-4">
         <h4 className="mb-4 text-lg font-medium leading-none py-4">Clients crédit</h4>
-        <div className="flex flex-row justify-between px-3">
+        <div className="flex flex-row justify-between md:px-3">
           <div className="text-sm font-medium">Client</div>
           <div className="text-sm font-medium">Téléphone</div>
           <div className="text-sm font-medium"> prix reste</div>

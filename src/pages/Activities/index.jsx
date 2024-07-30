@@ -68,23 +68,23 @@ export default function Activities() {
 
     const renderActivityType = (type) => {
         switch (type) {
-            case "new_user_created": return type + ' ' + "mssg";
-            case "user_updated": return type + ' ' + "mssg";
-            case "user_deleted": return type + ' ' + "mssg";
-            case "password_updated": return type + ' ' + "mssg";
+            case "new_user_created": return "Nouvel utilisateur créé";
+        case "user_updated": return "Utilisateur mis à jour";
+        case "user_deleted": return "Utilisateur supprimé";
+        case "password_updated": return "Mot de passe mis à jour";
 
-            case "new_product_created": return type + ' ' + "mssg";
-            case "product_updated": return type + ' ' + "mssg";
-            case "product_deleted": return type + ' ' + "mssg";
+        case "new_product_created": return "Nouveau produit créé";
+        case "product_updated": return "Produit mis à jour";
+        case "product_deleted": return "Produit supprimé";
 
-            case "new_client_created": return type + ' ' + "mssg";
-            case "client_updated": return type + ' ' + "mssg";
-            case "client_deleted": return type + ' ' + "mssg";
+        case "new_client_created": return "Nouveau client créé";
+        case "client_updated": return "Client mis à jour";
+        case "client_deleted": return "Client supprimé";
 
-            case "new_order": return type + ' ' + "mssg";
-            case "order_updated": return type + ' ' + "mssg";
+        case "new_order": return "Nouvelle commande créée";
+        case "order_updated": return "Commande mise à jour";
 
-            case "unknown": return type + ' ' + "mssg";
+        case "unknown": return "Activité inconnue";
 
             default: return "##"
         }

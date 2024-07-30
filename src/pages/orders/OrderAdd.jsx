@@ -39,7 +39,7 @@ export default function OrderAdd() {
     const [totalClients, setTotalClients] = useState(0);
     const [searchQuery, setSearchQuery] = useState("");
     const [searchStatus, setSearchStatus] = useState("");
-
+console.log('clients',clients);
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
