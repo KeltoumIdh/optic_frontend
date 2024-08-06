@@ -27,25 +27,25 @@ export function ListCard() {
 
   const [isLoading, setisLoading] = React.useState(false)
 
-  React.useEffect(() => {
-    const fetchClients = async () => {
-      try {
-        setisLoading(true)
-        await csrf();
-        const response = await axiosClient.get("/api/credit/clients");
-        if (response.status === 200) {
-          setClients(response.data);
-          console.log("clients", response.data);
-        } else {
-          throw new Error("Failed to fetch clients");
-        }
-      } catch (error) {
-        console.error("Error fetching clients:", error);
-      } finally {
-        setisLoading(false)
+  const fetchClients = async () => {
+    try {
+      setisLoading(true)
+      await csrf();
+      const response = await axiosClient.get("/api/credit/clients");
+      if (response.status === 200) {
+        setClients(response.data);
+        console.log("clients", response.data);
+      } else {
+        throw new Error("Failed to fetch clients");
       }
-    };
+    } catch (error) {
+      console.error("Error fetching clients:", error);
+    } finally {
+      setisLoading(false)
+    }
+  };
 
+  React.useEffect(() => {
     fetchClients();
   }, []);
 
@@ -62,6 +62,24 @@ export function ListCard() {
       return "bg-green-600 text-white";
     }
   };
+
+  const [confirmationInProgress, setConfirmationInProgress] = React.useState(false)
+  const sendConfirmationRequest = async (id) => {
+    try {
+      setConfirmationInProgress(true)
+      await csrf();
+      const response = await axiosClient.put("/api/confirmOrder", { order_id: id });
+      if (response.status === 200) {
+        fetchClients()
+      } else {
+        throw new Error("Failed to fetch clients");
+      }
+    } catch (error) {
+      console.error("Error fetching clients:", error);
+    } finally {
+      setConfirmationInProgress(false)
+    }
+  }
 
   return isLoading ? <div className="h-72 w-100 rounded-md border animate-pulse"></div> : (
     <ScrollArea className="h-72 w-100 rounded-md border">
@@ -99,7 +117,7 @@ export function ListCard() {
                         </DialogDescription>
                       </DialogHeader>
                       <DialogFooter>
-                        <Button type="submit">Confirm</Button>
+                        <Button type="submit" onClick={() => sendConfirmationRequest(client.id)}>{confirmationInProgress ? 'Loading...' : 'Confirm'}</Button>
                         <DialogClose asChild>
                           <Button type="button" variant="secondary">
                             Close
