@@ -28,8 +28,12 @@ const formSchema = z.object({
 export default function ProfileForm() {
   const { toast } = useToast();
   const navigate = useNavigate();
+  console.log("role", formSchema.role);
   const form = useForm({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      role: "admin", // Default role value
+    },
   });
   const {
     control, // Correction: Utilisation de form.control au lieu de control
@@ -45,6 +49,7 @@ export default function ProfileForm() {
     formData.append("name", values.name);
     formData.append("email", values.email);
     formData.append("role", values.role);
+    console.log(values.role);
     formData.append("password", values.password);
 
     try {
@@ -130,18 +135,15 @@ export default function ProfileForm() {
           />
 
           <FormField
-            control={form.control}
+            control={control}
             name="role"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Rôle</FormLabel>
+                <FormLabel>Role</FormLabel>
                 <FormControl>
-                  <select {...field} className="px-2 py-1 mx-2 bg-white ">
+                  <select {...field} className="px-2 py-1 mx-2 bg-white">
                     <option value="admin">Admin</option>
                     <option value="owner">Owner</option>
-                    {/* <option value="user">Utilisateur</option>
-                    <option value="guest">Invité</option> */}
-                    {/* Ajoutez d'autres options selon vos besoins */}
                   </select>
                 </FormControl>
                 <FormMessage />
