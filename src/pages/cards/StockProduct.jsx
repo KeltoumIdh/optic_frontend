@@ -42,26 +42,29 @@ export function StockCard() {
     }
   };
   return isLoading ? <div className="h-72 w-100 rounded-md border animate-pulse"></div> : (
-    <ScrollArea className="h-72 w-100 rounded-md border">
-      <div className="p-4">
-        <h4 className="mb-4 text-lg font-medium leading-none py-4">Produit en rupture de stock</h4>
-
-        <div className="flex flex-row justify-between">
-          <div className="text-sm font-medium">Nom du Produit</div>
-          <div className="text-sm font-medium">Référence</div>
-          <div className="text-sm font-medium">Quantité Disponible</div>
-          <div className="text-sm font-medium">Statut</div>
-        </div>
-        <Separator className="my-2" />
-
-        {products.map((product) => (
-          <>
-            <div className="flex flex-row justify-between" key={product.id}>
-              <div className="text-sm">{product.name}</div>
-              <div className="text-sm">{product.reference}</div>
-              <div className="text-sm">{product.quantity_available}</div>
-              <div className="text-sm">
-                <div>
+    <ScrollArea className="h-72 w-full rounded-md border">
+  <div className="md:p-4 py-4">
+    <h4 className="mb-4 max-md:px-4 text-lg font-medium leading-none py-4">
+      Produit en rupture de stock
+    </h4>
+    <div className="relative overflow-x-auto">
+      <div className="overflow-y-auto h-56">
+        <table className="min-w-full table-auto">
+          <thead className="sticky top-0 bg-gray-100">
+            <tr>
+              <th className="md:px-4 px-2 py-2 text-sm font-medium">Nom du Produit</th>
+              <th className="md:px-4 px-2 py-2 text-sm font-medium">Référence</th>
+              <th className="md:px-4 px-2 py-2 text-sm font-medium">Quantité Disponible</th>
+              <th className="md:px-4 px-2 py-2 text-sm font-medium">Statut</th>
+            </tr>
+          </thead>
+          <tbody>
+            {products.map((product) => (
+              <tr key={product.id} className="bg-white border-b">
+                <td className="md:px-4 px-2 py-2 text-sm">{product.name}</td>
+                <td className="md:px-4 px-2 py-2 text-sm">{product.reference}</td>
+                <td className="md:px-4 px-2 py-2 text-sm">{product.quantity_available}</td>
+                <td className="md:px-4 px-2 py-2 text-sm">
                   <span
                     className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColorClass(
                       product.status
@@ -69,14 +72,16 @@ export function StockCard() {
                   >
                     {product.status}
                   </span>
-                </div>
-              </div>
-            </div>
-            <Separator className="my-2" />
-          </>
-        ))}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
-    </ScrollArea>
+    </div>
+  </div>
+</ScrollArea>
+
 
   )
 }

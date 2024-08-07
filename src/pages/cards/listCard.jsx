@@ -87,18 +87,18 @@ export function ListCard() {
     <div className="h-72 w-100 rounded-md border animate-pulse"></div>
   ) : (
     <ScrollArea className="h-72 w-full rounded-md border">
-  <div className="p-4">
-    <h4 className="mb-4 text-lg font-medium leading-none py-4">
+  <div className="md:p-4 py-4">
+    <h4 className="mb-4 max-md:px-4 text-lg font-medium leading-none py-4">
       Clients crédit
     </h4>
     <table className="min-w-full table-auto">
       <thead className="sticky top-0 bg-gray-100">
         <tr>
-          <th className="px-4 py-2 text-sm font-medium">Client</th>
-          <th className="px-4 py-2 text-sm font-medium">Téléphone</th>
-          <th className="px-4 py-2 text-sm font-medium">Prix reste</th>
-          <th className="px-4 py-2 text-sm font-medium">Jours restants</th>
-          <th className="px-4 py-2 text-sm font-medium">Confirmation</th>
+          <th className="md:px-4 px-2 py-2 text-sm font-medium">Client</th>
+          <th className="md:px-4 px-2 py-2 text-sm font-medium">Téléphone</th>
+          <th className="md:px-4 px-2 py-2 text-sm font-medium">Prix reste</th>
+          <th className="md:px-4 px-2 py-2 text-sm font-medium">Jours restants</th>
+          <th className="md:px-4 px-2 py-2 text-sm font-medium">Confirmation</th>
         </tr>
       </thead>
       <tbody>
@@ -110,10 +110,10 @@ export function ListCard() {
           );
           return (
             <tr key={client.id} className="bg-white border-b">
-              <td className="px-4 py-2 text-sm">{client.name} {client.lname}</td>
-              <td className="px-4 py-2 text-sm">{client.phone}</td>
-              <td className="px-4 py-2 text-sm">{client.remain_price}</td>
-              <td className="px-4 py-2 text-sm">
+              <td className="md:px-4 px-2 py-2 text-sm">{client.name} {client.lname}</td>
+              <td className="md:px-4 px-2 py-2 text-sm">{client.phone}</td>
+              <td className="md:px-4 px-2 py-2 text-sm">{client.remain_price}</td>
+              <td className="md:px-4 px-2 py-2 text-sm">
                 <span
                   className={`px-2 inline-flex text-xs text-center leading-5 font-semibold rounded-full ${getStatusColorClass(client)}`}
                 >
