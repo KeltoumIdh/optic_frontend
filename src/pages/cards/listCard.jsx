@@ -86,19 +86,22 @@ export function ListCard() {
   return isLoading ? (
     <div className="h-72 w-100 rounded-md border animate-pulse"></div>
   ) : (
-    <ScrollArea className="h-72 w-100 rounded-md border">
-      <div className="p-4">
-        <h4 className="mb-4 text-lg font-medium leading-none py-4">
-          Clients crédit
-        </h4>
-        <div className="flex flex-row justify-between md:px-3">
-          <div className="text-sm font-medium">Client</div>
-          <div className="text-sm font-medium">Téléphone</div>
-          <div className="text-sm font-medium"> prix reste</div>
-          <div className="text-sm font-medium">Jours restants</div>
-          <div className="text-sm font-medium">confirmation</div>
-        </div>
-        <Separator className="my-2" />
+    <ScrollArea className="h-72 w-full rounded-md border">
+  <div className="p-4">
+    <h4 className="mb-4 text-lg font-medium leading-none py-4">
+      Clients crédit
+    </h4>
+    <table className="min-w-full table-auto">
+      <thead className="sticky top-0 bg-gray-100">
+        <tr>
+          <th className="px-4 py-2 text-sm font-medium">Client</th>
+          <th className="px-4 py-2 text-sm font-medium">Téléphone</th>
+          <th className="px-4 py-2 text-sm font-medium">Prix reste</th>
+          <th className="px-4 py-2 text-sm font-medium">Jours restants</th>
+          <th className="px-4 py-2 text-sm font-medium">Confirmation</th>
+        </tr>
+      </thead>
+      <tbody>
         {clients.map((client) => {
           const currentDate = new Date();
           const finCreditDate = new Date(client.date_fin_credit);
@@ -106,64 +109,64 @@ export function ListCard() {
             (finCreditDate - currentDate) / (1000 * 3600 * 24)
           );
           return (
-            <div className="">
-              <div
-                key={client.id}
-                className="flex flex-row justify-between  px-2"
-              >
-                <div className="text-sm">
-                  {client.name} {client.lname}
-                </div>
-                <div className="text-sm">{client.phone}</div>
-                <div className="text-sm">{client.remain_price}</div>
-                <div className="text-sm ">
-                  <span
-                    className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full w-600 ${getStatusColorClass(
-                      client
-                    )}`}
-                  >
-                    {" "}
-                    {daysRemaining} jours
-                  </span>
-                </div>
-                <div>
-                  <Dialog>
-                    <DialogTrigger>Confirmer</DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>
-                          Modifier la Commande de {client.name} {client.lname}
-                        </DialogTitle>
-                        <DialogDescription>
-                          prix reste {client.remain_price}
-                        </DialogDescription>
-                        <DialogDescription>
-                          Cette action ne peut pas être annulée. Êtes-vous sûr
-                          de vouloir confirmer définitivement le payement de cette commande ?
-                        </DialogDescription>
-                      </DialogHeader>
-                      <DialogFooter>
-                        <Button
-                          type="submit"
-                          onClick={() => sendConfirmationRequest(client.id)}
-                        >
-                          {confirmationInProgress ? "Loading..." : "Confirm"}
+            <tr key={client.id} className="bg-white border-b">
+              <td className="px-4 py-2 text-sm">{client.name} {client.lname}</td>
+              <td className="px-4 py-2 text-sm">{client.phone}</td>
+              <td className="px-4 py-2 text-sm">{client.remain_price}</td>
+              <td className="px-4 py-2 text-sm">
+                <span
+                  className={`px-2 inline-flex text-xs text-center leading-5 font-semibold rounded-full ${getStatusColorClass(client)}`}
+                >
+                  {daysRemaining} jours
+                </span>
+              </td>
+              <td className="px-4 py-2 text-sm">
+                <Dialog>
+                  <DialogTrigger>Confirmer</DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>
+                        Modifier la Commande de {client.name} {client.lname}
+                      </DialogTitle>
+                      <DialogDescription>
+                        Prix reste {client.remain_price}
+                      </DialogDescription>
+                      <DialogDescription>
+                        Cette action ne peut pas être annulée. Êtes-vous sûr de vouloir confirmer définitivement le paiement de cette commande ?
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                      <Button
+                        type="submit"
+                        onClick={() => sendConfirmationRequest(client.id)}
+                      >
+                        {confirmationInProgress ? "Loading..." : "Confirm"}
+                      </Button>
+                      <DialogClose asChild>
+                        <Button type="button" variant="secondary">
+                          Close
                         </Button>
-                        <DialogClose asChild>
-                          <Button type="button" variant="secondary">
-                            Close
-                          </Button>
-                        </DialogClose>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                </div>
-              </div>
-              <Separator className="my-2" />
-            </div>
+                      </DialogClose>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </td>
+            </tr>
           );
         })}
-      </div>
-    </ScrollArea>
+      </tbody>
+    </table>
+  </div>
+</ScrollArea>
+
+
+
+
+
+
+
+
+
+
   );
 }
