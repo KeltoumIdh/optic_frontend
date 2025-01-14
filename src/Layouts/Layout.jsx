@@ -1,6 +1,6 @@
-import { GaugeIcon } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
-import { Link, Outlet, useNavigate } from 'react-router-dom'
+import { GaugeIcon } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import {
@@ -12,12 +12,11 @@ import {
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu";
 import { ChevronLeft, LogOutIcon, Menu } from "lucide-react";
-import { Sidebare } from './Sidebare'
+import { Sidebare } from "./Sidebare";
 import { useUserContext } from "../context/AuthContext.jsx";
-import AuthApi from '../services/Api/Auth/AuthApi.js';
-import axiosClient from '@/api/axiosClient';
+import AuthApi from "../services/Api/Auth/AuthApi.js";
+import axiosClient from "@/api/axiosClient";
 // import {logo} from "../assets/logo.jpg"
-
 
 export default function Layout() {
   // const { user, logout } = useAuthContext();
@@ -26,45 +25,44 @@ export default function Layout() {
 
   const isAuth = window.localStorage.getItem("isAuth") ?? false;
 
-  const csrf = () => axiosClient.get('sanctum/csrf-cookie');
+  const csrf = () => axiosClient.get("sanctum/csrf-cookie");
 
   const getAuthUser = async () => {
-    await csrf()
+    await csrf();
 
-    alert('getuser')
+    alert("getuser");
 
-    await axiosClient.get("api/auth/user")
-      .then(async res => {
+    await axiosClient
+      .get("api/auth/user")
+      .then(async (res) => {
         const userData = res.data;
 
         setUser(userData);
       })
-      .catch(async error => {
-        if (error.response.data.message === 'Unauthenticated.') {
+      .catch(async (error) => {
+        if (error.response.data.message === "Unauthenticated.") {
           window.localStorage.setItem("isAuth", false);
-          navigate('/login')
+          navigate("/login");
         }
-      })
-  }
+      });
+  };
 
   useEffect(() => {
     if (isAuth === true) {
-      getAuthUser()
+      getAuthUser();
     } else {
       navigate("/login");
     }
   }, [isAuth]);
 
-
   return (
     <>
       <header>
-        <nav
-          className="sticky top-0 z-10 block w-full max-w-full px-4 py-2 text-black bg-white border rounded-none shadow-md h-max border-white/80 bg-opacity-80 backdrop-blur-2xl backdrop-saturate-200 lg:px-8 lg:py-4">
+        <nav className="sticky top-0 z-10 block w-full max-w-full px-4 py-2 text-black bg-white border rounded-none shadow-md h-max border-white/80 bg-opacity-80 backdrop-blur-2xl backdrop-saturate-200 lg:px-8 lg:py-4">
           <div className="flex items-center justify-between text-blue-gray-900">
             {/* <img
         src={logo}
-           className="w-12 h-12 
+           className="w-12 h-12
          "
            alt="logo"
          /> */}
@@ -77,48 +75,56 @@ export default function Layout() {
               <div className="hidden mr-4 lg:block">
                 <ul className="flex flex-col gap-2 mt-2 mb-4 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
                   <li className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                    <Link className={'flex items-center'} to={'/'}><GaugeIcon className='mx-1' size={20} /> Dashboard</Link>
+                    <Link className={"flex items-center"} to={"/"}>
+                      <GaugeIcon className="mx-1" size={20} /> Dashboard
+                    </Link>
                   </li>
                   <li className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                    <Link className={'flex items-center'} to={'/clients'}> Clients</Link>
+                    <Link className={"flex items-center"} to={"/clients"}>
+                      {" "}
+                      Clients
+                    </Link>
                   </li>
                 </ul>
               </div>
               <div className="flex items-center gap-x-1">
-                <div className="flex justify-center items-center flex-row gap-3 mr-3">
-
-
-
-
-                </div>
-
-
+                <div className="flex justify-center items-center flex-row gap-3 mr-3"></div>
               </div>
               <button
                 className="relative ml-auto h-6 max-h-[40px] w-6 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-inherit transition-all hover:bg-transparent focus:bg-transparent active:bg-transparent disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:hidden"
-                type="button">
+                type="button"
+              >
                 <span className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" stroke="currentColor"
-                    strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M4 6h16M4 12h16M4 18h16"
+                    ></path>
                   </svg>
                 </span>
               </button>
-
-
-
-
             </div>
           </div>
         </nav>
       </header>
 
-      <main className={'mx-auto  space-y-4 '}>
-        <div className='flex '>
-          <div className=' md:h-1/4'><Sidebare /></div>
-          <div className='p-4 sm:ml-64 w-full'><Outlet /></div>
+      <main className={"mx-auto  space-y-4 "}>
+        <div className="flex ">
+          <div className=" md:h-1/4">
+            <Sidebare />
+          </div>
+          <div className="p-4 sm:ml-64 w-full">
+            <Outlet />
+          </div>
         </div>
       </main>
     </>
-  )
+  );
 }

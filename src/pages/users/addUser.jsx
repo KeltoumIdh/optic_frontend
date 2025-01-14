@@ -38,6 +38,7 @@ export default function ProfileForm() {
   const {
     control, // Correction: Utilisation de form.control au lieu de control
     setError,
+    reset,
     formState: { isSubmitting },
   } = form;
 
@@ -66,7 +67,7 @@ export default function ProfileForm() {
         });
         navigate("/user/list");
         reset();
-        setShowSuccessPopup(true);
+        // setShowSuccessPopup(true);
       }
     } catch (error) {
       if (error.response && error.response.data && error.response.data.errors) {
