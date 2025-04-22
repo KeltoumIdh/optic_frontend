@@ -1,286 +1,318 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-    // TableContainer,
-    // TablePagination,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Button } from "../../components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { useCheckoutStore } from "../../store";
 import { useAuth } from "@/hooks/useAuth";
 import axiosClient from "@/api/axiosClient";
-import { backEndUrl, renderImageDir } from "@/helpers/utils";
+import { renderImageDir } from "@/helpers/utils";
 import Spinner from "@/components/Spinner";
-
-
+import {
+  Users,
+  Search,
+  PlusCircle,
+  UserCheck,
+  ArrowLeft,
+  CreditCard,
+  ShoppingCart,
+} from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function OrderAdd() {
+  const { csrf } = useAuth();
+  const { setClient } = useCheckoutStore();
+  const [clients, setClients] = useState([]);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalClients, setTotalClients] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-    const { csrf } = useAuth();
+  const handleChangePage = (newPage) => {
+    setPage(newPage);
+  };
 
-    const { setClient } = useCheckoutStore();
-    const [clients, setClients] = useState([]);
-    const [rowsPerPage, setRowsPerPage] = useState(5);
-    const [page, setPage] = useState(0);
-    const [totalPages, setTotalPages] = useState(0);
-    const [totalClients, setTotalClients] = useState(0);
-    const [searchQuery, setSearchQuery] = useState("");
-    const [searchStatus, setSearchStatus] = useState("");
-console.log('clients',clients);
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
-    const handleSearch = () => {
-        console.log("Search Query2:", searchQuery);
-        getClients(0, rowsPerPage, searchQuery, searchStatus);
-    };
-    const handleChangeSearch = (event) => {
-        setSearchQuery(event.target.value);
-    };
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
-    const [isLoading, setIsLoading] = useState(false)
+  const handleChangeSearch = (event) => {
+    setSearchQuery(event.target.value);
+  };
 
-    const getClients = async (page, perPage, query = "", status = "") => {
-        try {
-            setIsLoading(true)
-            await csrf();
-            const res = await axiosClient.get("/api/orders/add", {
-                params: {
-                    page: page + 1,
-                    per_page: perPage,
-                    query: query,
-                    status: status || "",
-                },
-            });
+  const getClients = async (page, perPage, query = "") => {
+    try {
+      setIsLoading(true);
+      await csrf();
+      const res = await axiosClient.get("/api/orders/add", {
+        params: {
+          page: page + 1,
+          per_page: perPage,
+          query: query,
+        },
+      });
 
-            const data = res.data?.data ?? [];
-            const total = res.data?.total_pages ?? 0;
-            const totalClientsCount = res.data?.total ?? 0;
+      const data = res.data?.data ?? [];
+      const total = res.data?.total_pages ?? 0;
+      const totalClientsCount = res.data?.total ?? 0;
 
-            setClients(data);
-            setTotalPages(total);
-            setTotalClients(totalClientsCount);
-        } catch (err) {
-            console.log("err", err);
-        } finally {
-            setIsLoading(false)
-        }
-    };
+      setClients(data);
+      setTotalPages(total);
+      setTotalClients(totalClientsCount);
+    } catch (err) {
+      console.error("Error fetching clients:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    useEffect(() => {
-        getClients(page, rowsPerPage, searchQuery, searchStatus);
-    }, [page, rowsPerPage, searchQuery, searchStatus]);
+  useEffect(() => {
+    getClients(page, rowsPerPage, searchQuery);
+  }, [page, rowsPerPage, searchQuery]);
 
-    return (
-        <>
-            <div className="flex p-2 justify-between">
-                <div className="flex items-center ">
-                    <Link to={"/orders"} className="mr-2 cursor-pointer">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth="1.5"
-                            stroke="currentColor"
-                            className="w-6 h-6"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
-                            />
-                        </svg>
-                    </Link>
+  const renderNoClientsFound = () => (
+    <TableRow>
+      <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+        <div className="flex flex-col items-center">
+          <UserCheck className="h-12 w-12 text-gray-400 mb-2" />
+          <p className="text-lg font-medium">Aucun client trouvé</p>
+          <p className="text-sm text-gray-500 mt-1">
+            {searchQuery
+              ? "Essayez une autre recherche."
+              : "Aucun client n'est disponible."}
+          </p>
+        </div>
+      </TableCell>
+    </TableRow>
+  );
 
-                    <h4 className="lg:text-2xl text-lg font-semibold dark:text-gray-300">
-                        Les Clients
-                    </h4>
-                </div>
-                <Link className={"flex items-center"} to={"/clients/add"}>
-                    <button
-                        className=" select-none rounded-lg bg-gradient-to-tr from-gray-900 to-gray-800 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none inline-block"
-                        type="button"
-                    >
-                        {" "}
-                        Créer une nouvelle commande pour un invité
-                    </button>
-                </Link>
+  const renderLoadingSpinner = () => (
+    <TableRow>
+      <TableCell colSpan={6}>
+        <div className="flex justify-center items-center min-h-[300px]">
+          <Spinner />
+        </div>
+      </TableCell>
+    </TableRow>
+  );
+
+  return (
+    <div className="mx-auto px-2 py-4 md:px-4 md:py-6">
+      <Card className="shadow-md border border-gray-200 dark:border-gray-700">
+        <CardHeader className="pb-3 border-b dark:border-gray-700">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <Link
+                to="/orders"
+                className="mr-3 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Link>
+              <div className="flex items-center">
+                <Users className="h-6 w-6 mr-2 text-primary" />
+                <CardTitle className="text-xl md:text-2xl font-bold">
+                  Sélectionner un client
+                </CardTitle>
+              </div>
             </div>
-            <div className="flex p-2 justify-start space-x-2">
-                {/* <select
-                    value={searchStatus}
-                    onChange={(e) => setSearchStatus(e.target.value)}
-                    className="bg-gray-50 w-fit border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                >
-                    <option value="">All</option>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                </select> */}
+            <Link to="/clients/add">
+              <Button className="bg-primary hover:bg-primary/90">
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Client invité
+              </Button>
+            </Link>
+          </div>
+          <CardDescription className="mt-2 text-gray-500 dark:text-gray-400">
+            Sélectionnez un client pour créer une nouvelle commande
+          </CardDescription>
+        </CardHeader>
 
-                <form className="lg:w-1/2 w-full ">
-                    <label
-                        htmlFor="default-search"
-                        className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
-                    >
-                        Search
-                    </label>
-                    <div className="relative">
-                        <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                            <svg
-                                className="w-4 h-4 text-gray-500 dark:text-gray-400"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 20 20"
-                            >
-                                <path
-                                    stroke="currentColor"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                                />
-                            </svg>
-                        </div>
-                        <input
-                            value={searchQuery}
-                            onChange={handleChangeSearch}
-                            type="search"
-                            id="default-search"
-                            className="block w-full px-4 py-3 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="Search by name, email, or phone"
-                            required
-                        />
-                        {/* <button
-                            onClick={handleSearch}
-                            type="submit"
-                            className="text-white font-sans uppercase  absolute end-2.5 bottom-2 bg-gray-900 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                        >
-                            Search
-                        </button> */}
-                    </div>
-                </form>
+        <CardContent className="p-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-3">
+            <div className="relative w-full md:max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+              <Input
+                value={searchQuery}
+                onChange={handleChangeSearch}
+                className="w-full pl-10"
+                placeholder="Rechercher par nom, email, ou téléphone"
+              />
             </div>
+          </div>
 
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Client</TableHead>
-                        <TableHead>Numéro de téléphone</TableHead>
-                        <TableHead>Ville</TableHead>
-                        <TableHead>Nbr Commandes</TableHead>
-                        <TableHead>Credit</TableHead>
-                        <TableHead className='text-right mr-6'>Actions</TableHead>
-                    </TableRow>
+          <div className="rounded-md border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader className="bg-gray-50 dark:bg-gray-800">
+                  <TableRow>
+                    <TableHead className="font-medium">Client</TableHead>
+                    <TableHead className="font-medium whitespace-nowrap hidden md:table-cell">
+                      Numéro de téléphone
+                    </TableHead>
+                    <TableHead className="font-medium whitespace-nowrap hidden md:table-cell">
+                      Ville
+                    </TableHead>
+                    <TableHead className="font-medium whitespace-nowrap hidden lg:table-cell">
+                      Nbr Commandes
+                    </TableHead>
+                    <TableHead className="font-medium whitespace-nowrap">
+                      Crédit
+                    </TableHead>
+                    <TableHead className="font-medium text-right">
+                      Actions
+                    </TableHead>
+                  </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {isLoading ? suspense() :
-                        clients?.length === 0 ? notFound() :
-                            clients.map((client) => (
-                                <TableRow key={client.id}>
-                                    <TableCell className="h-full flex items-center">
-                                        <img
-                                            src={renderImageDir(client.image)}
-                                            alt="avatar"
-                                            width="40"
-                                            height="40"
-                                            className="pr-2"
-                                        />
-                                        {client.name} {client.lname}
-                                    </TableCell>
-                                    <TableCell>{client.phone}</TableCell>
-                                    <TableCell>{client.city}</TableCell>
-                                    <TableCell className='flex justify-center'>{client.orders_count}</TableCell>
-                                    <TableCell className="text-center ">
-                                        {client.has_credit ? (
-                                            <div className="bg-red-100 rounded text-red-800">
-                                                {" "}
-                                                Oui{" "}
-                                            </div>
-                                        ) : (
-                                            <div className="bg-green-100 text-green-800">
-                                                Non{" "}
-                                            </div>
-                                        )}
-                                    </TableCell>
-                                    <TableCell>
-                                        <Link
-                                            onClick={() => setClient(client.id)}
-                                            to={`/orders/products/add/${client.id}`}
-                                        >
-                                            <Button className="bg-blue-400 mr-2">
-                                                Create Order
-                                            </Button>
-                                        </Link>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                  {isLoading
+                    ? renderLoadingSpinner()
+                    : clients?.length === 0
+                    ? renderNoClientsFound()
+                    : clients.map((client) => (
+                        <TableRow
+                          key={client.id}
+                          className="hover:bg-gray-50 dark:hover:bg-gray-800"
+                        >
+                          <TableCell>
+                            <div className="flex items-center gap-3">
+                              <Avatar className="h-9 w-9">
+                                <AvatarImage
+                                  src={renderImageDir(client.image)}
+                                  alt={client.name}
+                                />
+                                <AvatarFallback>
+                                  {client.name ? client.name.charAt(0) : "C"}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <p className="font-medium line-clamp-1">
+                                  {client.name} {client.lname}
+                                </p>
+                                <p className="text-xs text-gray-500 hidden sm:block">
+                                  {client.email}
+                                </p>
+                                <p className="text-xs text-gray-500 md:hidden">
+                                  {client.phone}
+                                </p>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell className="hidden md:table-cell">
+                            {client.phone}
+                          </TableCell>
+                          <TableCell className="hidden md:table-cell">
+                            {client.city}
+                          </TableCell>
+                          <TableCell className="text-center hidden lg:table-cell">
+                            {client.orders_count}
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              variant={
+                                client.has_credit ? "destructive" : "success"
+                              }
+                              className="whitespace-nowrap"
+                            >
+                              <CreditCard className="h-3 w-3 mr-1" />
+                              {client.has_credit ? "Oui" : "Non"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Link
+                              onClick={() => setClient(client.id)}
+                              to={`/orders/products/add/${client.id}`}
+                              className="inline-block"
+                            >
+                              <Button className="bg-primary hover:bg-primary/90 whitespace-nowrap">
+                                <ShoppingCart className="mr-2 h-4 w-4 md:mr-1" />
+                                <span className="hidden md:inline">
+                                  Créer commande
+                                </span>
+                                <span className="md:hidden">Commander</span>
+                              </Button>
+                            </Link>
+                          </TableCell>
+                        </TableRow>
+                      ))}
                 </TableBody>
-            </Table>
+              </Table>
+            </div>
+          </div>
 
-            {!isLoading && clients?.length > 0 &&
-                <div className="flex justify-between mt-4 lg:px-4">
-                    <div className="w-full">
-                        <p className="text-sm w-full text-gray-500">
-                            Showing {clients.length} of {totalClients} clients
-                        </p>
-                    </div>
-                    <Pagination className="flex justify-end">
-                        <PaginationContent>
-                            <PaginationItem>
-                                <PaginationPrevious
-                                    href="#"
-                                    onClick={(e) => handleChangePage(e, page - 1)}
-                                    style={{ color: page > 0 ? "blue" : "gray" }}
-                                />
-                            </PaginationItem>
-                            {[...Array(totalPages)].map((_, index) => (
-                                <PaginationItem key={index}>
-                                    <PaginationLink
-                                        href="#"
-                                        onClick={(e) => handleChangePage(e, index)}
-                                        style={{
-                                            color: index === page ? "red" : "black",
-                                        }}
-                                    >
-                                        {index + 1}
-                                    </PaginationLink>
-                                </PaginationItem>
-                            ))}
-                            <PaginationItem>
-                                <PaginationNext
-                                    href="#"
-                                    onClick={(e) => handleChangePage(e, page + 1)}
-                                    style={{
-                                        color:
-                                            page < totalPages - 1 ? "blue" : "gray",
-                                    }}
-                                />
-                            </PaginationItem>
-                        </PaginationContent>
-                    </Pagination>
-                </div>}
-        </>
-    );
+          {!isLoading && clients?.length > 0 && (
+            <div className="flex flex-col md:flex-row justify-between items-center mt-4 gap-2">
+              <div className="text-sm text-gray-500">
+                Affichage de {clients.length} sur {totalClients} clients
+              </div>
+
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => handleChangePage(Math.max(0, page - 1))}
+                      disabled={page === 0}
+                      className={
+                        page === 0 ? "pointer-events-none opacity-50" : ""
+                      }
+                    />
+                  </PaginationItem>
+
+                  {[...Array(Math.min(totalPages, 5)).keys()].map((i) => (
+                    <PaginationItem key={i}>
+                      <PaginationLink
+                        onClick={() => handleChangePage(i)}
+                        isActive={page === i}
+                      >
+                        {i + 1}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() =>
+                        handleChangePage(Math.min(totalPages - 1, page + 1))
+                      }
+                      disabled={page >= totalPages - 1}
+                      className={
+                        page >= totalPages - 1
+                          ? "pointer-events-none opacity-50"
+                          : ""
+                      }
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
 }
-
-
-const suspense = () => <TableRow className="bg-white hover:bg-white"><TableCell colSpan={5}><Spinner /></TableCell></TableRow>
-const notFound = () => <TableRow className="bg-white hover:bg-white"><TableCell colSpan={5}>No results!</TableCell></TableRow>

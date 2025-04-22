@@ -1,4 +1,3 @@
-import React from "react";
 import { FourCard } from "./cards/FourCard";
 import { ListCard } from "./cards/listCard";
 import ChartCard from "./cards/ChartCard";
@@ -6,26 +5,31 @@ import { StockCard } from "./cards/StockProduct";
 
 const Home = () => {
   return (
-    <div className="w-full">
-      <div className="md:m-2 flex flex-col justify-between items-start gap-2 w-full md:w-[calc(100 - 5)] ">
-        <div className="h-auto mb-2 w-full">
+    <div className=" mx-auto px-2 py-4 md:px-4 md:py-6">
+      <h1 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">Dashboard</h1>
+      <div className="space-y-4 md:space-y-6">
+        <div className="w-full">
           <FourCard />
         </div>
-        <div className="h-auto w-full grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2">
-          <div className="flex flex-col h-auto ">
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+          <div className="bg-white rounded-lg shadow-sm">
             <StockCard />
           </div>
 
-          <div className="flex flex-col h-auto ">
+          <div className="bg-white rounded-lg shadow-sm">
             <ListCard />
           </div>
         </div>
-        <div className="h-auto w-full grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2">
-          <div className="flex flex-col h-auto ">
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+          <div className="bg-white rounded-lg shadow-sm">
             <ChartCard />
           </div>
 
-          <div className="flex flex-col h-auto ">{/* <ListCard /> */}</div>
+          <div className="bg-white rounded-lg shadow-sm">
+            {/* Reserved for future content */}
+          </div>
         </div>
       </div>
     </div>

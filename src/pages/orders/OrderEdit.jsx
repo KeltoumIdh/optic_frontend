@@ -13,14 +13,21 @@ import {
 } from "../../components/ui/form.jsx";
 import { Input } from "../../components/ui/input.jsx";
 import { Button } from "../../components/ui/button.jsx";
-import { Loader } from "lucide-react";
+import { ArrowLeft, Upload, Save } from "lucide-react";
 import { useToast } from "../../components/ui/use-toast.js";
 import { Label } from "../../components/ui/label.jsx";
 import SuccessPopup from "../../components/Popups/SuccessPopup.jsx";
 import { useAuth } from "@/hooks/useAuth.jsx";
 import axiosClient from "@/api/axiosClient.jsx";
 import Spinner from "@/components/Spinner.jsx";
-
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card";
 
 const formSchema = z.object({
   payment_method: z.string().max(50),
@@ -32,9 +39,7 @@ const formSchema = z.object({
 });
 
 export default function OrderEdit() {
-
   const { csrf } = useAuth();
-
   const { id } = useParams();
   const [isCredit, setIsCredit] = useState(false);
   const { toast } = useToast();
@@ -47,11 +52,11 @@ export default function OrderEdit() {
 
   const { handleSubmit, register, setValue, formState } = form;
 
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        setIsLoading(true)
+        setIsLoading(true);
         await csrf();
         const response = await axiosClient.post(`/api/orders/edit/${id}`);
         setValue("payment_method", response.data.payment_method);
@@ -65,14 +70,13 @@ export default function OrderEdit() {
       } catch (error) {
         console.error("Fetch Order Error", error);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
     };
     fetchOrder();
   }, [id, setValue]);
 
-
-  const [file, setFile] = useState("")
+  const [file, setFile] = useState("");
   const handleFileChange = (e) => {
     const file = e.target.files[0];
 
@@ -83,12 +87,11 @@ export default function OrderEdit() {
       };
       reader.readAsDataURL(file);
     } else {
-      setFile('')
+      setFile("");
     }
-  }
+  };
 
-
-  const [inProgress, setInProgress] = useState(false)
+  const [inProgress, setInProgress] = useState(false);
   const onSubmit = async (e) => {
     e.preventDefault();
 
@@ -101,7 +104,7 @@ export default function OrderEdit() {
     };
 
     try {
-      setInProgress(true)
+      setInProgress(true);
       await csrf();
       const response = await axiosClient.put(`/api/orders/update/${id}`, data);
       toast({
@@ -118,7 +121,7 @@ export default function OrderEdit() {
         status: "error",
       });
     } finally {
-      setInProgress(false)
+      setInProgress(false);
     }
   };
 
@@ -126,134 +129,191 @@ export default function OrderEdit() {
     setShowSuccessPopup(false);
   };
 
-  return isLoading ? <Spinner /> : (
-    <>
-      <div className="flex items-center p-2">
-        <Link to={"/orders"} className="mr-2">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth="1.5"
-            stroke="currentColor"
-            className="w-6 h-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
-            />
-          </svg>
-        </Link>
-        <h2 className="md:text-2xl font-semibold dark:text-gray-300">
-          Modifier Commande #{id}
-        </h2>
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-[80vh]">
+        <Spinner />
       </div>
+    );
+  }
 
-      <Form {...form}>
-        <form
-          onSubmit={onSubmit}
-          className="space-y-3 p-2"
-          encType="multipart/form-data"
-        >
-          <FormField
-            control={form.control}
-            name="status"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Status</FormLabel>
-                <FormControl>
-                  <select
-                    {...field}
-                    className="border rounded-md w-full py-2 px-3 bg-white"
-                  >
-                    <option value="in_delivery">En livraison</option>
-                    <option value="delivered">Livré</option>
-                    <option value="canceled">Annulé</option>
-                  </select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="payment_method"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Méthode de paiement</FormLabel>
-                <FormControl>
-                  <select
-                    {...field}
-                    className="border rounded-md w-full py-2 px-3 bg-white"
-                  >
-                    <option value="">
-                      Sélectionnez une méthode de paiement
-                    </option>
-                    <option value="cash">Cash</option>
-                    <option value="check">Chèque</option>
-                    <option value="traita">La Traite</option>
-                  </select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          {isCredit == 1 && (
-            <FormField
-              control={form.control}
-              name="date_fin_credit"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Date de fin de crédit</FormLabel>
-                  <FormControl>
-                    <input
-                      id="_date"
-                      type="date"
-                      {...field}
-                      className="border rounded-md md:w-1/3 py-2 px-3 text-black"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          )}
-          <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label htmlFor="payement_file">Fichier de paiement</Label>
-            <Input
-              id="payement_file"
-              name="payement_file"
-              type="file"
-              onChange={handleFileChange}
-              accept="image/png, image/jpg, image/jpeg"
-            />
+  return (
+    <div className="mx-auto px-2 py-4 md:px-4 md:py-6">
+      <Card className="shadow-md border border-gray-200 dark:border-gray-700">
+        <CardHeader className="pb-3 border-b dark:border-gray-700">
+          <div className="flex items-center">
+            <Link
+              to="/orders"
+              className="mr-3 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Link>
+            <div>
+              <CardTitle className="text-xl md:text-2xl font-bold">
+                Modifier Commande #{id}
+              </CardTitle>
+              <CardDescription className="mt-1 text-gray-500 dark:text-gray-400">
+                Mise à jour des informations de paiement
+              </CardDescription>
+            </div>
           </div>
-          <FormField
-            control={form.control}
-            name="paid_price"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Prix payé</FormLabel>
-                <FormControl>
-                  <Input placeholder="Prix payé" {...field} type="number" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        </CardHeader>
 
-          <Button type="submit" disabled={inProgress}>
-            {!inProgress ? 'Modifier' : 'Loading...'}
-          </Button>
-        </form>
-      </Form>
+        <CardContent className="p-4 pt-6">
+          <Form {...form}>
+            <form
+              onSubmit={onSubmit}
+              className="space-y-5"
+              encType="multipart/form-data"
+            >
+              <div className="grid md:grid-cols-2 gap-5">
+                <FormField
+                  control={form.control}
+                  name="status"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Status</FormLabel>
+                      <FormControl>
+                        <select
+                          {...field}
+                          className="border rounded-md w-full py-2 px-3 bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                        >
+                          <option value="in_delivery">En livraison</option>
+                          <option value="delivered">Livré</option>
+                          <option value="canceled">Annulé</option>
+                        </select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="payment_method"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Méthode de paiement</FormLabel>
+                      <FormControl>
+                        <select
+                          {...field}
+                          className="border rounded-md w-full py-2 px-3 bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                        >
+                          <option value="">
+                            Sélectionnez une méthode de paiement
+                          </option>
+                          <option value="cash">Cash</option>
+                          <option value="check">Chèque</option>
+                          <option value="traita">La Traite</option>
+                        </select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-5">
+                <FormField
+                  control={form.control}
+                  name="paid_price"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Prix payé</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Prix payé"
+                          {...field}
+                          type="number"
+                          className="dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {isCredit == 1 && (
+                  <FormField
+                    control={form.control}
+                    name="date_fin_credit"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Date de fin de crédit</FormLabel>
+                        <FormControl>
+                          <input
+                            type="date"
+                            {...field}
+                            className="border rounded-md w-full py-2 px-3 text-black dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                            onClick={(e) => e.target.showPicker()}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+              </div>
+
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                <Label
+                  htmlFor="payement_file"
+                  className="block mb-2 font-medium"
+                >
+                  Fichier de paiement
+                </Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    id="payement_file"
+                    name="payement_file"
+                    type="file"
+                    onChange={handleFileChange}
+                    accept="image/png, image/jpg, image/jpeg"
+                    className="flex-1 dark:bg-gray-900 dark:border-gray-700"
+                  />
+                  {file && (
+                    <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center">
+                      <Upload className="h-5 w-5 text-gray-600" />
+                    </div>
+                  )}
+                </div>
+                {file && (
+                  <p className="text-xs text-green-600 mt-2">
+                    Image chargée avec succès
+                  </p>
+                )}
+              </div>
+
+              <CardFooter className="flex justify-between px-0 pt-3 pb-0">
+                <Button variant="outline" onClick={() => navigate("/orders")}>
+                  <ArrowLeft className="mr-2 h-4 w-4" /> Annuler
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={inProgress}
+                  className="bg-primary hover:bg-primary/90"
+                >
+                  {!inProgress ? (
+                    <>
+                      <Save className="mr-2 h-4 w-4" /> Enregistrer
+                    </>
+                  ) : (
+                    <>
+                      <Spinner className="mr-2 h-4 w-4" /> Traitement...
+                    </>
+                  )}
+                </Button>
+              </CardFooter>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
       {showSuccessPopup && (
         <SuccessPopup
           message="Commande mise à jour avec succès!"
           onClose={closeSuccessPopup}
         />
       )}
-    </>
+    </div>
   );
 }

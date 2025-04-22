@@ -1,297 +1,415 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { BiSolidShow } from "react-icons/bi";
-import { RiEditFill } from "react-icons/ri";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-    // TableContainer,
-    // TablePagination,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
 import { useAuth } from "@/hooks/useAuth.jsx";
 import axiosClient from "@/api/axiosClient.jsx";
-import Loader from "@/components/loader";
-import Spinner from "@/components/Spinner";
 import { renderImageDir } from "@/helpers/utils";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import {
+  User,
+  Search,
+  Plus,
+  Eye,
+  Edit,
+  Phone,
+  MapPin,
+  Check,
+  X,
+  AlertTriangle,
+} from "lucide-react";
+import Spinner from "@/components/Spinner";
 
+// Badge component for client status
+const Badge = ({ children, variant = "default", className = "" }) => {
+  const getVariantClass = () => {
+    switch (variant) {
+      case "success":
+        return "bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100";
+      case "warning":
+        return "bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100";
+      case "destructive":
+        return "bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100";
+      case "outline":
+        return "bg-transparent border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300";
+      default:
+        return "bg-primary text-white";
+    }
+  };
 
+  return (
+    <span
+      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${getVariantClass()} ${className}`}
+    >
+      {children}
+    </span>
+  );
+};
 
 export default function Clients() {
-    const [clients, setClients] = useState([]);
-    const [rowsPerPage, setRowsPerPage] = useState(5);
-    const [page, setPage] = useState(0);
-    const [totalPages, setTotalPages] = useState(0);
-    const [totalClients, setTotalClients] = useState(0);
-    const [searchQuery, setSearchQuery] = useState("");
-    const [searchStatus, setSearchStatus] = useState("");
+  const [clients, setClients] = useState([]);
+  const [rowsPerPage] = useState(10);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalClients, setTotalClients] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+  const { csrf } = useAuth();
 
-    const { csrf } = useAuth()
+  const handleChangePage = (newPage) => {
+    setPage(newPage);
+  };
 
-    const [loading, setLoading] = useState(false);
+  const handleChangeSearch = (event) => {
+    const value = event.target.value;
+    setSearchQuery(value);
 
+    // Reset to first page when search changes
+    if (page !== 0) {
+      setPage(0);
+    }
+  };
 
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      setPage(0); // Reset to first page on new search
+      getClients(0, rowsPerPage, searchQuery);
+    }
+  };
 
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
+  const getClients = async (page, perPage, query = "") => {
+    try {
+      setIsLoading(true);
+      await csrf();
+      const res = await axiosClient.get("/api/clients", {
+        params: {
+          page: page + 1,
+          per_page: perPage,
+          query: query,
+        },
+      });
 
-    const handleSearch = () => {
-        console.log("Search Query2:", searchQuery);
-        getClients(0, rowsPerPage, searchQuery, searchStatus);
-    };
+      const data = res.data?.data ?? [];
+      const total = res.data?.total_pages ?? 0;
+      const totalClientsCount = res.data?.total ?? 0;
 
-    const handleChangeSearch = (event) => {
-        setSearchQuery(event.target.value);
-    };
+      setClients(data);
+      setTotalPages(total);
+      setTotalClients(totalClientsCount);
+    } catch (err) {
+      console.error("Error fetching clients:", err);
+      toast({
+        title: "Erreur",
+        description: "Impossible de récupérer la liste des clients",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    const getClients = async (page, perPage, query = "", status = "") => {
-        try {
-            setLoading(true)
-            await csrf();
-            const res = await axiosClient.get("/api/clients", {
-                params: {
-                    page: page + 1,
-                    per_page: perPage,
-                    query: query, // Use consistent naming (either 'query' or 'search')
-                    status: status || "", // Ensure status is set to an empty string if not provided
-                },
-            });
+  useEffect(() => {
+    getClients(page, rowsPerPage, searchQuery);
+  }, [page, rowsPerPage, searchQuery]);
 
-            const data = res.data?.data ?? [];
-            const total = res.data?.total_pages ?? 0;
-            const totalClientsCount = res.data?.total ?? 0;
+  // Generate pagination items
+  const renderPaginationItems = () => {
+    if (totalPages <= 1) return null;
 
-            setClients(data);
-            setTotalPages(total);
-            setTotalClients(totalClientsCount);
-        } catch (err) {
-            console.log("err", err);
-        } finally {
-            setLoading(false)
-        }
-    };
+    const items = [];
+    const maxVisiblePages = 5;
 
-    const handleDelete = async (id) => {
-        try {
-            await csrf();
-            await axiosClient.delete(`/api/clients/delete/${id}`);
-            setClients((prevClients) =>
-                prevClients.filter((client) => client.id !== id)
-            );
-        } catch (err) {
-            console.log("err", err);
-        }
-    };
-
-    useEffect(() => {
-        getClients(page, rowsPerPage, searchQuery, searchStatus);
-    }, [page, rowsPerPage, searchQuery, searchStatus]);
-
-    return (
-        <>
-            <div className="flex p-2 justify-between">
-                <h4 className="md:text-2xl font-semibold dark:text-gray-300">
-                    Clients
-                </h4>
-                <Link className={"flex items-center"} to={"/clients/add"}>
-                    <button
-                        className=" select-none rounded-lg bg-gradient-to-tr from-gray-900 to-gray-800 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:inline-block"
-                        type="button"
-                    >
-                        {" "}
-                        Ajouter
-                    </button>
-                </Link>
-            </div>
-            <div className="flex p-2 justify-start space-x-2">
-                {/* <select
-                    value={searchStatus}
-                    onChange={(e) => setSearchStatus(e.target.value)}
-                    className="bg-gray-50 w-fit border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                >
-                    <option value="">All</option>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                </select> */}
-
-                <form className="lg:w-1/2 w-full ">
-                    <label
-                        htmlFor="default-search"
-                        className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
-                    >
-                        Search
-                    </label>
-                    <div className="relative">
-                        <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                            <svg
-                                className="w-4 h-4 text-gray-500 dark:text-gray-400"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 20 20"
-                            >
-                                <path
-                                    stroke="currentColor"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                                />
-                            </svg>
-                        </div>
-                        <input
-                            value={searchQuery}
-                            onChange={handleChangeSearch}
-                            type="search"
-                            id="default-search"
-                            className="block w-full px-4 py-3 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="Search by name, email, or phone"
-                            required
-                        />
-                        {/* <button
-                            onClick={handleSearch}
-                            type="submit"
-                            className="text-white font-sans uppercase  absolute end-2.5 bottom-2 bg-gray-900 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                        >
-                            Search
-                        </button> */}
-                    </div>
-                </form>
-            </div>
-
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Client</TableHead>
-                        <TableHead>Numéro de téléphone</TableHead>
-                        <TableHead>Ville</TableHead>
-                        <TableHead>Nbr Commandes</TableHead>
-                        <TableHead>Credit</TableHead>
-                        <TableHead className='text-right mr-6'>Actions</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {loading ? suspense() :
-                        clients?.length === 0 ? notFound() :
-                            clients.map((client) => (
-                                <TableRow key={client.id}>
-                                    <TableCell className="h-full flex items-center">
-                                        <img
-                                            src={renderImageDir(client.image)}
-                                            alt="avatar"
-                                            width="40"
-                                            height="40"
-                                            className="pr-2"
-                                        />
-                                        {client.name} {client.lname}
-                                    </TableCell>
-                                    <TableCell className='max-md:p-2'>{client.phone}</TableCell>
-                                    <TableCell>{client.city}</TableCell>
-                                    <TableCell className='flex justify-center max-md:p-2'>{client.orders_count}</TableCell>
-                                    <TableCell className="text-center max-md:p-2">
-                                        {client.has_credit ? (
-                                            <div className="bg-red-100 rounded text-red-800">
-                                                {" "}
-                                                Oui{" "}
-                                            </div>
-                                        ) : (
-                                            <div className="bg-green-100 text-green-800">
-                                                Non{" "}
-                                            </div>
-                                        )}
-                                    </TableCell>
-                                    <TableCell className='max-md:p-2 flex items-center h-full'>
-                                        <Button className="bg-blue-400 m-1  max-md:px-3">
-                                            <Link
-                                                to={`/clients/edit/${client.id}`}
-                                                className="max-lg:text-xs "
-                                            >
-                                                <RiEditFill />
-                                            </Link>
-                                        </Button>
-                                        <Button className="bg-purple-400 mx-1 max-lg:text-sm max-md:px-3">
-                                            <Link
-                                                to={`/clients/details/${client.id}`}
-                                                className="max-lg:text-xs "
-                                            >
-                                                <BiSolidShow />
-                                            </Link>
-                                        </Button>
-                                        {/* <Button
-                                        className="bg-red-500 max-lg:text-xs m-1 max-lg:p-2"
-                                        onClick={() => handleDelete(client.id)}
-                                    >
-                                        Supprimer
-                                    </Button> */}
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                </TableBody>
-            </Table>
-
-            {!loading && clients?.length > 0 &&
-            <div className="flex justify-between mt-4 lg:px-4">
-                <div className="w-full">
-                    <p className="text-sm w-full text-gray-500">
-                        Showing {clients.length} of {totalClients} clients
-                    </p>
-                </div>
-                <Pagination className="flex justify-end">
-                    <PaginationContent>
-                        <PaginationItem>
-                            <PaginationPrevious
-                                href="#"
-                                onClick={(e) => handleChangePage(e, page - 1)}
-                                style={{ color: page > 0 ? "blue" : "gray" }}
-                            />
-                        </PaginationItem>
-                        {[...Array(totalPages)].map((_, index) => (
-                            <PaginationItem key={index}>
-                                <PaginationLink
-                                    href="#"
-                                    onClick={(e) => handleChangePage(e, index)}
-                                    style={{
-                                        color: index === page ? "red" : "black",
-                                    }}
-                                >
-                                    {index + 1}
-                                </PaginationLink>
-                            </PaginationItem>
-                        ))}
-                        <PaginationItem>
-                            <PaginationNext
-                                href="#"
-                                onClick={(e) => handleChangePage(e, page + 1)}
-                                style={{
-                                    color:
-                                        page < totalPages - 1 ? "blue" : "gray",
-                                }}
-                            />
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination>
-            </div>}
-        </>
+    // Calculate range of pages to show
+    let startPage = Math.max(
+      0,
+      Math.min(
+        page - Math.floor(maxVisiblePages / 2),
+        totalPages - maxVisiblePages
+      )
     );
+    let endPage = Math.min(startPage + maxVisiblePages - 1, totalPages - 1);
+
+    // Adjust if we're showing fewer than maxVisiblePages
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(0, endPage - maxVisiblePages + 1);
+    }
+
+    // First page
+    if (startPage > 0) {
+      items.push(
+        <PaginationItem key="first">
+          <PaginationLink onClick={() => handleChangePage(0)}>1</PaginationLink>
+        </PaginationItem>
+      );
+
+      if (startPage > 1) {
+        items.push(
+          <PaginationItem key="ellipsis-start">
+            <PaginationLink disabled>...</PaginationLink>
+          </PaginationItem>
+        );
+      }
+    }
+
+    // Pages
+    for (let i = startPage; i <= endPage; i++) {
+      items.push(
+        <PaginationItem key={i}>
+          <PaginationLink
+            isActive={page === i}
+            onClick={() => handleChangePage(i)}
+          >
+            {i + 1}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+
+    // Last page
+    if (endPage < totalPages - 1) {
+      if (endPage < totalPages - 2) {
+        items.push(
+          <PaginationItem key="ellipsis-end">
+            <PaginationLink disabled>...</PaginationLink>
+          </PaginationItem>
+        );
+      }
+
+      items.push(
+        <PaginationItem key="last">
+          <PaginationLink onClick={() => handleChangePage(totalPages - 1)}>
+            {totalPages}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+
+    return items;
+  };
+
+  // Render empty state
+  const renderEmptyState = () => (
+    <TableRow>
+      <TableCell
+        colSpan={6}
+        className="text-center py-8 text-gray-500 dark:text-gray-400"
+      >
+        <div className="flex flex-col items-center justify-center space-y-3">
+          <AlertTriangle className="h-8 w-8 text-amber-500 opacity-40" />
+          <p>Aucun client trouvé</p>
+        </div>
+      </TableCell>
+    </TableRow>
+  );
+
+  return (
+    <div className="mx-auto px-2 py-4 md:px-4 md:py-6">
+      <Card className="shadow-md border border-gray-200 dark:border-gray-700">
+        <CardHeader className="pb-4 border-b dark:border-gray-700">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div className="flex items-center">
+              <User className="h-6 w-6 mr-2 text-primary" />
+              <div>
+                <CardTitle className="text-xl md:text-2xl font-bold">
+                  Clients
+                </CardTitle>
+                <CardDescription className="mt-1">
+                  {totalClients} client{totalClients !== 1 ? "s" : ""} au total
+                </CardDescription>
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+              <div className="relative w-full md:w-64">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 dark:text-gray-400" />
+                <Input
+                  value={searchQuery}
+                  onChange={handleChangeSearch}
+                  onKeyDown={handleKeyPress}
+                  className="pl-10 pr-4 py-2 w-full text-sm"
+                  placeholder="Rechercher un client..."
+                />
+              </div>
+              <Link to="/clients/add">
+                <Button className="w-full sm:w-auto bg-primary hover:bg-primary/90">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Ajouter un client
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="relative overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Client</TableHead>
+                  <TableHead>Numéro de téléphone</TableHead>
+                  <TableHead>Ville</TableHead>
+                  <TableHead>Commandes</TableHead>
+                  <TableHead>Crédit</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {isLoading ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center py-10">
+                      <div className="flex justify-center items-center">
+                        <Spinner />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ) : clients.length === 0 ? (
+                  renderEmptyState()
+                ) : (
+                  clients.map((client) => (
+                    <TableRow
+                      key={client.id}
+                      className="hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                    >
+                      <TableCell className="min-w-[200px]">
+                        <div className="flex items-center space-x-3">
+                          <div className="h-10 w-10 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-800 flex-shrink-0">
+                            {client.image ? (
+                              <img
+                                src={renderImageDir(client.image, "client")}
+                                alt={client.name}
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <User className="h-6 w-6 m-auto text-gray-400" />
+                            )}
+                          </div>
+                          <div>
+                            <div className="font-medium text-gray-900 dark:text-gray-100">
+                              {client.name} {client.lname}
+                            </div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">
+                              Client #{client.id}
+                            </div>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center">
+                          <Phone className="h-4 w-4 mr-2 text-gray-400" />
+                          <span>{client.phone}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center">
+                          <MapPin className="h-4 w-4 mr-2 text-gray-400" />
+                          <span>{client.city || "N/A"}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center">
+                          <span className="font-medium">
+                            {client.orders_count || 0}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {client.has_credit ? (
+                          <Badge
+                            variant="warning"
+                            className="flex items-center space-x-1"
+                          >
+                            <Check className="h-3 w-3 mr-0.5" />
+                            <span>Oui</span>
+                          </Badge>
+                        ) : (
+                          <Badge
+                            variant="outline"
+                            className="flex items-center space-x-1"
+                          >
+                            <X className="h-3 w-3 mr-0.5" />
+                            <span>Non</span>
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right space-x-2 whitespace-nowrap">
+                        <Link to={`/clients/details/${client.id}`}>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0"
+                          >
+                            <span className="sr-only">Voir les détails</span>
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </Link>
+                        <Link to={`/clients/edit/${client.id}`}>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0"
+                          >
+                            <span className="sr-only">Modifier</span>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </Link>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center py-4 border-t border-gray-200 dark:border-gray-700">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => handleChangePage(Math.max(0, page - 1))}
+                      disabled={page === 0}
+                    />
+                  </PaginationItem>
+
+                  {renderPaginationItems()}
+
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() =>
+                        handleChangePage(Math.min(totalPages - 1, page + 1))
+                      }
+                      disabled={page === totalPages - 1}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
 }
-
-
-const suspense = () => <TableRow className="bg-white hover:bg-white"><TableCell colSpan={5}><Spinner /></TableCell></TableRow>
-const notFound = () => <TableRow className="bg-white hover:bg-white"><TableCell colSpan={5}>No results!</TableCell></TableRow>

@@ -1,670 +1,607 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { CiMoneyCheck1 } from "react-icons/ci";
-import { useCheckoutStore } from "../../store";
 import { GiBanknote } from "react-icons/gi";
-import { BsCreditCard2Front } from "react-icons/bs";
+import { BsCreditCard2Front, BsCalendarDate } from "react-icons/bs";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { useCheckoutStore } from "../../store";
 import axiosClient from "@/api/axiosClient";
-import { Loader } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  ArrowLeft,
+  CreditCard,
+  Banknote,
+  Receipt,
+  Loader,
+  CheckCircle,
+  AlertCircle,
+  Upload,
+  FileText,
+} from "lucide-react";
+import Spinner from "@/components/Spinner";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { Calendar as CalendarIcon } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 
 function Checkout() {
+  const { csrf } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
-    const { csrf } = useAuth();
+  const {
+    setisCred,
+    setDate: setD,
+    setPrixPayee: setPrixP,
+    setPrixReste: setPrixR,
+    setEtatPayment: setEPa,
+    clientId,
+    cart,
+  } = useCheckoutStore();
 
-    const location = useLocation();
-    const {
-        setisCred,
-        setDate: setD,
-        setPrixPayee: setPrixP,
-        setPrixReste: setPrixR,
-        setEtatPayment: setEPa,
-        etatPayment: ePa,
-        isCredit: isC,
-        date: dat,
-        prixPayee: PrixP,
-        prixReste: PrixR,
-        clientId,
-        cart,
-        selectedProd,
-    } = useCheckoutStore();
+  // State variables
+  const [paymentMethod, setPaymentMethod] = useState("cash");
+  const [paymentType, setPaymentType] = useState("surPlace");
+  const [isCredit, setIsCredit] = useState(false);
+  const [date, setDate] = useState("");
+  const [paidAmount, setPaidAmount] = useState(0);
+  const [creditReference, setCreditReference] = useState("");
+  const [traitaDate, setTraitaDate] = useState("");
+  const [traitaForClient, setTraitaForClient] = useState(true);
+  const [traitaClient, setTraitaClient] = useState("");
+  const [file, setFile] = useState("");
+  const [loading, setLoading] = useState(false);
 
-    const [methodePayment, setMethodePayment] = React.useState("cash");
-    const { toast } = useToast();
-    const navigate = useNavigate();
-    const [etatPayment, setEtatPayment] = React.useState("surPlace");
-    const [isCredit, setIsCredit] = useState(false);
-    // console.log("etatPayment", etatPayment);
-    const [date, setDate] = useState("");
-    const [prixPayee, setPrixPayee] = useState(0);
-    const [referenceCredit, setReference] = useState("");
-    const [traitaDate, setTraitaDate] = useState("");
-    const [traitaForClient, setTraitaForClient] = useState(false);
-    const [traitaClient, setTraitaClient] = useState('');
-    const [file, setFile] = useState("");
-
-
-    const calculateRestPrice = () => {
-        const totalAmount = cart.total_price;
-        if (etatPayment === "credit") {
-            // Calculate rest price for credit payment
-            return prixPayee
-                ? totalAmount - parseFloat(prixPayee)
-                : totalAmount;
-        }
-    };
-
-    const [inProgress, setInProgress] = useState(false)
-
-    const [prixReste, setPrixReste] = useState(calculateRestPrice());
-    const handleCheckout = async () => {
-        try {
-            const formData = {
-                client_id: clientId,
-                cart: cart,
-                isCredit: etatPayment === "credit" ? true : false,
-                payment_method: methodePayment,
-                date_fin_credit: isCredit ? date : null,
-                paid_price:
-                    etatPayment !== "credit"
-                        ? cart.total_price
-                        : isNaN(prixPayee) || prixPayee === ""
-                            ? 0
-                            : parseFloat(prixPayee).toFixed(2),
-                remain_price: prixReste || 0,
-                total_price: cart.total_price,
-                reference_credit: referenceCredit,
-                file: file,
-                client_traita: traitaClient,
-                traita_date: traitaDate,
-            };
-            
-            setInProgress(true)
-            await csrf();
-            const response = await axiosClient.post("/api/add-order", formData);
-
-            toast({
-                title: "Success",
-                description: "la Commande created successfully!",
-            });
-            navigate("/orders");
-
-        } catch (error) {
-            console.error("Error creating order:", error);
-        } finally {
-            setInProgress(false)
-        }
-    };
-
-    const downloadInvoice = async (orderId) => {
-        try {
-            await csrf();
-            const response = await axiosClient.get(`/api/download-invoice/${orderId}`, {
-                responseType: "blob",
-            });
-            // Create a URL for the blob data
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-
-            // Create a temporary link element
-            const link = document.createElement("a");
-            link.href = url;
-            link.setAttribute("download", `invoice.pdf`); // Set the filename for download
-            document.body.appendChild(link);
-
-            // Click the link to trigger download
-            link.click();
-
-            // Cleanup
-            window.URL.revokeObjectURL(url);
-            link.remove();
-        } catch (error) {
-            console.error("Error downloading invoice:", error);
-        }
-    };
-
-    useEffect(() => {
-        setPrixReste(calculateRestPrice());
-        setisCred(isCredit);
-        setEPa(etatPayment);
-        setD(date);
-        setPrixP(prixPayee);
-        setPrixR(prixReste);
-    }, [prixPayee, prixReste, date, etatPayment, isCredit, cart.total_price]);
-
+  // Check if cart and client exist
+  if (!cart || !cart.productsCart || !clientId) {
     return (
-        <>
-            <div className=" h-screen py-2">
-                <div className="container mx-auto px-4">
-                    <div className="lg:flex max-lg:space-y-6 justify-between w-full">
-                        <div className="lg:w-1/2">
-                            <div className="flex items-center  mb-4">
-                                <Link
-                                    to={`/orders/confirmed`}
-                                    className="mr-2 cursor-pointer"
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        strokeWidth="1.5"
-                                        stroke="currentColor"
-                                        className="w-6 h-6"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
-                                        />
-                                    </svg>
-                                </Link>
-                                <h1 className="lg:text-2xl font-semibold">
-                                Confirmer la commande
-                                </h1>
-                                {/* <button
-                                    onClick={() => downloadInvoice(13)}
-                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                                >
-                                    download
-                                </button> */}
-                            </div>
-                            <div className="flex gap-10">
-                                <div className="inline-flex items-center">
-                                    <label
-                                        className="relative flex items-center p-3 rounded-full cursor-pointer"
-                                        htmlFor="radioCredit"
-                                    >
-                                        <input
-                                            name="type"
-                                            type="radio"
-                                            className="before:content[''] peer relative h-5 w-5 cursor-pointer appearance-none rounded-full border border-blue-gray-200 text-gray-900 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:border-gray-900 checked:before:bg-gray-900 hover:before:opacity-10"
-                                            id="radioCredit"
-                                            checked={etatPayment === "credit"}
-                                            onChange={() =>
-                                                setEtatPayment("credit")
-                                            }
-                                        />
-
-                                        <span className="absolute text-gray-900 transition-opacity opacity-0 pointer-events-none top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 peer-checked:opacity-100">
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                className="h-3.5 w-3.5"
-                                                viewBox="0 0 16 16"
-                                                fill="currentColor"
-                                            >
-                                                <circle
-                                                    data-name="ellipse"
-                                                    cx="8"
-                                                    cy="8"
-                                                    r="8"
-                                                ></circle>
-                                            </svg>
-                                        </span>
-                                    </label>
-                                    <label
-                                        className="mt-px font-light text-gray-700 cursor-pointer select-none"
-                                        htmlFor="radioCredit"
-                                    >
-                                        Credit
-                                    </label>
-                                </div>
-                                <div className="inline-flex items-center">
-                                    <label
-                                        className="relative flex items-center p-3 rounded-full cursor-pointer"
-                                        htmlFor="radiosurplace"
-                                    >
-                                        <input
-                                            name="type"
-                                            type="radio"
-                                            className="before:content[''] peer relative h-5 w-5 cursor-pointer appearance-none rounded-full border border-blue-gray-200 text-gray-900 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:border-gray-900 checked:before:bg-gray-900 hover:before:opacity-10"
-                                            id="radiosurplace"
-                                            checked={etatPayment === "surPlace"}
-                                            onChange={() => {
-                                                setEtatPayment("surPlace");
-                                                setIsCredit(true);
-                                            }}
-                                        />
-                                        <span className="absolute text-gray-900 transition-opacity opacity-0 pointer-events-none top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 peer-checked:opacity-100">
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                className="h-3.5 w-3.5"
-                                                viewBox="0 0 16 16"
-                                                fill="currentColor"
-                                            >
-                                                <circle
-                                                    data-name="ellipse"
-                                                    cx="8"
-                                                    cy="8"
-                                                    r="8"
-                                                ></circle>
-                                            </svg>
-                                        </span>
-                                    </label>
-                                    <label
-                                        className="mt-px font-light text-gray-700 cursor-pointer select-none"
-                                        htmlFor="radiosurplace"
-                                    >
-                                        Payement sur place
-                                    </label>
-                                </div>
-                            </div>
-
-                            <form className="mt-2 w-full pr-4 grid gap-6">
-                                {etatPayment === "credit" && (
-                                    <>
-                                        <div className="mb-2">
-                                            <label
-                                                htmlFor="date"
-                                                className="block text-sm font-medium text-gray-700"
-                                            >
-                                                Date:
-                                            </label>
-                                            <input
-                                                type="date"
-                                                id="date"
-                                                name="date"
-                                                value={date}
-                                                onChange={(e) =>
-                                                    setDate(e.target.value)
-                                                }
-                                                className="mt-1 p-2 border rounded-md w-full"
-                                            />
-                                        </div>
-
-                                        <div className="mb-2">
-                                            <label
-                                                htmlFor="prixPayee"
-                                                className="block text-sm font-medium text-gray-700"
-                                            >
-                                                Prix Payee:
-                                            </label>
-                                            <input
-                                                type="number"
-                                                id="prixPayee"
-                                                name="prixPayee"
-                                                value={prixPayee}
-                                                onChange={(e) =>
-                                                    setPrixPayee(e.target.value)
-                                                }
-                                                className="mt-1 p-2 border rounded-md w-full"
-                                            />
-                                        </div>
-                                    </>
-                                )}
-                            </form>
-
-                            <p className="mt-2 lg:text-lg font-medium">
-                            méthodes de payement
-                            </p>
-                            <form className="mt-5 w-full pr-4 grid gap-6">
-                                <div
-                                    className="relative"
-                                    onClick={() => setMethodePayment("cash")}
-                                >
-                                    <input
-                                        className="peer hidden"
-                                        id="radio_2"
-                                        type="radio"
-                                        name="radio"
-                                        checked={methodePayment === "cash"}
-                                    />
-                                    <span className="peer-checked:border-gray-700 absolute right-4 top-1/2 box-content block h-2 w-2 -translate-y-1/2 rounded-full border-8 border-gray-300 bg-white"></span>
-                                    <label
-                                        className="peer-checked:border-2 peer-checked:border-gray-700 peer-checked:bg-gray-50 flex cursor-pointer select-none rounded-lg border border-gray-300 px-4 py-2"
-                                        htmlFor="radio_2"
-                                    >
-                                        <GiBanknote
-                                            size={28}
-                                            className="flex items-center"
-                                        />
-                                        <div className="ml-4 ">
-                                            <span className="mt-2 font-semibold">
-                                                Cash
-                                            </span>
-                                        </div>
-                                    </label>
-                                </div>
-                                <div
-                                    className="relative cursor-pointer"
-                                    onClick={() => setMethodePayment("check")}
-                                >
-                                    <input
-                                        className="peer hidden"
-                                        id="radio_1"
-                                        type="radio"
-                                        name="radio"
-                                        checked={methodePayment === "check"}
-                                    />
-                                    <span className="peer-checked:border-gray-700 absolute right-4 top-1/2 box-content block h-2 w-2 -translate-y-1/2 rounded-full border-8 border-gray-300 bg-white"></span>
-                                    <label
-                                        className=" items-center peer-checked:border-2 peer-checked:border-gray-700 peer-checked:bg-gray-50 flex cursor-pointer select-none rounded-lg border border-gray-300 px-4 py-2"
-                                        htmlFor="radio_1"
-                                    >
-                                        <CiMoneyCheck1 size={28} />
-                                        <div className="ml-4">
-                                            <span className="mt-2 font-semibold">
-                                                Check
-                                            </span>
-                                        </div>
-                                    </label>
-                                </div>
-                                {methodePayment === "check" && (
-                                    <>
-                                        <div className="mb-2">
-                                            <label
-                                                htmlFor="checkreference"
-                                                className="block text-sm font-medium text-gray-700"
-                                            >
-                                                Reference:
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="checkreference"
-                                                name="checkreference"
-                                                onChange={(e) =>
-                                                    setReference(e.target.value)
-                                                }
-                                                className="mt-1 p-2 border rounded-md w-full"
-                                            />
-                                        </div>
-                                        <div className="mb-2">
-                                            <label
-                                                htmlFor="checkreference"
-                                                className="block text-sm font-medium text-gray-700"
-                                            >
-                                                Téléchargez le fichier check:
-                                            </label>
-                                            <input
-                                                className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50  focus:outline-none  "
-                                                id="file_input"
-                                                type="file"
-                                                accept="image/png, image/jpg, image/jpeg"
-                                                onChange={(e) => {
-                                                    const file = e.target.files[0];
-                                                    if (file) {
-                                                        const reader = new FileReader();
-                                                        reader.onloadend = () => {
-                                                            setFile(reader.result); // Base64 string
-                                                        };
-                                                        reader.readAsDataURL(file);
-                                                    } else {
-                                                        setFile('')
-                                                    }
-                                                }}
-                                            />
-                                        </div>
-                                    </>
-                                )}
-                                <div
-                                    className="relative"
-                                    onClick={() => setMethodePayment("traita")}
-                                >
-                                    <input
-                                        className="peer hidden"
-                                        id="radio_3"
-                                        type="radio"
-                                        name="radio"
-                                        checked={methodePayment === "traita"}
-                                    />
-                                    <span className="peer-checked:border-gray-700 absolute right-4 top-1/2 box-content block h-2 w-2 -translate-y-1/2 rounded-full border-8 border-gray-300 bg-white"></span>
-                                    <label
-                                        className="peer-checked:border-2 peer-checked:border-gray-700 peer-checked:bg-gray-50 flex cursor-pointer select-none rounded-lg border border-gray-300 px-4 py-2"
-                                        htmlFor="radio_3"
-                                    >
-                                        <BsCreditCard2Front
-                                            size={26}
-                                            className="flex items-center"
-                                        />
-                                        <div className="ml-4">
-                                            <span className="mt-2 font-semibold">
-                                                Traite
-                                            </span>
-                                        </div>
-                                    </label>
-                                </div>
-                                {methodePayment === "traita" && (
-                                    <>
-                                        <div className="mb-2">
-                                            <label
-                                                htmlFor="traitareference"
-                                                className="block text-sm font-medium text-gray-700"
-                                            >
-                                                Reference:
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="traitareference"
-                                                name="traitareference"
-                                                onChange={(e) =>
-                                                    setReference(e.target.value)
-                                                }
-                                                className="mt-1 p-2 border rounded-md w-full"
-                                            />
-                                        </div>
-                                        <div className="mb-2">
-                                            <label
-                                                htmlFor="traitadate"
-                                                className="block text-sm font-medium text-gray-700"
-                                            >
-                                                Date :
-                                            </label>
-                                            <input
-                                                type="date"
-                                                id="traitadate"
-                                                name="traitadate"
-                                                onChange={(e) =>
-                                                    setTraitaDate(
-                                                        e.target.value
-                                                    )
-                                                }
-                                                className="mt-1 p-2 border rounded-md w-full"
-                                            />
-                                        </div>
-                                        <div className="mb-2">
-                                            <label
-                                                htmlFor="checkreference"
-                                                className="block text-sm font-medium text-gray-700"
-                                            >
-                                                Téléchargez le fichier traite:
-                                            </label>
-                                            <input
-                                                className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50  focus:outline-none  "
-                                                id="file_input"
-                                                type="file"
-                                                accept="image/png, image/jpg, image/jpeg"
-                                                onChange={(e) => {
-                                                    const file = e.target.files[0];
-                                                    if (file) {
-                                                        const reader = new FileReader();
-                                                        reader.onloadend = () => {
-                                                            setFile(reader.result); // Base64 string
-                                                        };
-                                                        reader.readAsDataURL(file);
-                                                    } else {
-                                                        setFile('')
-                                                    }
-                                                }}
-                                            />
-                                        </div>
-                                        <div className="flex gap-10">
-                                            <div className="inline-flex items-center">
-                                                <label
-                                                    className="relative flex items-center p-3 rounded-full cursor-pointer"
-                                                    htmlFor="radioCredit"
-                                                >
-                                                    <input
-                                                        checked={
-                                                            traitaForClient
-                                                        }
-                                                        onChange={() =>
-                                                            setTraitaForClient(
-                                                                (prevState) =>
-                                                                    !prevState
-                                                            )
-                                                        }
-                                                        name="type"
-                                                        type="checkbox"
-                                                        className="before:content[''] peer relative h-5 w-5 cursor-pointer appearance-none rounded-full border border-blue-gray-200 text-gray-900 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:border-gray-900 checked:before:bg-gray-900 hover:before:opacity-10"
-                                                        id="radioCredit"
-                                                    />
-
-                                                    <span className="absolute text-gray-900 transition-opacity opacity-0 pointer-events-none top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 peer-checked:opacity-100">
-                                                        <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            className="h-3.5 w-3.5"
-                                                            viewBox="0 0 16 16"
-                                                            fill="currentColor"
-                                                        >
-                                                            <circle
-                                                                data-name="ellipse"
-                                                                cx="8"
-                                                                cy="8"
-                                                                r="8"
-                                                            ></circle>
-                                                        </svg>
-                                                    </span>
-                                                </label>
-                                                <label
-                                                    className="mt-px font-light text-gray-700 cursor-pointer select-none"
-                                                    htmlFor="traitaForClient"
-                                                >
-                                                    la traite pas de client
-                                                    initial
-                                                </label>
-                                            </div>
-                                            {traitaForClient && ( // Show input field only when checkbox is checked
-                                                <div className="mb-2">
-                                                    <label
-                                                        htmlFor="clientName"
-                                                        className="block text-sm font-medium text-gray-700"
-                                                    >
-                                                        Client Name:
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        id="clientName"
-                                                        name="clientName"
-                                                        className="mt-1 p-2 border rounded-md w-full"
-                                                        onChange={(e) =>
-                                                            setTraitaClient(
-                                                                e.target.value
-                                                            )
-                                                        }
-                                                    />
-                                                </div>
-                                            )}
-                                        </div>
-                                    </>
-                                )}
-                            </form>
-                        </div>
-                        <div className="flex flex-col lg:w-1/2 p-6 space-y-4 bg-gray-300 divide-y  sm:px-10">
-                            <h2 className="lg:text-2xl font-semibold">
-                            Items commandés
-                            </h2>
-                            {cart?.productsCart?.map((cart, index) => (
-                                <ul
-                                    key={index}
-                                    className="flex flex-col pt-4 space-y-2"
-                                >
-                                    <li className="flex items-start justify-between">
-                                        <h3>
-                                            {cart.name} ({cart.reference})
-                                            {cart.quantity &&
-                                                <span className="text-base pl-1 text-violet-700">
-                                                    x {cart.quantity}
-                                                </span>}
-                                        </h3>
-                                        <div className="text-right">
-                                            <span className="block">
-                                                {cart.price ?? 0 * cart.quantity ?? 0} dh
-                                            </span>
-                                            <span className="text-sm text-gray-600">
-                                                à {cart.price} dh
-                                            </span>
-                                        </div>
-                                    </li>
-                                </ul>
-                            ))}
-
-                            <div className="pt-4 space-y-2">
-                                <div>
-                                    <h2 className="lg:text-xl font-semibold">
-                                        Payment information
-                                    </h2>
-                                    <div className="items-center lg:space-x-2 text-xs">
-                                        <p className="text-gray-600">
-                                            payement{" "}
-                                            <span className="font-bold">
-                                                {methodePayment}
-                                            </span>{" "}
-                                            {isCredit
-                                                ? "Credit"
-                                                : "et sur place"}{" "}
-                                            <span className="font-bold">
-                                                {date && `jusqu'à ${date}`}
-                                            </span>
-                                        </p>
-
-                                        <p className="text-gray-600">
-                                            {methodePayment !== "cash" &&
-                                                `numero du compte ${referenceCredit}`}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="pt-4 space-y-2">
-                                <div className="flex justify-between">
-                                    <span>Payed price</span>
-                                    <span>
-                                        {etatPayment == "credit"
-                                            ? // ? prixPayee.toFixed(2)
-                                            isNaN(prixPayee) ||
-                                                prixPayee === ""
-                                                ? "0.00"
-                                                : parseFloat(prixPayee).toFixed(
-                                                    2
-                                                )
-                                            : cart.total_price}{" "}
-                                        dh
-                                    </span>
-                                </div>
-                                <div className="flex flex-col">
-                                    <div className="flex justify-between">
-                                        <span>Reste price</span>
-                                        <span>
-                                            {prixReste
-                                                ? prixReste.toFixed(2)
-                                                : "00.00"}{" "}
-                                            dh
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="space-y-6">
-                                    <div className="flex justify-between">
-                                        <span>Total</span>
-                                        <span className="font-semibold">
-                                            {cart.total_price} dh
-                                        </span>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        disabled={inProgress}
-                                        onClick={handleCheckout}
-                                        className={`w-full py-2 hover:text-white font-semibold border rounded flex items-center gap-2 justify-center ${inProgress ? 'bg-black' : 'hover:bg-black'}`}
-                                    >
-                                        <span>Commander</span>
-                                        {inProgress && <div className="animate-spin"><Loader /></div>}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </>
+      <div className="mx-auto px-2 py-4 md:px-4 md:py-6">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Erreur</AlertTitle>
+          <AlertDescription>
+            Informations de commande manquantes. Veuillez retourner à la
+            sélection des produits.
+          </AlertDescription>
+          <Button
+            variant="outline"
+            className="mt-4"
+            onClick={() => navigate("/orders/add")}
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" /> Retour
+          </Button>
+        </Alert>
+      </div>
     );
+  }
+
+  const calculateRemainingAmount = () => {
+    const totalAmount = cart.total_price;
+    if (paymentType === "credit") {
+      return paidAmount ? totalAmount - parseFloat(paidAmount) : totalAmount;
+    }
+    return 0;
+  };
+
+  const [remainingAmount, setRemainingAmount] = useState(
+    calculateRemainingAmount()
+  );
+
+  const handleCheckout = async () => {
+    try {
+      // Validation for required fields based on payment method
+      if (paymentMethod === "check" && !creditReference) {
+        toast({
+          title: "Erreur",
+          description: "Veuillez saisir le numéro du chèque",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (paymentMethod === "check" && !file) {
+        toast({
+          title: "Erreur",
+          description: "Veuillez télécharger l'image du chèque",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (paymentMethod === "traita") {
+        if (!creditReference) {
+          toast({
+            title: "Erreur",
+            description: "Veuillez saisir le numéro de la traite",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        if (!traitaDate) {
+          toast({
+            title: "Erreur",
+            description: "Veuillez saisir la date d'échéance",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        if (!traitaForClient && !traitaClient) {
+          toast({
+            title: "Erreur",
+            description: "Veuillez saisir le nom sur la traite",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        if (!file) {
+          toast({
+            title: "Erreur",
+            description: "Veuillez télécharger l'image de la traite",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+
+      // For credit, validate date is selected
+      if (paymentType === "credit" && !date) {
+        toast({
+          title: "Erreur",
+          description: "Veuillez sélectionner une date de fin de crédit",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const formData = {
+        client_id: clientId,
+        cart: cart,
+        isCredit: paymentType === "credit",
+        payment_method: paymentMethod,
+        date_fin_credit: paymentType === "credit" ? date : null,
+        paid_price:
+          paymentType !== "credit"
+            ? cart.total_price
+            : isNaN(paidAmount) || paidAmount === ""
+            ? 0
+            : parseFloat(paidAmount).toFixed(2),
+        remain_price: remainingAmount || 0,
+        total_price: cart.total_price,
+        reference_credit:
+          paymentMethod === "check" || paymentMethod === "traita"
+            ? creditReference
+            : "",
+        file: file,
+        client_traita:
+          paymentMethod === "traita" && !traitaForClient ? traitaClient : "",
+        traita_date: paymentMethod === "traita" ? traitaDate : null,
+      };
+
+      setLoading(true);
+      await csrf();
+      await axiosClient.post("/api/add-order", formData);
+
+      toast({
+        title: "Succès",
+        description: "La commande a été créée avec succès !",
+        variant: "success",
+      });
+
+      navigate("/orders");
+    } catch (error) {
+      console.error("Error creating order:", error);
+      toast({
+        title: "Erreur",
+        description:
+          "Une erreur est survenue lors de la création de la commande.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const updatedRemainingAmount = calculateRemainingAmount();
+    setRemainingAmount(updatedRemainingAmount);
+
+    // Update store values
+    setisCred(isCredit);
+    setEPa(paymentType);
+    setD(date);
+    setPrixP(paidAmount);
+    setPrixR(remainingAmount);
+  }, [paidAmount, paymentType, isCredit, date, cart.total_price]);
+
+  // Add a function to handle file upload
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFile(reader.result);
+      };
+      reader.readAsDataURL(selectedFile);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-[80vh]">
+        <Spinner />
+      </div>
+    );
+  }
+
+  return (
+    <div className="mx-auto px-2 py-4 md:px-4 md:py-6">
+      <Card className="shadow-md border border-gray-200 dark:border-gray-700">
+        <CardHeader className="pb-3 border-b dark:border-gray-700">
+          <div className="flex items-center">
+            <Link
+              to="/orders/confirmed"
+              state={{
+                selectedProducts: cart.productsCart.map((p) => p.product_id),
+                clientId,
+              }}
+              className="mr-3 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Link>
+            <div className="flex items-center">
+              <Receipt className="h-6 w-6 mr-2 text-primary" />
+              <CardTitle className="text-xl md:text-2xl font-bold">
+                Finaliser la commande
+              </CardTitle>
+            </div>
+          </div>
+          <CardDescription className="mt-2 text-gray-500 dark:text-gray-400">
+            Choisissez les options de paiement et finalisez la commande
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent className="p-4 pt-6">
+          <div className="grid lg:grid-cols-2 gap-6">
+            {/* PAYMENT OPTIONS COLUMN */}
+            <div className="space-y-6">
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                <h3 className="text-lg font-medium mb-4">Mode de paiement</h3>
+
+                <RadioGroup
+                  value={paymentType}
+                  onValueChange={setPaymentType}
+                  className="space-y-3"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="credit" id="credit" />
+                    <Label
+                      htmlFor="credit"
+                      className="flex items-center cursor-pointer"
+                    >
+                      <CreditCard className="h-4 w-4 mr-2" />
+                      Crédit
+                    </Label>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="surPlace" id="surPlace" />
+                    <Label
+                      htmlFor="surPlace"
+                      className="flex items-center cursor-pointer"
+                    >
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      Paiement sur place
+                    </Label>
+                  </div>
+                </RadioGroup>
+
+                {paymentType === "credit" && (
+                  <div className="mt-6 pl-6 border-l-2 border-gray-200 dark:border-gray-700 space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="paidAmount">Montant payé</Label>
+                      <Input
+                        id="paidAmount"
+                        type="number"
+                        min="0"
+                        max={cart.total_price}
+                        value={paidAmount}
+                        onChange={(e) => setPaidAmount(e.target.value)}
+                        placeholder="0.00"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="creditDate">Date de fin de crédit</Label>
+                      <input
+                        type="date"
+                        value={date || ""}
+                        onChange={(e) => setDate(e.target.value)}
+                        className="border rounded px-3 py-2 w-full"
+                        onClick={(e) => e.target.showPicker()}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                <h3 className="text-lg font-medium mb-4">
+                  Méthode de paiement
+                </h3>
+
+                <RadioGroup
+                  value={paymentMethod}
+                  onValueChange={setPaymentMethod}
+                  className="space-y-3"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="cash" id="cash" />
+                    <Label
+                      htmlFor="cash"
+                      className="flex items-center cursor-pointer"
+                    >
+                      <Banknote className="h-4 w-4 mr-2" />
+                      Espèces
+                    </Label>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="check" id="check" />
+                    <Label
+                      htmlFor="check"
+                      className="flex items-center cursor-pointer"
+                    >
+                      <CiMoneyCheck1 className="h-4 w-4 mr-2" />
+                      Chèque
+                    </Label>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="traita" id="traita" />
+                    <Label
+                      htmlFor="traita"
+                      className="flex items-center cursor-pointer"
+                    >
+                      <FileText className="h-4 w-4 mr-2" />
+                      Traite
+                    </Label>
+                  </div>
+                </RadioGroup>
+
+                {paymentMethod === "check" && (
+                  <div className="mt-6 pl-6 border-l-2 border-gray-200 dark:border-gray-700 space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="referenceCheck">Numéro du chèque</Label>
+                      <Input
+                        id="referenceCheck"
+                        value={creditReference}
+                        onChange={(e) => setCreditReference(e.target.value)}
+                        placeholder="Numéro du chèque"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="checkImage">Image du chèque</Label>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          id="checkImage"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleFileChange}
+                          className="flex-1"
+                        />
+                        {file && (
+                          <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center">
+                            <Upload className="h-5 w-5 text-gray-600" />
+                          </div>
+                        )}
+                      </div>
+                      {file && (
+                        <p className="text-xs text-green-600">
+                          Image chargée avec succès
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {paymentMethod === "traita" && (
+                  <div className="mt-6 pl-6 border-l-2 border-gray-200 dark:border-gray-700 space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="referenceTraita">
+                        Numéro de la traite
+                      </Label>
+                      <Input
+                        id="referenceTraita"
+                        value={creditReference}
+                        onChange={(e) => setCreditReference(e.target.value)}
+                        placeholder="Numéro de la traite"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="traitaDate">Date d'échéance</Label>
+                      <input
+                        type="date"
+                        value={traitaDate || ""}
+                        onChange={(e) => setTraitaDate(e.target.value)}
+                        className="border rounded px-3 py-2 w-full"
+                        onClick={(e) => e.target.showPicker()}
+                      />
+                    </div>
+
+                    <div className="flex items-center space-x-2 my-4">
+                      <Checkbox
+                        id="traitaForClient"
+                        checked={traitaForClient}
+                        onCheckedChange={setTraitaForClient}
+                      />
+                      <Label htmlFor="traitaForClient">
+                        La traite est pour le même client
+                      </Label>
+                    </div>
+
+                    {!traitaForClient && (
+                      <div className="space-y-2">
+                        <Label htmlFor="traitaClient">Nom sur la traite</Label>
+                        <Input
+                          id="traitaClient"
+                          value={traitaClient}
+                          onChange={(e) => setTraitaClient(e.target.value)}
+                          placeholder="Nom du titulaire"
+                        />
+                      </div>
+                    )}
+
+                    <div className="space-y-2">
+                      <Label htmlFor="traitaImage">Image de la traite</Label>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          id="traitaImage"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleFileChange}
+                          className="flex-1"
+                        />
+                        {file && (
+                          <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center">
+                            <Upload className="h-5 w-5 text-gray-600" />
+                          </div>
+                        )}
+                      </div>
+                      {file && (
+                        <p className="text-xs text-green-600">
+                          Image chargée avec succès
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* ORDER SUMMARY COLUMN */}
+            <div>
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                <h3 className="text-lg font-medium mb-4">
+                  Récapitulatif de la commande
+                </h3>
+
+                <div className="space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span>Sous-total</span>
+                    <span>{parseFloat(cart.total_price).toFixed(2)} dh</span>
+                  </div>
+
+                  {paymentType === "credit" && paidAmount > 0 && (
+                    <div className="flex justify-between text-sm text-green-600">
+                      <span>Montant payé</span>
+                      <span>-{parseFloat(paidAmount).toFixed(2)} dh</span>
+                    </div>
+                  )}
+
+                  <Separator />
+
+                  <div className="flex justify-between font-medium text-lg">
+                    <span>Total</span>
+                    <span>{parseFloat(cart.total_price).toFixed(2)} dh</span>
+                  </div>
+
+                  {paymentType === "credit" && (
+                    <div className="flex justify-between font-medium text-red-600">
+                      <span>Montant restant</span>
+                      <span>{parseFloat(remainingAmount).toFixed(2)} dh</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-6 bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                <h3 className="text-lg font-medium mb-4">Produits</h3>
+
+                <div className="space-y-2 max-h-52 overflow-y-auto">
+                  {cart.productsCart &&
+                    cart.productsCart.map((product, index) => (
+                      <div
+                        key={index}
+                        className="flex justify-between items-center py-2 border-b dark:border-gray-700"
+                      >
+                        <div className="flex-1">
+                          <div className="font-medium">{product.name}</div>
+                          <div className="text-sm text-gray-500">
+                            {product.quantity} x{" "}
+                            {parseFloat(product.price).toFixed(2)} dh
+                          </div>
+                        </div>
+                        <div className="font-medium">
+                          {(product.quantity * product.price).toFixed(2)} dh
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+
+        <CardFooter className="flex justify-between border-t p-4 dark:border-gray-700">
+          <Button
+            variant="outline"
+            onClick={() =>
+              navigate("/orders/confirmed", {
+                state: {
+                  selectedProducts: cart.productsCart.map((p) => p.product_id),
+                  clientId,
+                },
+              })
+            }
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" /> Retour
+          </Button>
+
+          <Button
+            onClick={handleCheckout}
+            className="bg-primary hover:bg-primary/90"
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <Loader className="mr-2 h-4 w-4 animate-spin" /> Traitement...
+              </>
+            ) : (
+              <>
+                <CheckCircle className="mr-2 h-4 w-4" /> Confirmer la commande
+              </>
+            )}
+          </Button>
+        </CardFooter>
+      </Card>
+    </div>
+  );
 }
 
 export default Checkout;

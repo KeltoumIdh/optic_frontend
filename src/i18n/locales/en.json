@@ -1,0 +1,77 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search",
+    "noResults": "No results found",
+    "confirm": "Confirm",
+    "back": "Back"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot Password?",
+    "loginError": "Invalid email or password"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "orders": "Orders",
+    "products": "Products",
+    "customers": "Customers",
+    "settings": "Settings",
+    "profile": "Profile",
+    "activities": "Activities"
+  },
+  "orders": {
+    "title": "Orders",
+    "newOrder": "New Order",
+    "orderNumber": "Order Number",
+    "orderDate": "Order Date",
+    "status": "Status",
+    "customer": "Customer",
+    "total": "Total",
+    "actions": "Actions",
+    "viewDetails": "View Details",
+    "downloadInvoice": "Download Invoice",
+    "viewInvoice": "View Invoice"
+  },
+  "products": {
+    "title": "Products",
+    "addProduct": "Add Product",
+    "name": "Name",
+    "price": "Price",
+    "stock": "Stock",
+    "category": "Category",
+    "description": "Description"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "noNotifications": "No notifications",
+    "markAsRead": "Mark as read",
+    "markAllAsRead": "Mark all as read",
+    "empty": "No notifications"
+  },
+  "time": {
+    "minutesAgo": "m",
+    "hoursAgo": "h"
+  },
+  "account": {
+    "myAccount": "My Account",
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+  "dashboard": {
+    "title": "Dashboard"
+  },
+  "roles": {
+    "owner": "Owner",
+    "admin": "Administrator",
+    "user": "User"
+  }
+} 

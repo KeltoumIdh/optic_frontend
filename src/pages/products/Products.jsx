@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { BiSolidShow } from "react-icons/bi";
-import { RiEditFill } from "react-icons/ri";
+import { RiEditFill, RiSearchLine } from "react-icons/ri";
+import { HiPlus } from "react-icons/hi";
 import {
   Table,
   TableBody,
@@ -18,14 +19,13 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { axiosProduct } from "../../api/axios";
 import { Button } from "../../components/ui/button";
-import { backEndUrl, renderImageDir } from "@/helpers/utils";
+import { renderImageDir } from "@/helpers/utils";
 import { useAuth } from "@/hooks/useAuth";
-import axiosClient from "@/api/axiosClient";
-import Loader from "@/components/loader";
 import Spinner from "@/components/Spinner";
+import { AlertTriangle, Package } from "lucide-react";
 
 export default function Products() {
   const { csrf } = useAuth();
@@ -34,32 +34,35 @@ export default function Products() {
   const isOwner = authUser?.data?.role === "owner";
 
   const [products, setProducts] = useState([]);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [totalProducts, setTotalProducts] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchStatus, setSearchStatus] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+    if (newPage >= 0 && newPage < totalPages) {
+      setPage(newPage);
+    }
   };
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const handleSearch = () => {
-    console.log("Search Query2:", searchQuery);
+  const handleSearch = (e) => {
+    e.preventDefault();
     getProducts(0, rowsPerPage, searchQuery, searchStatus);
+    setPage(0); // Reset to first page when searching
   };
 
   const handleChangeSearch = (event) => {
     setSearchQuery(event.target.value);
   };
 
-  const [loading, setLoading] = useState(false);
+  const handleStatusChange = (e) => {
+    setSearchStatus(e.target.value);
+    setPage(0); // Reset to first page when filter changes
+    getProducts(0, rowsPerPage, searchQuery, e.target.value);
+  };
 
   const getProducts = async (page, perPage, query = "", status = "") => {
     try {
@@ -69,8 +72,8 @@ export default function Products() {
         params: {
           page: page + 1,
           per_page: perPage,
-          query: query, // Use consistent naming (either 'query' or 'search')
-          status: status || "", // Ensure status is set to an empty string if not provided
+          query: query,
+          status: status || "",
         },
       });
 
@@ -82,7 +85,7 @@ export default function Products() {
       setTotalPages(total);
       setTotalProducts(totalProductsCount);
     } catch (err) {
-      console.log("err", err);
+      console.error("Error fetching products:", err);
     } finally {
       setLoading(false);
     }
@@ -91,229 +94,272 @@ export default function Products() {
   const getStatusColorClass = (status) => {
     switch (status) {
       case "Stock faible":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-amber-100 text-amber-800 border-amber-300 border";
       case "Disponible":
-        return "bg-green-100 text-green-800";
+        return "bg-emerald-100 text-emerald-800 border-emerald-300 border";
       case "Rupture de stock":
-        return "bg-red-100 text-red-800";
+        return "bg-rose-100 text-rose-800 border-rose-300 border";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 text-gray-800 border-gray-300 border";
     }
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await csrf();
-      await axiosClient.delete(`/api/products/delete/${id}`);
-      setProducts((prevProducts) =>
-        prevProducts.filter((product) => product.id !== id)
-      );
-    } catch (err) {
-      console.log("err", err);
-    }
-  };
-
+  // Fetch products when page, rowsPerPage change
   useEffect(() => {
     getProducts(page, rowsPerPage, searchQuery, searchStatus);
-  }, [page, rowsPerPage, searchQuery, searchStatus]);
+  }, [page, rowsPerPage]);
+
+  // Trigger search when search query changes after delay
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (searchQuery !== undefined) {
+        getProducts(0, rowsPerPage, searchQuery, searchStatus);
+        setPage(0);
+      }
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery]);
 
   return (
-    <>
-      <div className="flex p-2 justify-between">
-        <h4 className="lg:text-2xl text-lg font-semibold dark:text-gray-300">
-          Les Produits
-        </h4>
-        <button
-          className=" select-none rounded-lg bg-gradient-to-tr from-gray-900 to-gray-800 lg:py-2 lg:px-4 px-2 text-center align-middle font-sans md:text-xs text-[10px] font-bold uppercase text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none inline-block"
-          type="button"
-        >
-          <Link className={"flex items-center"} to={"/products/add"}>
-            {" "}
-            Ajouter
-          </Link>
-        </button>
-      </div>
-      <div className="flex p-2 justify-start space-x-2">
-        <select
-          value={searchStatus}
-          onChange={(e) => setSearchStatus(e.target.value)}
-          className="bg-gray-50 w-fit border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  md:p-2.5 p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-        >
-          <option value="">All</option>
-          <option value="Disponible">Disponible</option>
-          <option value="Stock faible">Stock faible</option>
-          <option value="Rupture de stock">Rupture de stock</option>
-        </select>
-
-        <form className="lg:w-1/2 w-full ">
-          {/* <label
-                        htmlFor="default-search"
-                        className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
-                    >
-                        Search
-                    </label> */}
-          <div className="relative">
-            <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-              <svg
-                className="md:w-4 md:h-4 h-3  text-gray-500 dark:text-gray-400"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                />
-              </svg>
+    <div className=" mx-auto px-2 py-4 md:px-4 md:py-6">
+      <Card className="shadow-sm">
+        <CardHeader className="pb-2">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="flex items-center">
+              <Package className="h-5 w-5 mr-2 text-primary" />
+              <CardTitle className="text-xl md:text-2xl font-bold">
+                Les Produits
+              </CardTitle>
             </div>
-            <input
-              value={searchQuery}
-              onChange={handleChangeSearch}
-              type="search"
-              id="default-search"
-              className="block w-full lg:px-4 md:py-3 p-2 ps-10 md:text-sm text-xs text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Recherche par nom du produit ou reference."
-              required
-            />
-            {/* <button
-                            onClick={handleSearch}
-                            type="submit"
-                            className="text-white font-sans uppercase  absolute end-2.5 bottom-2 bg-gray-900 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                        >
-                            Search
-                        </button> */}
+            <Link to="/products/add">
+              <Button className="bg-primary hover:bg-primary/90 rounded-md flex items-center gap-1">
+                <HiPlus className="mr-1" />
+                <span className="hidden sm:inline">Ajouter un produit</span>
+                <span className="sm:hidden">Ajouter</span>
+              </Button>
+            </Link>
           </div>
-        </form>
-      </div>
+        </CardHeader>
+        <CardContent>
+          <div className="mb-6 space-y-4">
+            <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
+              <div className="w-full sm:w-auto">
+                <select
+                  value={searchStatus}
+                  onChange={handleStatusChange}
+                  className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 text-sm rounded-md w-full px-3 py-2 outline-none focus:ring-2 focus:ring-primary/50"
+                >
+                  <option value="">Tous les statuts</option>
+                  <option value="Disponible">Disponible</option>
+                  <option value="Stock faible">Stock faible</option>
+                  <option value="Rupture de stock">Rupture de stock</option>
+                </select>
+              </div>
+              <form onSubmit={handleSearch} className="flex-1 relative">
+                <div className="relative">
+                  <input
+                    value={searchQuery}
+                    onChange={handleChangeSearch}
+                    type="search"
+                    className="block w-full px-4 py-2 ps-10 text-sm text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary/50 outline-none"
+                    placeholder="Recherche par nom ou référence..."
+                  />
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-3">
+                    <RiSearchLine className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                  </div>
+                  <button type="submit" className="sr-only">
+                    Rechercher
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Produit</TableHead>
-            <TableHead>Prix</TableHead>
-            <TableHead>Quantité</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {loading
-            ? suspense()
-            : products?.length === 0
-            ? notFound()
-            : products.map((product) => (
-                <TableRow key={product.id}>
-                  <TableCell className="flex items-center max-md:p-2">
-                    <img
-                      src={renderImageDir(product?.image || "")}
-                      alt="avatar"
-                      width="40px"
-                      height="40px"
-                      className="pr-2"
-                    />{" "}
-                    <div className="flex flex-col">
-                      <div>{product.name}</div>
-                      <div>{product.reference}</div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="max-md:p-2 text-center">
-                    {product.price}
-                  </TableCell>
-                  <TableCell className="max-md:p-2 text-center">
-                    {product.quantity_available}
-                  </TableCell>
-                  <TableCell className="max-md:p-2">
-                    <span
-                      className={`px-2 inline-flex text-center text-xs leading-5 font-semibold rounded-full ${getStatusColorClass(
-                        product.status
-                      )}`}
-                    >
-                      {product.status}
-                    </span>
-                  </TableCell>
-                  <TableCell className="max-md:p-2 flex items-center h-full">
-                    {isOwner && (
-                      <Link to={`/products/edit/${product.id}`}>
-                        <Button className="bg-blue-400 mr-2 max-md:px-3">
-                          <RiEditFill />
-                        </Button>
-                      </Link>
-                    )}
-                    <Link to={`/products/details/${product.id}`}>
-                      <Button className="bg-purple-400 mr-2 max-md:px-3">
-                        <BiSolidShow />
-                      </Button>
-                    </Link>
-                    {/* <Button
-                                        className="bg-red-500"
-                                        onClick={() => handleDelete(product.id)}
-                                    >
-                                        Delete
-                                    </Button> */}
-                  </TableCell>
-                </TableRow>
-              ))}
-        </TableBody>
-      </Table>
-      {!loading && products?.length > 0 && (
-        <div className="flex justify-between mt-4 lg:px-4">
-          <div className="w-full">
-            <p className="text-sm w-full text-gray-500">
-              Showing {products.length} of {totalProducts} produits
-            </p>
+          <div className="border rounded-md overflow-hidden">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader className="bg-gray-50 dark:bg-gray-800">
+                  <TableRow>
+                    <TableHead className="py-3 font-medium">Produit</TableHead>
+                    <TableHead className="py-3 font-medium text-center">
+                      Prix
+                    </TableHead>
+                    <TableHead className="py-3 font-medium text-center">
+                      Quantité
+                    </TableHead>
+                    <TableHead className="py-3 font-medium">Status</TableHead>
+                    <TableHead className="py-3 font-medium">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {loading ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-8">
+                        <div className="flex justify-center">
+                          <Spinner />
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ) : products?.length === 0 ? (
+                    <TableRow>
+                      <TableCell
+                        colSpan={5}
+                        className="text-center py-8 text-gray-500"
+                      >
+                        <div className="flex flex-col items-center justify-center space-y-3">
+                          <AlertTriangle className="h-8 w-8 text-amber-500 opacity-40" />
+                          <p>Aucun produit trouvé</p>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    products.map((product) => (
+                      <TableRow
+                        key={product.id}
+                        className="border-b hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                      >
+                        <TableCell className="py-3 flex items-center">
+                          <div className="h-10 w-10 mr-3 rounded-md overflow-hidden bg-gray-100 flex-shrink-0">
+                            <img
+                              src={renderImageDir(product?.image || "")}
+                              alt={product.name}
+                              className="h-full w-full object-cover"
+                            />
+                          </div>
+                          <div className="flex flex-col">
+                            <p className="font-medium text-sm">
+                              {product.name}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {product.reference}
+                            </p>
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-3 text-center">
+                          <span className="font-medium">{product.price}</span>
+                        </TableCell>
+                        <TableCell className="py-3 text-center">
+                          <span
+                            className={
+                              product.quantity_available <= 5
+                                ? "text-amber-600 font-medium"
+                                : ""
+                            }
+                          >
+                            {product.quantity_available}
+                          </span>
+                        </TableCell>
+                        <TableCell className="py-3">
+                          <span
+                            className={`px-2.5 py-1 inline-flex text-xs items-center justify-center font-medium rounded-full ${getStatusColorClass(
+                              product.status
+                            )}`}
+                          >
+                            {product.status}
+                          </span>
+                        </TableCell>
+                        <TableCell className="py-3">
+                          <div className="flex space-x-2">
+                            {isOwner && (
+                              <Link to={`/products/edit/${product.id}`}>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-8 w-8 p-0 border-blue-200 hover:bg-blue-50 hover:text-blue-600"
+                                >
+                                  <RiEditFill className="h-4 w-4" />
+                                </Button>
+                              </Link>
+                            )}
+                            <Link to={`/products/details/${product.id}`}>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-8 w-8 p-0 border-purple-200 hover:bg-purple-50 hover:text-purple-600"
+                              >
+                                <BiSolidShow className="h-4 w-4" />
+                              </Button>
+                            </Link>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           </div>
-          <Pagination className="flex justify-end">
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  href="#"
-                  onClick={(e) => handleChangePage(e, page - 1)}
-                  style={{ color: page > 0 ? "blue" : "gray" }}
-                />
-              </PaginationItem>
-              {[...Array(totalPages)].map((_, index) => (
-                <PaginationItem key={index}>
-                  <PaginationLink
-                    href="#"
-                    onClick={(e) => handleChangePage(e, index)}
-                    style={{
-                      color: index === page ? "red" : "black",
-                    }}
-                  >
-                    {index + 1}
-                  </PaginationLink>
-                </PaginationItem>
-              ))}
-              <PaginationItem>
-                <PaginationNext
-                  href="#"
-                  onClick={(e) => handleChangePage(e, page + 1)}
-                  style={{
-                    color: page < totalPages - 1 ? "blue" : "gray",
-                  }}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
-      )}
-    </>
+
+          {!loading && products?.length > 0 && (
+            <div className="flex flex-col sm:flex-row justify-between items-center mt-4 gap-4">
+              <div>
+                <p className="text-sm text-gray-500">
+                  Affichage de {products.length} sur {totalProducts} produits
+                </p>
+              </div>
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={(e) => handleChangePage(e, page - 1)}
+                      className={
+                        page > 0
+                          ? "cursor-pointer hover:text-primary"
+                          : "cursor-not-allowed opacity-50"
+                      }
+                    />
+                  </PaginationItem>
+                  {Array.from({ length: Math.min(totalPages, 5) }).map(
+                    (_, index) => {
+                      // Show only 5 pages at a time with smart pagination
+                      let pageIndex = page;
+                      if (page < 2) {
+                        pageIndex = index;
+                      } else if (page >= totalPages - 2) {
+                        pageIndex = totalPages - 5 + index;
+                      } else {
+                        pageIndex = page - 2 + index;
+                      }
+
+                      if (pageIndex >= 0 && pageIndex < totalPages) {
+                        return (
+                          <PaginationItem key={pageIndex}>
+                            <PaginationLink
+                              onClick={(e) => handleChangePage(e, pageIndex)}
+                              isActive={pageIndex === page}
+                              className={
+                                pageIndex === page
+                                  ? "bg-primary text-white border-primary"
+                                  : "hover:bg-gray-50"
+                              }
+                            >
+                              {pageIndex + 1}
+                            </PaginationLink>
+                          </PaginationItem>
+                        );
+                      }
+                      return null;
+                    }
+                  )}
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={(e) =>
+                        page < totalPages - 1 && handleChangePage(e, page + 1)
+                      }
+                      className={
+                        page < totalPages - 1
+                          ? "cursor-pointer hover:text-primary"
+                          : "cursor-not-allowed opacity-50"
+                      }
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }
-
-const suspense = () => (
-  <TableRow className="bg-white hover:bg-white">
-    <TableCell colSpan={5}>
-      <Spinner />
-    </TableCell>
-  </TableRow>
-);
-const notFound = () => (
-  <TableRow className="bg-white hover:bg-white">
-    <TableCell colSpan={5}>No results!</TableCell>
-  </TableRow>
-);

@@ -1,0 +1,105 @@
+{
+  "common": {
+    "loading": "جاري التحميل...",
+    "error": "حدث خطأ",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "search": "بحث",
+    "noResults": "لا توجد نتائج",
+    "confirm": "تأكيد",
+    "back": "رجوع"
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "logout": "تسجيل الخروج",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "loginError": "البريد الإلكتروني أو كلمة المرور غير صحيحة"
+  },
+  "navigation": {
+    "dashboard": "لوحة التحكم",
+    "orders": "الطلبات",
+    "products": "المنتجات",
+    "customers": "العملاء",
+    "settings": "الإعدادات",
+    "profile": "الملف الشخصي",
+    "activities": "الأنشطة"
+  },
+  "sidebar": {
+    "dashboard": "لوحة التحكم",
+    "products": "المنتجات",
+    "orders": "الطلبات",
+    "clients": "العملاء",
+    "users": "المستخدمين",
+    "invoice": "الفواتير",
+    "bank": "البنك",
+    "activities": "الأنشطة"
+  },
+  "profile": {
+    "title": "الملف الشخصي",
+    "personalInfo": "المعلومات الشخصية",
+    "changePassword": "تغيير كلمة المرور",
+    "currentPassword": "كلمة المرور الحالية",
+    "newPassword": "كلمة المرور الجديدة",
+    "enterCurrentPassword": "أدخل كلمة المرور الحالية",
+    "enterNewPassword": "أدخل كلمة المرور الجديدة",
+    "passwordRequirements": {
+      "minLength": "على الأقل 8 أحرف",
+      "uppercase": "حرف كبير واحد",
+      "lowercase": "حرف صغير واحد",
+      "number": "رقم واحد"
+    },
+    "fullName": "الاسم الكامل",
+    "emailAddress": "البريد الإلكتروني",
+    "accountRole": "دور الحساب"
+  },
+  "orders": {
+    "title": "الطلبات",
+    "newOrder": "طلب جديد",
+    "orderNumber": "رقم الطلب",
+    "orderDate": "تاريخ الطلب",
+    "status": "الحالة",
+    "customer": "العميل",
+    "total": "المجموع",
+    "actions": "الإجراءات",
+    "viewDetails": "عرض التفاصيل",
+    "downloadInvoice": "تحميل الفاتورة",
+    "viewInvoice": "عرض الفاتورة"
+  },
+  "products": {
+    "title": "المنتجات",
+    "addProduct": "إضافة منتج",
+    "name": "الاسم",
+    "price": "السعر",
+    "stock": "المخزون",
+    "category": "الفئة",
+    "description": "الوصف"
+  },
+  "notifications": {
+    "title": "الإشعارات",
+    "noNotifications": "لا توجد إشعارات",
+    "markAsRead": "تحديد كمقروء",
+    "markAllAsRead": "تحديد الكل كمقروء",
+    "empty": "لا توجد إشعارات"
+  },
+  "time": {
+    "minutesAgo": " دقيقة",
+    "hoursAgo": " ساعة"
+  },
+  "account": {
+    "myAccount": "حسابي",
+    "profile": "الملف الشخصي",
+    "logout": "تسجيل الخروج"
+  },
+  "dashboard": {
+    "title": "لوحة التحكم"
+  },
+  "roles": {
+    "owner": "مالك",
+    "admin": "مدير",
+    "user": "مستخدم"
+  }
+}

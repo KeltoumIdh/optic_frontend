@@ -1,8 +1,6 @@
 import {
-  BookCopy,
   Glasses,
   LayoutDashboardIcon,
-  MessageSquareCodeIcon,
   Users,
   Mailbox,
   UserPlus,
@@ -12,58 +10,60 @@ import {
 } from "lucide-react";
 import { Button } from "./button";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useMemo } from "react";
 import { backEndUrl } from "@/helpers/utils";
 import { useAuth } from "@/hooks/useAuth";
+import { useTranslation } from "react-i18next";
+import { cn } from "@/lib/utils";
+import PropTypes from "prop-types";
 
 const LINKS = [
   {
     id: 1,
-    label: "Dashboard",
+    label: "sidebar.dashboard",
     path: "/",
     icon: LayoutDashboardIcon,
   },
   {
     id: 2,
-    label: "Produits",
+    label: "sidebar.products",
     path: "/products",
     icon: Glasses,
   },
   {
     id: 3,
-    label: "Commandes",
+    label: "sidebar.orders",
     path: "/orders",
     icon: Mailbox,
   },
   {
     id: 4,
-    label: "clients",
+    label: "sidebar.clients",
     path: "/clients",
     icon: Users,
   },
   {
     id: 5,
-    label: "Users",
+    label: "sidebar.users",
     path: "/user/list",
     icon: UserPlus,
   },
   {
     id: 6,
-    label: "Facture",
+    label: "sidebar.invoice",
     path: "/Facture/list",
     icon: Files,
   },
   {
     id: 7,
-    label: "Banque ",
+    label: "sidebar.bank",
     path: "/check/list",
     icon: Banknote,
   },
   {
     id: 8,
-    label: "Activities",
+    label: "sidebar.activities",
     path: "/activities",
-    icon: Files,
+    icon: FileCheck,
   },
 ];
 
@@ -71,55 +71,86 @@ const SideBar = ({ open }) => {
   const { authUser } = useAuth();
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const sideBarStyle = useMemo(() => {
-    return open
-      ? `w-[200px] flex flex-col justify-start items-start gap-5`
-      : `w-[50px] flex flex-col justify-center items-center gap-5`;
-  }, [open]);
-
+  const { t, i18n } = useTranslation();
   const isOwner = authUser?.data?.role === "owner";
+  const isRTL = i18n.language === "ar";
 
   return (
     <div
-      className={`${sideBarStyle} max-lg:hidden m-2 transition-width  duration-200 ease-linear`}
+      className={cn(
+        "h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out",
+        open ? "w-64" : "w-20",
+        isRTL ? "border-l border-r-0" : "border-r"
+      )}
     >
-      {open ? (
-        <div className="flex  w-full h-12 items-center justify-center">
-          <Link to="/">
+      <div className="flex flex-col h-full p-4">
+        <div className={cn("flex justify-center ")}>
+          <Link to="/" className="flex items-center">
             <img
               src={`${backEndUrl}/assets/logo/logo.png`}
-              className="w-28"
+              className={cn("h-auto", open ? "h-24" : "h-8")}
               alt="app-logo"
             />
           </Link>
         </div>
-      ) : (
-        <img
-          src={`${backEndUrl}/assets/logo/logo.png`}
-          alt="app-logo"
-          className="w-16  px-1"
-        />
-      )}
-      <div className="flex flex-col justify-start items-start gap-5 w-full">
-        {LINKS.map((link) => {
-          if (!isOwner && (link.id === 5 || link.id === 8)) return null;
-          return (
-            <Button
-              key={link.id}
-              variant={`${pathname === link.path ? "default" : "ghost"}`}
-              className="text-md gap-2 flex justify-start items-center w-full"
-              onClick={() => navigate(link.path)}
-            >
-              <link.icon size={25} strokeWidth={1.25} />
-              <span className={`${!open ? "hidden" : "block"}`}>
-                {link.label}
-              </span>
-            </Button>
-          );
-        })}
+
+        <div className="space-y-1 flex-1">
+          {LINKS.map((link) => {
+            if (!isOwner && (link.id === 5 || link.id === 8)) return null;
+
+            const isActive = pathname === link.path;
+
+            return (
+              <Button
+                key={link.id}
+                variant={isActive ? "default" : "ghost"}
+                className={cn(
+                  "w-full flex items-center justify-between",
+                  isActive
+                    ? "bg-primary/10 text-primary hover:bg-primary/20"
+                    : "hover:bg-gray-100 dark:hover:bg-gray-700",
+                  !open && "justify-center",
+                  "group relative"
+                )}
+                onClick={() => navigate(link.path)}
+              >
+                <div
+                  className={cn(
+                    "flex items-center gap-2 w-full",
+                    isRTL && "flex-reverse "
+                  )}
+                >
+                  <link.icon
+                    size={20}
+                    className={cn(isActive ? "text-primary" : "text-gray-500")}
+                    strokeWidth={1.5}
+                  />
+                  {open && <span>{t(link.label)}</span>}
+                </div>
+
+                {!open && (
+                  <div
+                    className={cn(
+                      "absolute rounded-md px-2 py-1 bg-gray-900 text-white text-xs invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-300",
+                      isRTL
+                        ? "right-full mr-2 translate-x-3 group-hover:translate-x-0"
+                        : "left-full ml-2 -translate-x-3 group-hover:translate-x-0"
+                    )}
+                  >
+                    {t(link.label)}
+                  </div>
+                )}
+              </Button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
+};
+
+SideBar.propTypes = {
+  open: PropTypes.bool.isRequired,
 };
 
 export default SideBar;
@@ -128,52 +159,70 @@ export const MobileMenu = ({ toggleMobileSideBar }) => {
   const { authUser } = useAuth();
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+  const isOwner = authUser?.data?.role === "owner";
+  const isRTL = i18n.language === "ar";
 
-  // jump to the selected page
   const jump = (path) => {
     navigate(path);
     toggleMobileSideBar();
   };
 
-  const isOwner = authUser?.data?.role === "owner";
-
   return (
-    <>
-      <div
-        onClick={toggleMobileSideBar}
-        className="lg:hidden fixed top-0 left-0 z-[1000] h-full w-full bg-black/40"
-      ></div>
-      <div
-        className={`lg:hidden w-[200px] h-dvh overflow-y-auto flex flex-col justify-start items-start gap-5 duration-200 ease-linear bg-white
-                fixed top-0 left-0 z-[1001]
-                `}
-      >
-        <div className="w-full px-2">
-          <div className="flex items-center justify-center p-2 w-full h-[100px]">
+    <div className="h-full overflow-y-auto flex flex-col bg-white dark:bg-gray-800">
+      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between mb-2">
+          <Link
+            to="/"
+            className="flex items-center"
+            onClick={toggleMobileSideBar}
+          >
             <img
               src={`${backEndUrl}/assets/logo/logo.png`}
-              className="h-full w-auto"
+              className="h-8 w-auto"
               alt="app-logo"
             />
-          </div>
-          <div className="w-full flex flex-col justify-start items-start gap-5">
-            {LINKS.map((link) => {
-              if (!isOwner && (link.id === 5 || link.id === 8)) return null;
-              return (
-                <Button
-                  key={link.id}
-                  variant={`${pathname === link.path ? "default" : "ghost"}`}
-                  className="text-sm gap-2 flex justify-start items-center w-full "
-                  onClick={() => jump(link.path)}
-                >
-                  {link.icon && <link.icon size={20} />}
-                  <span>{link.label}</span>
-                </Button>
-              );
-            })}
-          </div>
+          </Link>
         </div>
       </div>
-    </>
+
+      <div className="p-4 space-y-1">
+        {LINKS.map((link) => {
+          if (!isOwner && (link.id === 5 || link.id === 8)) return null;
+
+          const isActive = pathname === link.path;
+
+          return (
+            <Button
+              key={link.id}
+              variant={isActive ? "default" : "ghost"}
+              className={cn(
+                "w-full flex items-center justify-between",
+                isActive ? "bg-primary/10 text-primary hover:bg-primary/20" : ""
+              )}
+              onClick={() => jump(link.path)}
+            >
+              <div
+                className={cn(
+                  "flex items-center gap-2 w-full",
+                  isRTL && "flex-row-reverse justify-between"
+                )}
+              >
+                <link.icon
+                  size={20}
+                  className={cn(isActive ? "text-primary" : "text-gray-500")}
+                  strokeWidth={1.5}
+                />
+                <span>{t(link.label)}</span>
+              </div>
+            </Button>
+          );
+        })}
+      </div>
+    </div>
   );
+};
+
+MobileMenu.propTypes = {
+  toggleMobileSideBar: PropTypes.func.isRequired,
 };

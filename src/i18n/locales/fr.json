@@ -1,0 +1,105 @@
+{
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "search": "Rechercher",
+    "noResults": "Aucun résultat trouvé",
+    "confirm": "Confirmer",
+    "back": "Retour"
+  },
+  "auth": {
+    "login": "Connexion",
+    "logout": "Déconnexion",
+    "email": "Email",
+    "password": "Mot de passe",
+    "forgotPassword": "Mot de passe oublié ?",
+    "loginError": "Email ou mot de passe incorrect"
+  },
+  "navigation": {
+    "dashboard": "Tableau de bord",
+    "orders": "Commandes",
+    "products": "Produits",
+    "customers": "Clients",
+    "settings": "Paramètres",
+    "profile": "Profil",
+    "activities": "Activités"
+  },
+  "sidebar": {
+    "dashboard": "Tableau de bord",
+    "products": "Produits",
+    "orders": "Commandes",
+    "clients": "Clients",
+    "users": "Utilisateurs",
+    "invoice": "Factures",
+    "bank": "Banque",
+    "activities": "Activités"
+  },
+  "profile": {
+    "title": "Profil",
+    "personalInfo": "Informations personnelles",
+    "changePassword": "Changer le mot de passe",
+    "currentPassword": "Mot de passe actuel",
+    "newPassword": "Nouveau mot de passe",
+    "enterCurrentPassword": "Entrez votre mot de passe actuel",
+    "enterNewPassword": "Entrez votre nouveau mot de passe",
+    "passwordRequirements": {
+      "minLength": "Au moins 8 caractères",
+      "uppercase": "Une lettre majuscule",
+      "lowercase": "Une lettre minuscule",
+      "number": "Un chiffre"
+    },
+    "fullName": "Nom complet",
+    "emailAddress": "Adresse email",
+    "accountRole": "Rôle du compte"
+  },
+  "orders": {
+    "title": "Commandes",
+    "newOrder": "Nouvelle commande",
+    "orderNumber": "Numéro de commande",
+    "orderDate": "Date de commande",
+    "status": "Statut",
+    "customer": "Client",
+    "total": "Total",
+    "actions": "Actions",
+    "viewDetails": "Voir les détails",
+    "downloadInvoice": "Télécharger la facture",
+    "viewInvoice": "Voir la facture"
+  },
+  "products": {
+    "title": "Produits",
+    "addProduct": "Ajouter un produit",
+    "name": "Nom",
+    "price": "Prix",
+    "stock": "Stock",
+    "category": "Catégorie",
+    "description": "Description"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "noNotifications": "Aucune notification",
+    "markAsRead": "Marquer comme lu",
+    "markAllAsRead": "Tout marquer comme lu",
+    "empty": "Aucune notification"
+  },
+  "time": {
+    "minutesAgo": " min",
+    "hoursAgo": " h"
+  },
+  "account": {
+    "myAccount": "Mon compte",
+    "profile": "Profil",
+    "logout": "Déconnexion"
+  },
+  "dashboard": {
+    "title": "Tableau de bord"
+  },
+  "roles": {
+    "owner": "Propriétaire",
+    "admin": "Administrateur",
+    "user": "Utilisateur"
+  }
+}

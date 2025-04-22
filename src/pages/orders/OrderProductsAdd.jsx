@@ -1,364 +1,447 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
 } from "@/components/ui/pagination";
 import {
-    Avatar,
-    AvatarImage,
-    AvatarFallback,
-} from "../../components/ui/avatar";
-import { Image } from "@radix-ui/react-avatar";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useCheckoutStore } from "../../store";
 import { useAuth } from "@/hooks/useAuth";
 import axiosClient from "@/api/axiosClient.jsx";
-import { backEndUrl, renderImageDir } from "@/helpers/utils";
+import { renderImageDir } from "@/helpers/utils";
 import Spinner from "@/components/Spinner";
-
+import {
+  ArrowRight,
+  ArrowLeft,
+  Package,
+  Search,
+  BoxSelect,
+  AlertTriangle,
+} from "lucide-react";
 
 export default function OrderProductsAdd() {
+  const { id } = useParams();
+  const { csrf } = useAuth();
+  const {
+    setSelectedProd,
+    clientId: storeClientId,
+    selectedProd,
+  } = useCheckoutStore();
+  const [products, setProducts] = useState([]);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchStatus, setSearchStatus] = useState("all");
+  const [client, setClient] = useState(null);
+  const navigate = useNavigate();
+  const [selectedProducts, setSelectedProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-    const { csrf } = useAuth();
+  const clientId = id || storeClientId;
 
-    const { setSelectedProd, clientId, selectedProd } = useCheckoutStore();
+  const handleSelectProduct = (productId, availableQNT = 0) => {
+    if (availableQNT === 0) return;
 
-    const [products, setProducts] = useState([]);
-    const [rowsPerPage, setRowsPerPage] = useState(5);
-    const [page, setPage] = useState(0);
-    const [totalPages, setTotalPages] = useState(0);
-    const [totalProducts, setTotalProducts] = useState(0);
-    const [searchQuery, setSearchQuery] = useState("");
-    const [searchStatus, setSearchStatus] = useState("");
-    console.log(products);
-    console.log(searchQuery);
+    const isSelected = selectedProducts.includes(productId);
+    if (isSelected) {
+      setSelectedProducts((prevSelected) =>
+        prevSelected.filter((id) => id !== productId)
+      );
+    } else {
+      setSelectedProducts((prevSelected) => [...prevSelected, productId]);
+    }
+  };
 
-    // const { clientId } = useParams();
-    // const clientId = window.location.pathname.split('/').pop();
-    const [client, setClient] = useState();
-    const navigate = useNavigate();
-    const [selectedProducts, setSelectedProducts] = useState([]);
-    const handleSelectProduct = (productId, availableQNT = 0) => {
-        if (availableQNT === 0) return;
+  const handleSaveSelectedProducts = () => {
+    if (selectedProducts.length === 0) {
+      return; // Prevent continuing without selecting products
+    }
+    setSelectedProd(selectedProducts);
+    navigate("/orders/confirmed", {
+      state: { selectedProducts, clientId },
+    });
+  };
 
-        const isSelected = selectedProducts.includes(productId);
-        if (isSelected) {
-            setSelectedProducts((prevSelected) =>
-                prevSelected.filter((id) => id !== productId)
-            );
-        } else {
-            setSelectedProducts((prevSelected) => [...prevSelected, productId]);
+  const handleChangePage = (newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const handleChangeSearch = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const getProducts = async (page, perPage, query = "", status = "") => {
+    try {
+      setLoading(true);
+      await csrf();
+      console.log("Fetching products with client ID:", clientId);
+
+      const res = await axiosClient.get(
+        `/api/orders/products/add/${clientId}`,
+        {
+          params: {
+            page: page + 1,
+            per_page: perPage,
+            query: query,
+            status: status === "all" ? "" : status,
+          },
         }
-    };
-    const handleSaveSelectedProducts = () => {
-        setSelectedProd(selectedProducts);
-        console.log("Selected Products:", selectedProducts);
-        navigate("/orders/confirmed", {
-            state: { selectedProducts, clientId },
-        });
-    };
-    //
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
-    const handleSearch = () => {
-        console.log("Search Query2:", searchQuery);
-        getProducts(0, rowsPerPage, searchQuery, searchStatus);
-    };
-    const handleChangeSearch = (event) => {
-        setSearchQuery(event.target.value);
-    };
+      );
 
-    const [loading, setLoading] = useState(false);
-    const getProducts = async (page, perPage, query = "", status = "") => {
-        try {
-            setLoading(true)
-            await csrf();
-            const res = await axiosClient.post(`/api/orders/products/add/${clientId}`, {
-                params: {
-                    page: page + 1,
-                    per_page: perPage,
-                    query: query,
-                    status: status || "",
-                },
-            }
-            );
-            const data = res.data?.data?.data ?? [];
-            const client = res?.data?.client ?? [];
-            const total = res.data?.total_pages ?? 0;
-            const totalProductsCount = res.data?.total ?? 0;
+      console.log("API Response:", res.data);
 
-            setClient(client);
-            setProducts(data);
-            setTotalPages(total);
-            setTotalProducts(totalProductsCount);
-        } catch (err) {
-            console.log("err", err);
-        } finally {
-            setLoading(false)
-        }
-    };
+      const data = res.data?.data?.data ?? [];
+      const client = res?.data?.client ?? [];
+      const total = res.data?.total_pages ?? 0;
+      const totalProductsCount = res.data?.total ?? 0;
 
-    const getStatusColorClass = (status) => {
-        switch (status) {
-            case "Stock faible":
-                return "bg-yellow-100 text-yellow-800";
-            case "Disponible":
-                return "bg-green-100 text-green-800";
-            case "Rupture de stock":
-                return "bg-red-100 text-red-800";
-            default:
-                return "bg-gray-100 text-gray-800";
-        }
-    };
+      console.log("Parsed products:", data);
+      console.log("Client info:", client);
 
-    useEffect(() => {
-        getProducts(page, rowsPerPage, searchQuery, searchStatus);
-        // setSelectedProd(selectedProducts);
-    }, [page, rowsPerPage, searchQuery, searchStatus]);
+      setClient(client);
+      setProducts(data);
+      setTotalPages(total);
+      setTotalProducts(totalProductsCount);
+    } catch (err) {
+      console.error("Error fetching products:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    return (
-        <>
-            <div className="flex p-2 justify-between">
-                <div className="flex items-center ">
-                    <Link to={"/orders/add"} className="mr-2 cursor-pointer">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth="1.5"
-                            stroke="currentColor"
-                            className="w-6 h-6"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
-                            />
-                        </svg>
-                    </Link>
-                    <h4 className="lg:text-2xl font-semibold dark:text-gray-300">
-                    Sélectionnez les produits pour le client <span className="underline">{client?.name}</span>
-                    </h4>
-                </div>
-                <button
-                    onClick={handleSaveSelectedProducts}
-                    className=" select-none rounded-lg bg-gradient-to-tr from-gray-900 to-gray-800 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:inline-block"
-                    type="button"
-                >
-                    Suivant
-                </button>
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case "Stock faible":
+        return (
+          <Badge variant="warning" className="flex items-center gap-1">
+            <AlertTriangle className="h-3 w-3" /> {status}
+          </Badge>
+        );
+      case "Disponible":
+        return <Badge variant="success">{status}</Badge>;
+      case "Rupture de stock":
+        return <Badge variant="destructive">{status}</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
+    }
+  };
+
+  useEffect(() => {
+    console.log("Client ID from store:", storeClientId);
+    console.log("Client ID from URL params:", id);
+    console.log("Using client ID:", clientId);
+  }, [storeClientId, id, clientId]);
+
+  useEffect(() => {
+    getProducts(page, rowsPerPage, searchQuery, searchStatus);
+  }, [page, rowsPerPage, searchQuery, searchStatus]);
+
+  // Initialize selectedProducts with any previously selected products
+  useEffect(() => {
+    if (selectedProd && selectedProd.length > 0) {
+      setSelectedProducts(selectedProd);
+    }
+  }, [selectedProd]);
+
+  const renderNoProductsFound = () => (
+    <TableRow>
+      <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+        <div className="flex flex-col items-center">
+          <Package className="h-12 w-12 text-gray-400 mb-2" />
+          <p className="text-lg font-medium">Aucun produit trouvé</p>
+          <p className="text-sm text-gray-500 mt-1">
+            {searchQuery
+              ? "Essayez une autre recherche."
+              : "Aucun produit n'est disponible."}
+          </p>
+        </div>
+      </TableCell>
+    </TableRow>
+  );
+
+  const renderLoadingSpinner = () => (
+    <TableRow>
+      <TableCell colSpan={5}>
+        <div className="flex justify-center items-center min-h-[300px]">
+          <Spinner />
+        </div>
+      </TableCell>
+    </TableRow>
+  );
+
+  return (
+    <div className="mx-auto px-2 py-4 md:px-4 md:py-6">
+      <Card className="shadow-md border border-gray-200 dark:border-gray-700">
+        <CardHeader className="pb-3 border-b dark:border-gray-700">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <Link
+                to="/orders/add"
+                className="mr-3 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Link>
+              <div className="flex items-center">
+                <Package className="h-6 w-6 mr-2 text-primary" />
+                <CardTitle className="text-xl md:text-2xl font-bold">
+                  Sélectionner des produits
+                </CardTitle>
+              </div>
             </div>
-            <div className="flex p-2 justify-start space-x-2">
-                <select
-                    value={searchStatus}
-                    onChange={(e) => setSearchStatus(e.target.value)}
-                    className="bg-gray-50 w-fit border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                >
-                    <option value="">All</option>
-                    <option value="Disponible">Disponible</option>
-                    <option value="Stock faible">Stock faible</option>
-                </select>
+            <Button
+              onClick={handleSaveSelectedProducts}
+              className="bg-primary hover:bg-primary/90"
+              disabled={selectedProducts.length === 0}
+              size="lg"
+            >
+              Suivant
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+          <CardDescription className="mt-2 text-gray-500 dark:text-gray-400">
+            {client?.name ? (
+              <>
+                Sélectionnez les produits pour le client{" "}
+                <span className="font-medium">{client.name}</span>
+              </>
+            ) : (
+              "Sélectionnez les produits pour votre commande"
+            )}
+          </CardDescription>
+        </CardHeader>
 
-                <form className="lg:w-1/2 w-full ">
-                    {/* <label
-                        htmlFor="default-search"
-                        className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
-                    >
-                        Search
-                    </label> */}
-                    <div className="relative">
-                        <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                            <svg
-                                className="w-4 h-4 text-gray-500 dark:text-gray-400"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 20 20"
-                            >
-                                <path
-                                    stroke="currentColor"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                                />
-                            </svg>
-                        </div>
-                        <input
-                            value={searchQuery}
-                            onChange={handleChangeSearch}
-                            type="search"
-                            id="default-search"
-                            className="block w-full px-4 py-3 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="Search by name or reference"
-                            required
-                        />
-                        {/* <button
-                            onClick={handleSearch}
-                            type="submit"
-                            className="text-white font-sans uppercase  absolute end-2.5 bottom-2 bg-gray-900 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                        >
-                            Search
-                        </button> */}
-                    </div>
-                </form>
+        <CardContent className="p-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-3">
+            <Select
+              value={searchStatus}
+              onValueChange={(value) => setSearchStatus(value)}
+            >
+              <SelectTrigger className="md:w-[180px] w-full">
+                <SelectValue placeholder="Filtrer par statut" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tous</SelectItem>
+                <SelectItem value="Disponible">Disponible</SelectItem>
+                <SelectItem value="Stock faible">Stock faible</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <div className="relative w-full md:max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+              <Input
+                value={searchQuery}
+                onChange={handleChangeSearch}
+                className="w-full pl-10"
+                placeholder="Rechercher par nom ou référence"
+              />
             </div>
+          </div>
 
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Produit</TableHead>
-                        <TableHead>Prix</TableHead>
-                        <TableHead>Quantité</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Actions</TableHead>
-                    </TableRow>
+          <div className="mb-4 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <BoxSelect className="h-5 w-5 text-blue-500" />
+              <p className="text-sm text-blue-700 dark:text-blue-400">
+                {selectedProducts.length} produit
+                {selectedProducts.length !== 1 ? "s" : ""} sélectionné
+                {selectedProducts.length !== 1 ? "s" : ""}
+              </p>
+            </div>
+            {selectedProducts.length > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedProducts([])}
+                className="h-8 text-blue-600"
+              >
+                Effacer la sélection
+              </Button>
+            )}
+          </div>
+
+          <div className="rounded-md border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader className="bg-gray-50 dark:bg-gray-800">
+                  <TableRow>
+                    <TableHead className="w-[50px]"></TableHead>
+                    <TableHead className="font-medium">Produit</TableHead>
+                    <TableHead className="font-medium whitespace-nowrap">
+                      Prix
+                    </TableHead>
+                    <TableHead className="font-medium whitespace-nowrap">
+                      Quantité
+                    </TableHead>
+                    <TableHead className="font-medium whitespace-nowrap">
+                      Statut
+                    </TableHead>
+                  </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {loading ? suspense() :
-                        products?.length === 0 ? notFound() :
-                            products.map((product) => {
-                                const QNT = product.quantity_available;
-                                return (
-                                    <TableRow key={product.id}>
-                                        <TableCell className="flex items-center gap-2">
-                                            <img
-                                                src={renderImageDir(product.image)}
-                                                alt="avatar"
-                                                width={40}
-                                                height={40}
-                                            />
-                                            <div className="flex flex-col">
-                                                <div>{product.name}</div>
-                                                <div>{product.reference}</div>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>{product.price}</TableCell>
-                                        <TableCell>
-                                            {QNT}
-                                        </TableCell>
-                                        <TableCell>
-                                            <span
-                                                className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColorClass(
-                                                    product.status
-                                                )}`}
-                                            >
-                                                {product.status}
-                                            </span>
-                                        </TableCell>
+                  {loading
+                    ? renderLoadingSpinner()
+                    : products?.length === 0
+                    ? renderNoProductsFound()
+                    : products.map((product) => {
+                        const QNT = product.quantity_available;
+                        const isDisabled = QNT === 0;
+                        const isSelected = selectedProducts.includes(
+                          product.id
+                        );
 
-                                        <TableCell>
-                                            <div className="inline-flex items-center">
-                                                <label
-                                                    className="relative flex items-center p-3 rounded-full cursor-pointer"
-                                                    htmlFor="amber"
-                                                >
-                                                    <input
-                                                        disabled={QNT === 0}
-                                                        checked={selectedProducts.includes(product.id)}
-                                                        onChange={() => handleSelectProduct(product.id, QNT)}
-                                                        type="checkbox"
-                                                        className={`before:content[''] peer relative h-5 w-5  appearance-none rounded-md border border-blue-gray-200 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:border-green-500 checked:bg-green-500 checked:before:bg-green-500 hover:before:opacity-10
-                                                            ${QNT === 0 ? 'cursor-not-allowed' : 'cursor-pointer'}
-                                                        `}
-                                                        id="amber"
-                                                    />
-                                                    <span className="absolute text-white transition-opacity opacity-0 pointer-events-none top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 peer-checked:opacity-100">
-                                                        <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            className="h-3.5 w-3.5"
-                                                            viewBox="0 0 20 20"
-                                                            fill="currentColor"
-                                                            stroke="currentColor"
-                                                            strokeWidth="1"
-                                                        >
-                                                            <path
-                                                                fillRule="evenodd"
-                                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                                clipRule="evenodd"
-                                                            ></path>
-                                                        </svg>
-                                                    </span>
-                                                </label>
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                )
-                            })}
+                        return (
+                          <TableRow
+                            key={product.id}
+                            className={`hover:bg-gray-50 dark:hover:bg-gray-800 ${
+                              isDisabled ? "opacity-60" : ""
+                            }`}
+                          >
+                            <TableCell>
+                              <Checkbox
+                                checked={isSelected}
+                                onCheckedChange={() =>
+                                  handleSelectProduct(product.id, QNT)
+                                }
+                                disabled={isDisabled}
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-3">
+                                <img
+                                  src={renderImageDir(product.image)}
+                                  alt={product.name}
+                                  className="h-10 w-10 rounded object-cover hidden sm:block"
+                                />
+                                <div>
+                                  <p className="font-medium line-clamp-2">
+                                    {product.name}
+                                  </p>
+                                  <p className="text-xs text-gray-500">
+                                    Réf: {product.reference}
+                                  </p>
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <span className="font-medium">
+                                {product.price} dh
+                              </span>
+                            </TableCell>
+                            <TableCell>
+                              <span
+                                className={
+                                  QNT < 10 && QNT > 0
+                                    ? "text-amber-600 font-medium"
+                                    : ""
+                                }
+                              >
+                                {QNT}
+                              </span>
+                            </TableCell>
+                            <TableCell>
+                              {getStatusBadge(product.status)}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
                 </TableBody>
-            </Table>
-            {/* <div className="flex justify-end mt-4 px-4">
-                <Button
-                    onClick={handleSaveSelectedProducts}
-                    className="bg-green-400"
-                >
-                    Save Selected Products
-                </Button>
-            </div> */}
-            {!loading && products?.length > 0 &&
-                <div className="flex justify-between mt-4 lg:px-4">
-                    <div className="w-full">
-                        <p className="text-sm w-full text-gray-500">
-                            Showing {products.length} of {totalProducts} produits
-                        </p>
-                    </div>
-                    <Pagination className="flex justify-end">
-                        <PaginationContent>
-                            <PaginationItem>
-                                <PaginationPrevious
-                                    href="#"
-                                    onClick={(e) => handleChangePage(e, page - 1)}
-                                    style={{ color: page > 0 ? "blue" : "gray" }}
-                                />
-                            </PaginationItem>
-                            {[...Array(totalPages)].map((_, index) => (
-                                <PaginationItem key={index}>
-                                    <PaginationLink
-                                        href="#"
-                                        onClick={(e) => handleChangePage(e, index)}
-                                        style={{
-                                            color: index === page ? "red" : "black",
-                                        }}
-                                    >
-                                        {index + 1}
-                                    </PaginationLink>
-                                </PaginationItem>
-                            ))}
-                            <PaginationItem>
-                                <PaginationNext
-                                    href="#"
-                                    onClick={(e) => handleChangePage(e, page + 1)}
-                                    style={{
-                                        color:
-                                            page < totalPages - 1 ? "blue" : "gray",
-                                    }}
-                                />
-                            </PaginationItem>
-                        </PaginationContent>
-                    </Pagination>
-                </div>}
-        </>
-    );
+              </Table>
+            </div>
+          </div>
+
+          {!loading && products?.length > 0 && (
+            <div className="flex flex-col md:flex-row justify-between items-center mt-4 gap-2">
+              <div className="text-sm text-gray-500">
+                Affichage de {products.length} sur {totalProducts} produits
+              </div>
+
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => handleChangePage(Math.max(0, page - 1))}
+                      disabled={page === 0}
+                      className={
+                        page === 0 ? "pointer-events-none opacity-50" : ""
+                      }
+                    />
+                  </PaginationItem>
+
+                  {[...Array(Math.min(totalPages, 5)).keys()].map((i) => (
+                    <PaginationItem key={i}>
+                      <PaginationLink
+                        onClick={() => handleChangePage(i)}
+                        isActive={page === i}
+                      >
+                        {i + 1}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() =>
+                        handleChangePage(Math.min(totalPages - 1, page + 1))
+                      }
+                      disabled={page >= totalPages - 1}
+                      className={
+                        page >= totalPages - 1
+                          ? "pointer-events-none opacity-50"
+                          : ""
+                      }
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
+        </CardContent>
+        {selectedProducts.length > 0 && (
+          <div className="fixed bottom-4 right-4 md:hidden z-50">
+            <Button
+              onClick={handleSaveSelectedProducts}
+              className="bg-primary hover:bg-primary/90 shadow-lg rounded-full h-14 w-14 p-0"
+            >
+              <ArrowRight className="h-6 w-6" />
+            </Button>
+          </div>
+        )}
+      </Card>
+    </div>
+  );
 }
-
-
-const suspense = () => <TableRow className="bg-white hover:bg-white"><TableCell colSpan={5}><Spinner /></TableCell></TableRow>
-const notFound = () => <TableRow className="bg-white hover:bg-white"><TableCell colSpan={5}>No results!</TableCell></TableRow>

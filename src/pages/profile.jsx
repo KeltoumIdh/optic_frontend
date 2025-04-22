@@ -1,25 +1,17 @@
-import React, { useState } from "react";
-import {Informations} from "./profile/CardInformations"
-import {Update} from "./profile/CardPassword"
+import { Informations } from "./profile/CardInformations";
+import { Update } from "./profile/CardPassword";
 
 const Profile = () => {
+  return (
+    <div className="max-w-6xl mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold mb-8">Profile</h1>
 
-
-    return (
-        <div className="w-full">
-        <h4 className="mx-2 text-2xl font-semibold dark:text-gray-300">
-            Profile
-        </h4>
-        <div className="flex flex-col lg:flex-row md:flex-row">
-            <Informations className="w-full" />
-            <Update className="w-full" />
-        </div>
+      <div className="grid md:grid-cols-2 gap-6">
+        <Informations />
+        <Update />
+      </div>
     </div>
-
-
-
-
-    );
+  );
 };
 
 export default Profile;
