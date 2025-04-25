@@ -9,7 +9,9 @@
     "search": "بحث",
     "noResults": "لا توجد نتائج",
     "confirm": "تأكيد",
-    "back": "رجوع"
+    "back": "رجوع",
+    "refresh": "تحديث",
+    "orders": "طلبات"
   },
   "auth": {
     "login": "تسجيل الدخول",
@@ -41,20 +43,29 @@
   "profile": {
     "title": "الملف الشخصي",
     "personalInfo": "المعلومات الشخصية",
+    "updatePassword": "تغيير كلمة المرور",
+    "save": "حفظ",
+    "cancel": "إلغاء",
     "changePassword": "تغيير كلمة المرور",
     "currentPassword": "كلمة المرور الحالية",
     "newPassword": "كلمة المرور الجديدة",
+    "confirmNewPassword": "تأكيد كلمة المرور الجديدة",
+    "confirmNewPasswordPlaceholder": "أدخل تأكيد كلمة المرور الجديدة",
     "enterCurrentPassword": "أدخل كلمة المرور الحالية",
     "enterNewPassword": "أدخل كلمة المرور الجديدة",
+    "passwordUpdatedSuccessfully": "تم تحديث كلمة المرور بنجاح! سيتم تسجيل خروجك خلال 3 ثوان...",
+    "updatingPassword": "جاري تحديث كلمة المرور...",
     "passwordRequirements": {
-      "minLength": "على الأقل 8 أحرف",
+      "minLength": "٨ أحرف على الأقل",
       "uppercase": "حرف كبير واحد",
       "lowercase": "حرف صغير واحد",
       "number": "رقم واحد"
     },
     "fullName": "الاسم الكامل",
     "emailAddress": "البريد الإلكتروني",
-    "accountRole": "دور الحساب"
+    "accountRole": "دور الحساب",
+    "error": "خطأ",
+    "success": "نجاح"
   },
   "orders": {
     "title": "الطلبات",
@@ -95,7 +106,80 @@
     "logout": "تسجيل الخروج"
   },
   "dashboard": {
-    "title": "لوحة التحكم"
+    "title": "لوحة التحكم",
+    "statistics": {
+      "title": "الإحصائيات",
+      "daily": "يومي",
+      "weekly": "أسبوعي",
+      "monthly": "شهري",
+      "sales": "المبيعات",
+      "orders": "الطلبات",
+      "clients": "العملاء الجدد",
+      "averageOrder": "متوسط الطلب",
+      "compared": "مقارنة بالفترة السابقة",
+      "noData": "لا توجد بيانات متاحة لهذه الفترة"
+    },
+    "recentOrders": "الطلبات الأخيرة",
+    "stockStatus": "حالة المخزون",
+    "salesChart": "رسم بياني للمبيعات",
+    "totalClients": "إجمالي العملاء",
+    "totalOrders": "إجمالي الطلبات",
+    "totalProducts": "إجمالي المنتجات",
+    "totalUsers": "إجمالي المستخدمين",
+    "stockLevels": "مستويات المخزون",
+    "recentTransactions": "المعاملات الأخيرة",
+    "salesOverview": "نظرة عامة على المبيعات",
+    "topProducts": "المنتجات الأكثر مبيعاً",
+    "loading": "جاري التحميل...",
+    "total": "الإجمالي",
+    "client": "عميل",
+    "order": "طلب",
+    "product": "منتج",
+    "users": "مستخدم",
+    "creditClients": "العملاء الدائنين",
+    "outOfStockProducts": "المنتجات غير المتوفرة",
+    "tableHeaders": {
+      "client": "العميل",
+      "phone": "الهاتف",
+      "remainingAmount": "المبلغ المتبقي",
+      "days": "الأيام",
+      "action": "الإجراء",
+      "productName": "اسم المنتج",
+      "reference": "المرجع",
+      "quantity": "الكمية",
+      "status": "الحالة"
+    },
+    "status": {
+      "outOfStock": "غير متوفر",
+      "lowStock": "مخزون منخفض",
+      "inStock": "متوفر",
+      "confirm": "تأكيد"
+    },
+    "metrics": {
+      "totalClientsLabel": "العدد الإجمالي للعملاء",
+      "totalOrdersLabel": "العدد الإجمالي للطلبات",
+      "totalProductsLabel": "العدد الإجمالي للمنتجات",
+      "totalUsersLabel": "العدد الإجمالي للمستخدمين"
+    },
+    "finances": {
+      "title": "المالية",
+      "totalRevenue": "إجمالي الإيرادات",
+      "paidAmount": "المبلغ المدفوع",
+      "pendingAmount": "المبلغ المعلق",
+      "paymentCompletion": "حالة الدفعات",
+      "orderStatus": "حالة الطلبات"
+    },
+    "timeframes": {
+      "today": "اليوم",
+      "yesterday": "الأمس",
+      "this_week": "هذا الأسبوع",
+      "last_week": "الأسبوع الماضي",
+      "this_month": "هذا الشهر",
+      "last_month": "الشهر الماضي",
+      "this_year": "هذا العام",
+      "last_year": "العام الماضي",
+      "all_time": "كل الأوقات"
+    }
   },
   "roles": {
     "owner": "مالك",

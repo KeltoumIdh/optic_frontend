@@ -1,7 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardFooter,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -13,6 +18,8 @@ import { useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useNavigate } from "react-router-dom";
 import { useUserContext } from "@/context/AuthContext";
+import { useTranslation } from "react-i18next";
+import { cn } from "@/lib/utils";
 
 export const Update = () => {
   const { toast } = useToast();
@@ -20,6 +27,8 @@ export const Update = () => {
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
   const { logout } = useUserContext();
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === "ar";
 
   const formSchema = z
     .object({
@@ -124,13 +133,13 @@ export const Update = () => {
   if (!isOwner) return null;
 
   return (
-    <Card className="bg-white rounded-lg shadow-sm">
-      <CardContent className="p-6">
-        <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
-          <KeyRound className="h-5 w-5 text-gray-500" />
-          Change Password
+    <Card>
+      <CardHeader>
+        <h2 className={cn("text-lg font-semibold", isRTL && "text-right")}>
+          {t("profile.changePassword")}
         </h2>
-
+      </CardHeader>
+      <CardContent className={cn("space-y-4", isRTL && "text-right")}>
         {error && (
           <Alert variant="destructive" className="mb-6">
             <AlertCircle className="h-4 w-4" />
@@ -147,25 +156,32 @@ export const Update = () => {
             <CheckCircle2 className="h-4 w-4 text-green-600" />
             <AlertTitle>Success</AlertTitle>
             <AlertDescription>
-              Password updated successfully! You will be logged out in 3
-              seconds...
+              {t("profile.passwordUpdatedSuccessfully")}
             </AlertDescription>
           </Alert>
         )}
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className={cn("space-y-6", isRTL && "text-right")}
+          >
             <FormItem>
               <div className="flex items-center gap-2 text-gray-600 mb-2">
                 <Lock className="h-4 w-4" />
-                <span className="text-sm">Current Password</span>
+                <span className={cn("text-sm", isRTL && "text-right")}>
+                  {t("profile.currentPassword")}
+                </span>
               </div>
               <FormControl>
                 <Input
                   type="password"
                   {...form.register("old_password")}
-                  className="bg-gray-50 border-0 focus:ring-0"
-                  placeholder="Enter your current password"
+                  className={cn(
+                    "bg-gray-50 border-0 focus:ring-0",
+                    isRTL && "text-right"
+                  )}
+                  placeholder={t("profile.enterCurrentPassword")}
                 />
               </FormControl>
               <FormMessage className="text-xs mt-1" />
@@ -174,106 +190,98 @@ export const Update = () => {
             <FormItem>
               <div className="flex items-center gap-2 text-gray-600 mb-2">
                 <Lock className="h-4 w-4" />
-                <span className="text-sm">New Password</span>
+                <span className={cn("text-sm", isRTL && "text-right")}>
+                  {t("profile.newPassword")}
+                </span>
               </div>
               <FormControl>
                 <Input
                   type="password"
                   {...form.register("password")}
-                  className="bg-gray-50 border-0 focus:ring-0"
-                  placeholder="Enter your new password"
+                  className={cn(
+                    "bg-gray-50 border-0 focus:ring-0",
+                    isRTL && "text-right"
+                  )}
+                  placeholder={t("profile.enterNewPassword")}
                 />
               </FormControl>
               <FormMessage className="text-xs mt-1" />
-              <ul className="text-xs text-gray-500 mt-2 space-y-1">
-                <li className="flex items-center gap-1">
-                  <div
-                    className={`w-1 h-1 rounded-full ${
-                      form.watch("password")?.length >= 8
-                        ? "bg-green-500"
-                        : "bg-gray-300"
-                    }`}
-                  />
-                  At least 8 characters
-                </li>
-                <li className="flex items-center gap-1">
-                  <div
-                    className={`w-1 h-1 rounded-full ${
-                      /[A-Z]/.test(form.watch("password"))
-                        ? "bg-green-500"
-                        : "bg-gray-300"
-                    }`}
-                  />
-                  One uppercase letter
-                </li>
-                <li className="flex items-center gap-1">
-                  <div
-                    className={`w-1 h-1 rounded-full ${
-                      /[a-z]/.test(form.watch("password"))
-                        ? "bg-green-500"
-                        : "bg-gray-300"
-                    }`}
-                  />
-                  One lowercase letter
-                </li>
-                <li className="flex items-center gap-1">
-                  <div
-                    className={`w-1 h-1 rounded-full ${
-                      /[0-9]/.test(form.watch("password"))
-                        ? "bg-green-500"
-                        : "bg-gray-300"
-                    }`}
-                  />
-                  One number
-                </li>
+              <ul
+                className={cn(
+                  "text-sm text-gray-500 space-y-1 mt-2",
+                  isRTL && "text-right"
+                )}
+              >
+                <li>{t("profile.passwordRequirements.minLength")}</li>
+                <li>{t("profile.passwordRequirements.uppercase")}</li>
+                <li>{t("profile.passwordRequirements.lowercase")}</li>
+                <li>{t("profile.passwordRequirements.number")}</li>
               </ul>
             </FormItem>
 
             <FormItem>
               <div className="flex items-center gap-2 text-gray-600 mb-2">
                 <Lock className="h-4 w-4" />
-                <span className="text-sm">Confirm New Password</span>
+                <span className={cn("text-sm", isRTL && "text-right")}>
+                  {t("profile.confirmNewPassword")}
+                </span>
               </div>
               <FormControl>
                 <Input
                   type="password"
                   {...form.register("confirmation_password")}
-                  className="bg-gray-50 border-0 focus:ring-0"
-                  placeholder="Confirm your new password"
+                  className={cn(
+                    "bg-gray-50 border-0 focus:ring-0",
+                    isRTL && "text-right"
+                  )}
+                  placeholder={t("profile.confirmNewPasswordPlaceholder")}
                 />
               </FormControl>
               <FormMessage className="text-xs mt-1" />
             </FormItem>
 
-            <Button
-              type="submit"
-              className="w-full bg-[#0f172a] hover:bg-[#1e293b] text-white font-medium py-2.5"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <span className="flex items-center gap-2 justify-center">
-                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                      fill="none"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
-                  Updating Password...
-                </span>
-              ) : (
-                "Update Password"
+            <CardFooter
+              className={cn(
+                "flex gap-2",
+                isRTL ? "flex-row-reverse" : "flex-row"
               )}
-            </Button>
+            >
+              <Button
+                type="submit"
+                className={cn(
+                  "w-full bg-[#0f172a] hover:bg-[#1e293b] text-white font-medium py-2.5",
+                  isRTL && "flex-row-reverse"
+                )}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <span className="flex items-center gap-2 justify-center">
+                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                    {t("profile.updatingPassword")}
+                  </span>
+                ) : (
+                  t("profile.updatePassword")
+                )}
+              </Button>
+              <Button type="button" variant="outline" onClick={() => reset()}>
+                {t("profile.cancel")}
+              </Button>
+            </CardFooter>
           </form>
         </Form>
       </CardContent>

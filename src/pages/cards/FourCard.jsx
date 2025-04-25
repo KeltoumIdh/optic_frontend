@@ -5,10 +5,14 @@ import { useAuth } from "@/hooks/useAuth";
 import axiosClient from "@/api/axiosClient.jsx";
 import Spinner from "@/components/Spinner";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { cn } from "@/lib/utils";
 
 export const FourCard = () => {
   const { csrf, authUser } = useAuth();
   const isOwner = authUser?.data?.role === "owner";
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === "ar";
 
   const [totalP, setTotalP] = useState(0);
   const [totalO, setTotalO] = useState(0);
@@ -97,36 +101,40 @@ export const FourCard = () => {
 
   const statsCards = [
     {
-      title: "Clients",
+      title: t("dashboard.totalClients"),
       total: totalC,
-      label: "Client",
+      label: t("dashboard.client"),
+      labelText: t("dashboard.metrics.totalClientsLabel"),
       icon: <UsersRound className="h-6 w-6 text-blue-600" />,
       link: "/clients",
       bgColor: "bg-blue-50",
       hoverColor: "hover:bg-blue-100",
     },
     {
-      title: "Commandes",
+      title: t("dashboard.totalOrders"),
       total: totalO,
-      label: "Commande",
+      label: t("dashboard.order"),
+      labelText: t("dashboard.metrics.totalOrdersLabel"),
       icon: <ShoppingBag className="h-6 w-6 text-amber-600" />,
       link: "/orders",
       bgColor: "bg-amber-50",
       hoverColor: "hover:bg-amber-100",
     },
     {
-      title: "Produits",
+      title: t("dashboard.totalProducts"),
       total: totalP,
-      label: "Produit",
+      label: t("dashboard.product"),
+      labelText: t("dashboard.metrics.totalProductsLabel"),
       icon: <GlassesIcon className="h-6 w-6 text-green-600" />,
       link: "/products",
       bgColor: "bg-green-50",
       hoverColor: "hover:bg-green-100",
     },
     {
-      title: "Users",
+      title: t("dashboard.totalUsers"),
       total: totalU,
-      label: "Users",
+      label: t("dashboard.users"),
+      labelText: t("dashboard.metrics.totalUsersLabel"),
       icon: <Users className="h-6 w-6 text-purple-600" />,
       link: isOwner ? "/user/list" : "#",
       bgColor: "bg-purple-50",
@@ -139,7 +147,12 @@ export const FourCard = () => {
       <Spinner />
     </div>
   ) : (
-    <div className="grid grid-cols-1 xs:grid-cols-2 xl:grid-cols-4 gap-3 md:gap-6">
+    <div
+      className={cn(
+        "grid grid-cols-1 xs:grid-cols-2 xl:grid-cols-4 gap-3 md:gap-6",
+        isRTL && "direction-rtl"
+      )}
+    >
       {statsCards.map((card, index) => (
         <Link
           key={index}
@@ -149,22 +162,44 @@ export const FourCard = () => {
           <Card
             className={`h-full ${card.bgColor} border-none shadow-sm ${card.hoverColor} transition-all duration-200 transform group-hover:scale-[1.02]`}
           >
-            <CardHeader className="flex flex-row justify-between items-center pb-2 p-3 md:p-6">
-              <h2 className="text-base md:text-xl font-medium group-hover:text-blue-700 transition-colors duration-200">
+            <CardHeader
+              className={cn(
+                "flex flex-row items-center pb-2 p-3 md:p-6",
+                isRTL ? "flex-row-reverse justify-between" : "justify-between"
+              )}
+            >
+              <h2
+                className={cn(
+                  "text-base md:text-xl font-medium group-hover:text-blue-700 transition-colors duration-200",
+                  isRTL && "text-right"
+                )}
+              >
                 {card.title}
               </h2>
               <div className="p-1.5 md:p-2 rounded-full bg-white/70 shadow-sm backdrop-blur-sm">
                 {card.icon}
               </div>
             </CardHeader>
-            <CardContent className="p-3 md:p-6 pt-0 md:pt-0">
+            <CardContent
+              className={cn("p-3 md:p-6 pt-0 md:pt-0", isRTL && "text-right")}
+            >
               <div className="space-y-1">
                 <p className="text-xs md:text-sm text-muted-foreground">
-                  Total {card.title}
+                  {card.labelText}
                 </p>
-                <p className="text-xl md:text-2xl font-bold">
+                <p
+                  className={cn(
+                    "text-xl md:text-2xl font-bold",
+                    isRTL && "flex flex-row-reverse items-center gap-1"
+                  )}
+                >
                   {card.total}
-                  <span className="text-xs md:text-sm font-normal ml-1 text-muted-foreground">
+                  <span
+                    className={cn(
+                      "text-xs md:text-sm font-normal text-muted-foreground",
+                      isRTL ? "mr-1" : "ml-1"
+                    )}
+                  >
                     {card.label}
                   </span>
                 </p>

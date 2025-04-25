@@ -9,7 +9,9 @@
     "search": "Rechercher",
     "noResults": "Aucun résultat trouvé",
     "confirm": "Confirmer",
-    "back": "Retour"
+    "back": "Retour",
+    "refresh": "Actualiser",
+    "orders": "commandes"
   },
   "auth": {
     "login": "Connexion",
@@ -41,11 +43,18 @@
   "profile": {
     "title": "Profil",
     "personalInfo": "Informations personnelles",
+    "updatePassword": "Modifier le mot de passe",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
     "changePassword": "Changer le mot de passe",
     "currentPassword": "Mot de passe actuel",
     "newPassword": "Nouveau mot de passe",
+    "confirmNewPassword": "Confirmer le nouveau mot de passe",
+    "confirmNewPasswordPlaceholder": "Confirmez votre nouveau mot de passe",
     "enterCurrentPassword": "Entrez votre mot de passe actuel",
     "enterNewPassword": "Entrez votre nouveau mot de passe",
+    "passwordUpdatedSuccessfully": "Mot de passe mis à jour avec succès ! Vous serez déconnecté dans 3 secondes...",
+    "updatingPassword": "Mise à jour du mot de passe...",
     "passwordRequirements": {
       "minLength": "Au moins 8 caractères",
       "uppercase": "Une lettre majuscule",
@@ -54,7 +63,9 @@
     },
     "fullName": "Nom complet",
     "emailAddress": "Adresse email",
-    "accountRole": "Rôle du compte"
+    "accountRole": "Rôle du compte",
+    "error": "Erreur",
+    "success": "Succès"
   },
   "orders": {
     "title": "Commandes",
@@ -95,7 +106,80 @@
     "logout": "Déconnexion"
   },
   "dashboard": {
-    "title": "Tableau de bord"
+    "title": "Tableau de bord",
+    "statistics": {
+      "title": "Statistiques",
+      "daily": "Quotidien",
+      "weekly": "Hebdomadaire",
+      "monthly": "Mensuel",
+      "sales": "Chiffre d'affaires",
+      "orders": "Commandes",
+      "clients": "Nouveaux clients",
+      "averageOrder": "Panier moyen",
+      "compared": "vs période précédente",
+      "noData": "Aucune donnée disponible pour cette période"
+    },
+    "recentOrders": "Commandes récentes",
+    "stockStatus": "État du stock",
+    "salesChart": "Graphique des ventes",
+    "totalClients": "Total Clients",
+    "totalOrders": "Total Commandes",
+    "totalProducts": "Total Produits",
+    "totalUsers": "Total Utilisateurs",
+    "stockLevels": "Niveaux de stock",
+    "recentTransactions": "Transactions récentes",
+    "salesOverview": "Aperçu des ventes",
+    "topProducts": "Produits les plus vendus",
+    "loading": "Chargement...",
+    "total": "Total",
+    "client": "Client",
+    "order": "Commande",
+    "product": "Produit",
+    "users": "Utilisateurs",
+    "creditClients": "Clients à crédit",
+    "outOfStockProducts": "Produits en rupture de stock",
+    "tableHeaders": {
+      "client": "Client",
+      "phone": "Téléphone",
+      "remainingAmount": "Montant restant",
+      "days": "Jours",
+      "action": "Action",
+      "productName": "Nom du produit",
+      "reference": "Référence",
+      "quantity": "Quantité",
+      "status": "Statut"
+    },
+    "status": {
+      "outOfStock": "Rupture de stock",
+      "lowStock": "Stock faible",
+      "inStock": "En stock",
+      "confirm": "Confirmer"
+    },
+    "metrics": {
+      "totalClientsLabel": "Nombre total de clients",
+      "totalOrdersLabel": "Nombre total de commandes",
+      "totalProductsLabel": "Nombre total de produits",
+      "totalUsersLabel": "Nombre total d'utilisateurs"
+    },
+    "finances": {
+      "title": "Finances",
+      "totalRevenue": "Chiffre d'affaires",
+      "paidAmount": "Montant payé",
+      "pendingAmount": "Montant en attente",
+      "paymentCompletion": "État des paiements",
+      "orderStatus": "Statut des commandes"
+    },
+    "timeframes": {
+      "today": "Aujourd'hui",
+      "yesterday": "Hier",
+      "this_week": "Cette Semaine",
+      "last_week": "Semaine Dernière",
+      "this_month": "Ce Mois",
+      "last_month": "Mois Dernier",
+      "this_year": "Cette Année",
+      "last_year": "Année Dernière",
+      "all_time": "Tout le Temps"
+    }
   },
   "roles": {
     "owner": "Propriétaire",

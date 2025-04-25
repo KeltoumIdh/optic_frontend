@@ -13,7 +13,7 @@ import {
 } from "../../components/ui/form.jsx";
 import { Input } from "../../components/ui/input.jsx";
 import { Button } from "../../components/ui/button.jsx";
-import { ArrowLeft, Upload, Save } from "lucide-react";
+import { ArrowLeft, Upload, Save, AlertTriangle } from "lucide-react";
 import { useToast } from "../../components/ui/use-toast.js";
 import { Label } from "../../components/ui/label.jsx";
 import SuccessPopup from "../../components/Popups/SuccessPopup.jsx";
@@ -28,6 +28,14 @@ import {
   CardTitle,
   CardFooter,
 } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const formSchema = z.object({
   payment_method: z.string().max(50),
@@ -45,12 +53,17 @@ export default function OrderEdit() {
   const { toast } = useToast();
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const navigate = useNavigate();
+  const [originalStatus, setOriginalStatus] = useState("");
+  const [currentStatus, setCurrentStatus] = useState("");
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [showRestoreDialog, setShowRestoreDialog] = useState(false);
+  const [originalOrderData, setOriginalOrderData] = useState(null);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
   });
 
-  const { handleSubmit, register, setValue, formState } = form;
+  const { setValue } = form;
 
   const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
@@ -59,6 +72,10 @@ export default function OrderEdit() {
         setIsLoading(true);
         await csrf();
         const response = await axiosClient.post(`/api/orders/edit/${id}`);
+
+        // Store the original order data
+        setOriginalOrderData(response.data);
+
         setValue("payment_method", response.data.payment_method);
         setValue("date_fin_credit", response.data.date_fin_credit);
         setValue("paid_price", response.data.paid_price);
@@ -67,6 +84,10 @@ export default function OrderEdit() {
         setValue("status", response.data.order_status);
         // setValue("payement_file", response.data.payement_file);
         setIsCredit(response.data.is_credit);
+
+        // Store original status for reference
+        setOriginalStatus(response.data.order_status);
+        setCurrentStatus(response.data.order_status);
       } catch (error) {
         console.error("Fetch Order Error", error);
       } finally {
@@ -91,6 +112,38 @@ export default function OrderEdit() {
     }
   };
 
+  const handleStatusChange = (e) => {
+    const newStatus = e.target.value;
+    setCurrentStatus(newStatus);
+
+    // If changing to canceled, show confirmation dialog
+    if (newStatus === "canceled" && originalStatus !== "canceled") {
+      setShowCancelDialog(true);
+      e.preventDefault();
+      return;
+    }
+
+    // If changing from canceled to something else, show restoration dialog
+    if (originalStatus === "canceled" && newStatus !== "canceled") {
+      setShowRestoreDialog(true);
+      e.preventDefault();
+      return;
+    }
+
+    setValue("status", newStatus);
+  };
+
+  const confirmCancellation = () => {
+    setValue("status", "canceled");
+    setShowCancelDialog(false);
+  };
+
+  const confirmRestoration = () => {
+    // Continue with the status change
+    setValue("status", currentStatus);
+    setShowRestoreDialog(false);
+  };
+
   const [inProgress, setInProgress] = useState(false);
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -103,10 +156,19 @@ export default function OrderEdit() {
       status: e?.target?.status?.value ?? "",
     };
 
+    // If canceling order, show warning about payment status
+    if (data.status === "canceled" && originalStatus !== "canceled") {
+      toast({
+        title: "Info",
+        description:
+          "En annulant cette commande, le statut de paiement sera défini comme 'échec'.",
+      });
+    }
+
     try {
       setInProgress(true);
       await csrf();
-      const response = await axiosClient.put(`/api/orders/update/${id}`, data);
+      await axiosClient.put(`/api/orders/update/${id}`, data);
       toast({
         title: "Success",
         description: "Order updated successfully!",
@@ -160,6 +222,16 @@ export default function OrderEdit() {
         </CardHeader>
 
         <CardContent className="p-4 pt-6">
+          {originalStatus === "canceled" && (
+            <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-md flex items-start gap-2 text-amber-700">
+              <AlertTriangle className="h-5 w-5 mt-0.5 flex-shrink-0" />
+              <p className="text-sm">
+                Cette commande a été annulée. La modification du statut
+                rétablira la commande.
+              </p>
+            </div>
+          )}
+
           <Form {...form}>
             <form
               onSubmit={onSubmit}
@@ -177,10 +249,12 @@ export default function OrderEdit() {
                         <select
                           {...field}
                           className="border rounded-md w-full py-2 px-3 bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                          onChange={handleStatusChange}
                         >
                           <option value="in_delivery">En livraison</option>
                           <option value="delivered">Livré</option>
                           <option value="canceled">Annulé</option>
+                          <option value="completed">Terminé</option>
                         </select>
                       </FormControl>
                       <FormMessage />
@@ -308,12 +382,63 @@ export default function OrderEdit() {
           </Form>
         </CardContent>
       </Card>
+
       {showSuccessPopup && (
         <SuccessPopup
           message="Commande mise à jour avec succès!"
           onClose={closeSuccessPopup}
         />
       )}
+
+      {/* Cancellation Confirmation Dialog */}
+      <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirmer l'annulation de la commande</DialogTitle>
+            <DialogDescription>
+              Êtes-vous sûr de vouloir annuler cette commande ? Cette action
+              changera le statut de paiement à "échec" et pourrait affecter
+              l'inventaire.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowCancelDialog(false)}
+            >
+              Retour
+            </Button>
+            <Button variant="destructive" onClick={confirmCancellation}>
+              Confirmer l'annulation
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Restoration Confirmation Dialog */}
+      <Dialog open={showRestoreDialog} onOpenChange={setShowRestoreDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Rétablir la commande annulée</DialogTitle>
+            <DialogDescription>
+              Vous êtes sur le point de changer le statut d'une commande
+              annulée. Cette action rétablira la commande et pourrait affecter
+              l'inventaire et le statut de paiement.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowRestoreDialog(false)}
+            >
+              Annuler
+            </Button>
+            <Button variant="default" onClick={confirmRestoration}>
+              Rétablir la commande
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -67,7 +67,18 @@
     "logout": "Logout"
   },
   "dashboard": {
-    "title": "Dashboard"
+    "title": "Dashboard",
+    "timeframes": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "this_week": "This Week",
+      "last_week": "Last Week",
+      "this_month": "This Month",
+      "last_month": "Last Month",
+      "this_year": "This Year",
+      "last_year": "Last Year",
+      "all_time": "All Time"
+    }
   },
   "roles": {
     "owner": "Owner",
