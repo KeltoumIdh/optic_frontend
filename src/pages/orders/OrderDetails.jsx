@@ -1,7 +1,14 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import dayjs from "dayjs";
-import { ArrowLeft, Download, Edit, Receipt, Phone } from "lucide-react";
+import {
+  ArrowLeft,
+  Download,
+  Edit,
+  Receipt,
+  Phone,
+  AlertTriangle,
+} from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import axiosClient from "@/api/axiosClient.jsx";
 import { renderImageDir } from "@/helpers/utils";
@@ -21,6 +28,7 @@ function OrderDetails() {
   const { csrf } = useAuth();
   const [order, setOrder] = useState({});
   const [products, setProducts] = useState([]);
+  const [deletedProducts, setDeletedProducts] = useState([]);
   const { id } = useParams();
   const [isProgress, setIsProgress] = useState(false);
 
@@ -31,6 +39,7 @@ function OrderDetails() {
       const response = await axiosClient.get(`/api/orders/details/${id}`);
       setOrder(response.data.order);
       setProducts(response.data.products);
+      setDeletedProducts(response.data.deleted_products || []);
     } catch (err) {
       console.log("err", err);
     } finally {
@@ -117,40 +126,87 @@ function OrderDetails() {
               <div className="space-y-3">
                 {order?.cart &&
                   JSON.parse(order.cart).productsCart.map((p) => {
+                    // Check if the product exists in active products
                     const product = products.find(
                       (product) => product.id === p.product_id
                     );
-                    if (!product) return null;
-                    return (
-                      <div
-                        key={p.product_id}
-                        className="flex items-center p-4 rounded-lg bg-gray-50 dark:bg-gray-800"
-                      >
-                        <div className="flex-shrink-0 w-16 h-16 mr-4">
-                          <img
-                            className="w-full h-full object-cover rounded"
-                            src={renderImageDir(product.image)}
-                            alt={product.name}
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="text-sm font-medium text-gray-900 dark:text-white">
-                            {product.name}
-                            <span className="text-xs text-gray-500 ml-1">
-                              ({product.reference})
+
+                    // If it's found in active products, render it
+                    if (product) {
+                      return (
+                        <div
+                          key={p.product_id}
+                          className="flex items-center p-4 rounded-lg bg-gray-50 dark:bg-gray-800"
+                        >
+                          <div className="flex-shrink-0 w-16 h-16 mr-4">
+                            <img
+                              className="w-full h-full object-cover rounded"
+                              src={renderImageDir(product.image)}
+                              alt={product.name}
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-sm font-medium text-gray-900 dark:text-white">
+                              {product.name}
+                              <span className="text-xs text-gray-500 ml-1">
+                                ({product.reference})
+                              </span>
+                            </h4>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                              {p.quantity} x {p.price} dh
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <span className="inline-block font-medium text-green-600">
+                              {(p.price * p.quantity).toFixed(2)} dh
                             </span>
-                          </h4>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
-                            {p.quantity} x {p.price} dh
-                          </p>
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <span className="inline-block font-medium text-green-600">
-                            {(p.price * p.quantity).toFixed(2)} dh
-                          </span>
-                        </div>
-                      </div>
+                      );
+                    }
+
+                    // Check if it's a deleted product
+                    const deletedProduct = deletedProducts.find(
+                      (delProduct) => delProduct.id === p.product_id
                     );
+
+                    if (deletedProduct) {
+                      return (
+                        <div
+                          key={`deleted-${p.product_id}`}
+                          className="flex items-center p-4 rounded-lg bg-gray-50 dark:bg-gray-800 border border-amber-300"
+                        >
+                          <div className="flex-shrink-0 w-16 h-16 mr-4 flex items-center justify-center bg-gray-200 rounded">
+                            <AlertTriangle className="h-8 w-8 text-amber-500" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-sm font-medium text-gray-900 dark:text-white flex items-center">
+                              {deletedProduct.name}
+                              <span className="text-xs text-gray-500 ml-1">
+                                ({deletedProduct.reference})
+                              </span>
+                              <Badge
+                                className="ml-2 bg-amber-500"
+                                variant="secondary"
+                              >
+                                Produit supprimé
+                              </Badge>
+                            </h4>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                              {p.quantity} x {p.price} dh
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <span className="inline-block font-medium text-green-600">
+                              {(p.price * p.quantity).toFixed(2)} dh
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    // If neither found in active or deleted products
+                    return null;
                   })}
               </div>
 
