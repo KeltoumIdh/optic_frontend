@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import dayjs from "dayjs";
 import { useAuth } from "@/hooks/useAuth";
 import axiosClient from "@/api/axiosClient";
+import { axiosProduct } from "@/api/axios";
 import Loader from "@/components/loader";
 import { renderImageDir } from "@/helpers/utils";
 import {
@@ -124,7 +125,7 @@ function ProductDetails() {
     try {
       setDeleteLoading(true);
       await csrf();
-      const response = await axiosClient.delete(`/api/products/delete/${id}`);
+      const response = await axiosProduct.delete(`/products/delete/${id}`);
       if (response.status === 201) {
         toast({
           title: "Succès",
