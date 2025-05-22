@@ -169,7 +169,7 @@ export default function OrderAdd() {
           <div className="rounded-md border border-gray-200 dark:border-gray-700 overflow-hidden">
             <div className="overflow-x-auto">
               <Table>
-                <TableHeader className="bg-gray-50 dark:bg-gray-800">
+                <TableHeader className="bg-gray-50  ">
                   <TableRow>
                     <TableHead className="font-medium">Client</TableHead>
                     <TableHead className="font-medium whitespace-nowrap hidden md:table-cell">

@@ -294,7 +294,7 @@ export default function Clients() {
                     >
                       <TableCell className="min-w-[200px]">
                         <div className="flex items-center space-x-3">
-                          <div className="h-10 w-10 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-800 flex-shrink-0">
+                          <div className="h-10 w-10 rounded-full overflow-hidden bg-gray-100   flex-shrink-0">
                             {client.image ? (
                               <img
                                 src={renderImageDir(client.image, "client")}

@@ -139,13 +139,25 @@ function Orders() {
                 Commandes
               </CardTitle>
             </div>
-            <Link to="/orders/add">
-              <Button className="bg-primary hover:bg-primary/90">
-                <PlusCircle className="mr-2 h-4 w-4" />
-                <span className="hidden sm:inline">Nouvelle commande</span>
-                <span className="sm:hidden">Ajouter</span>
-              </Button>
-            </Link>
+            <div className="flex gap-2">
+              <Link to="/orders/old-invoice">
+                <Button
+                  variant="outline"
+                  className="border-primary text-primary hover:bg-primary/10"
+                >
+                  <CreditCard className="mr-2 h-4 w-4" />
+                  <span className="hidden sm:inline">Ancienne facture</span>
+                  <span className="sm:hidden">Facture</span>
+                </Button>
+              </Link>
+              <Link to="/orders/add">
+                <Button className="bg-primary hover:bg-primary/90">
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  <span className="hidden sm:inline">Nouvelle commande</span>
+                  <span className="sm:hidden">Ajouter</span>
+                </Button>
+              </Link>
+            </div>
           </div>
           <CardDescription className="mt-2 text-gray-500 dark:text-gray-400">
             Gérer et suivre toutes les commandes
@@ -187,7 +199,7 @@ function Orders() {
               <div className="rounded-md border border-gray-200 dark:border-gray-700 overflow-hidden">
                 <div className="overflow-x-auto">
                   <Table>
-                    <TableHeader className="bg-gray-50 dark:bg-gray-800">
+                    <TableHeader className="bg-gray-50  ">
                       <TableRow>
                         <TableHead className="font-medium whitespace-nowrap">
                           Commande

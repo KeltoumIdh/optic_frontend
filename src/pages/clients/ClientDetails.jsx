@@ -168,7 +168,7 @@ function ClientDetails() {
         <CardContent className="pt-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="md:col-span-1 flex flex-col">
-              <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 flex items-center justify-center h-[250px] border border-gray-200 dark:border-gray-700">
+              <div className="bg-gray-50  /50 rounded-lg p-4 flex items-center justify-center h-[250px] border border-gray-200 dark:border-gray-700">
                 {client?.image ? (
                   <img
                     src={renderImageDir(client.image, "client")}
@@ -187,7 +187,7 @@ function ClientDetails() {
                 )}
               </div>
 
-              <div className="mt-6 bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+              <div className="mt-6 bg-gray-50  /50 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
                 <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center">
                   <Calendar className="h-4 w-4 mr-2" />
                   Information
@@ -222,7 +222,7 @@ function ClientDetails() {
             </div>
 
             <div className="md:col-span-2">
-              <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 mb-6 border border-gray-200 dark:border-gray-700">
+              <div className="bg-gray-50  /50 rounded-lg p-4 mb-6 border border-gray-200 dark:border-gray-700">
                 <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-3">
                   Coordonnées du client
                 </h3>
@@ -270,7 +270,7 @@ function ClientDetails() {
               </div>
 
               {orders && orders.length > 0 ? (
-                <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div className="bg-gray-50  /50 rounded-lg p-4 border border-gray-200 dark:border-gray-700 overflow-hidden">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="font-medium text-gray-900 dark:text-gray-100">
                       Commandes du client
@@ -325,7 +325,7 @@ function ClientDetails() {
                         {orders.map((order) => (
                           <tr
                             key={order.id}
-                            className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                            className="bg-white   border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"
                           >
                             <td className="px-4 py-3 font-medium text-gray-900 dark:text-white whitespace-nowrap">
                               {order.id}
@@ -361,7 +361,7 @@ function ClientDetails() {
                   </div>
                 </div>
               ) : (
-                <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 border border-gray-200 dark:border-gray-700 text-center">
+                <div className="bg-gray-50  /50 rounded-lg p-4 border border-gray-200 dark:border-gray-700 text-center">
                   <ShoppingCart className="h-10 w-10 text-gray-400 mx-auto mb-2" />
                   <p className="text-gray-600 dark:text-gray-400">
                     Aucune commande pour ce client

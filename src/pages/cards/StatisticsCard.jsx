@@ -172,7 +172,7 @@ const StatisticsCard = () => {
             {t("dashboard.statistics.title")}
           </CardTitle>
 
-          <div className="inline-flex h-10 items-center justify-center rounded-md bg-gray-100 p-1 dark:bg-gray-800">
+          <div className="inline-flex h-10 items-center justify-center rounded-md bg-gray-100 p-1  ">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
@@ -180,7 +180,7 @@ const StatisticsCard = () => {
                 className={cn(
                   "inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50",
                   activeTab === tab.id
-                    ? "bg-white text-gray-900 shadow-sm dark:bg-gray-800 dark:text-gray-50"
+                    ? "bg-white text-gray-900 shadow-sm   dark:text-gray-50"
                     : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
                 )}
               >

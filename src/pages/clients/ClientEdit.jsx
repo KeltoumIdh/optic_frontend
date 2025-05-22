@@ -215,7 +215,7 @@ export default function ClientEdit() {
                       errors.name
                         ? "border-red-500 focus:ring-red-500"
                         : "border-gray-300 dark:border-gray-700 focus:ring-primary"
-                    } rounded-lg dark:bg-gray-800 focus:border-transparent transition-all`}
+                    } rounded-lg   focus:border-transparent transition-all`}
                   />
                   {errors.name && (
                     <p className="mt-1.5 text-sm text-red-600">{errors.name}</p>
@@ -235,7 +235,7 @@ export default function ClientEdit() {
                     value={clientData.lname}
                     onChange={handleChange}
                     name="lname"
-                    className="w-full px-4 py-2.5 text-sm border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-800 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                    className="w-full px-4 py-2.5 text-sm border border-gray-300 dark:border-gray-700 rounded-lg   focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                   />
                 </div>
 
@@ -257,7 +257,7 @@ export default function ClientEdit() {
                       errors.phone
                         ? "border-red-500 focus:ring-red-500"
                         : "border-gray-300 dark:border-gray-700 focus:ring-primary"
-                    } rounded-lg dark:bg-gray-800 focus:border-transparent transition-all`}
+                    } rounded-lg   focus:border-transparent transition-all`}
                   />
                   {errors.phone && (
                     <p className="mt-1.5 text-sm text-red-600">
@@ -279,7 +279,7 @@ export default function ClientEdit() {
                     value={clientData.city}
                     onChange={handleChange}
                     name="city"
-                    className="w-full px-4 py-2.5 text-sm border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-800 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                    className="w-full px-4 py-2.5 text-sm border border-gray-300 dark:border-gray-700 rounded-lg   focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                   />
                 </div>
 
@@ -296,7 +296,7 @@ export default function ClientEdit() {
                     value={clientData.address}
                     onChange={handleChange}
                     name="address"
-                    className="w-full px-4 py-2.5 text-sm border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-800 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                    className="w-full px-4 py-2.5 text-sm border border-gray-300 dark:border-gray-700 rounded-lg   focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                   />
                 </div>
               </div>
@@ -305,7 +305,7 @@ export default function ClientEdit() {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Photo du client
                 </label>
-                <div className="mt-1 border-2 border-gray-300 dark:border-gray-700 border-dashed rounded-lg h-[300px] flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-gray-800/50">
+                <div className="mt-1 border-2 border-gray-300 dark:border-gray-700 border-dashed rounded-lg h-[300px] flex items-center justify-center overflow-hidden bg-gray-50  /50">
                   {imagePreview ? (
                     <div className="flex flex-col items-center p-4 w-full h-full">
                       <div className="relative w-full h-full flex items-center justify-center">

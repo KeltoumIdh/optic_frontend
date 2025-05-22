@@ -1,4 +1,4 @@
-import {createBrowserRouter} from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import NotFound from "../pages/NotFound";
@@ -27,121 +27,123 @@ import { DataTable } from "../pages/ListCheck";
 import ClientDetails from "../pages/clients/ClientDetails";
 import Invoice from "../pages/invoice/Invoice";
 import { FactureTable } from "../pages/Facture";
-
+import OldInvoiceAdd from "../pages/orders/OldInvoiceAdd";
 
 export const router = createBrowserRouter([
-    {
-        // element: <Layout/>,
-        element: <App/>,
-        children:[
-            {
-                path: "/",
-                element: <Home/>,
-            },
+  {
+    // element: <Layout/>,
+    element: <App />,
+    children: [
+      {
+        path: "/",
+        element: <Home />,
+      },
 
-            {
-                path: "/clients",
-                element: <Clients/>,
-            },
-            {
-                path: "/clients/add",
-                element: <ClientAdd/>,
-            },
-            {
-                path: "/clients/edit/:id",
-                element: <ClientEdit/>,
-            },
-            {
-                path: "/clients/details/:id",
-                element: <ClientDetails/>,
-            },
-            {
-                path: "/products",
-                element: <Products/>,
-            },
-            {
-                path: "/products/add",
-                element: <ProductAdd/>,
-            },
-            {
-                path: "/products/edit/:id",
-                element: <ProductEdit/>,
-            },
-            {
-                path: "/products/details/:id",
-                element: <ProductDetails/>,
-            },
-            {
-                path: "/orders",
-                element: <Orders/>,
-            },
-            {
-                path: "/orders/products/add/:id",
-                element: <OrderProductsAdd/>,
-            },
-            {
-                path: "/orders/confirmed",
-                element: <OrderConfirmed/>,
-            },
-            {
-                path: "/checkout",
-                element: <Checkout/>,
-            },
-            {
-                path: "/orders/add",
-                element: <OrderAdd/>,
-            },
-            {
-                path: "/orders/edit/:id",
-                element: <OrderEdit/>,
-            },
-            {
-                path: "/orders/details/:id",
-                element: <OrderDetails/>,
-            },
-            {
-                path: "/view-invoice/:id",
-                element: <Invoice/>,
-            },
-            {
-                path: '/profile',
-                element: <Profile/>,
-            },
-            {
-                path: '/user/list',
-                element: <DataTableDemo/>,
-            },
-            {
-                path: '/user/add',
-                element: <ProfileForm/>,
-            },
-            {
-                path: '/user/edit/:id',
-                element: <EditUser/>,
-            },
-            {
-                path: '/check/list',
-                element: <DataTable/>,
-            },
-            {
-                path: '/Facture/list',
-                element: <FactureTable/>,
-            },
-            {
-                path: '/activities',
-                element: <Activities/>,
-            },
-            {
-                path: '*',
-                element: <NotFound/>,
-            },
-        ]
-        
+      {
+        path: "/clients",
+        element: <Clients />,
+      },
+      {
+        path: "/clients/add",
+        element: <ClientAdd />,
+      },
+      {
+        path: "/clients/edit/:id",
+        element: <ClientEdit />,
+      },
+      {
+        path: "/clients/details/:id",
+        element: <ClientDetails />,
+      },
+      {
+        path: "/products",
+        element: <Products />,
+      },
+      {
+        path: "/products/add",
+        element: <ProductAdd />,
+      },
+      {
+        path: "/products/edit/:id",
+        element: <ProductEdit />,
+      },
+      {
+        path: "/products/details/:id",
+        element: <ProductDetails />,
+      },
+      {
+        path: "/orders",
+        element: <Orders />,
+      },
+      {
+        path: "/orders/products/add/:id",
+        element: <OrderProductsAdd />,
+      },
+      {
+        path: "/orders/confirmed",
+        element: <OrderConfirmed />,
+      },
+      {
+        path: "/checkout",
+        element: <Checkout />,
+      },
+      {
+        path: "/orders/add",
+        element: <OrderAdd />,
+      },
+      {
+        path: "/orders/edit/:id",
+        element: <OrderEdit />,
+      },
+      {
+        path: "/orders/details/:id",
+        element: <OrderDetails />,
+      },
+      {
+        path: "/view-invoice/:id",
+        element: <Invoice />,
+      },
+      {
+        path: "/orders/old-invoice",
+        element: <OldInvoiceAdd />,
+      },
+      {
+        path: "/profile",
+        element: <Profile />,
+      },
+      {
+        path: "/user/list",
+        element: <DataTableDemo />,
+      },
+      {
+        path: "/user/add",
+        element: <ProfileForm />,
+      },
+      {
+        path: "/user/edit/:id",
+        element: <EditUser />,
+      },
+      {
+        path: "/check/list",
+        element: <DataTable />,
+      },
+      {
+        path: "/Facture/list",
+        element: <FactureTable />,
+      },
+      {
+        path: "/activities",
+        element: <Activities />,
+      },
+      {
+        path: "*",
+        element: <NotFound />,
+      },
+    ],
+  },
 
-    },
-
-    {
-        path: "/login",
-        element: <Login/>,
-    }
-])
+  {
+    path: "/login",
+    element: <Login />,
+  },
+]);

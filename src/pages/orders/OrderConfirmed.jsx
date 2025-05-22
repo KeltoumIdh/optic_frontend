@@ -234,7 +234,7 @@ function OrderConfirmed() {
             <div className="rounded-md border border-gray-200 dark:border-gray-700 overflow-hidden">
               <div className="overflow-x-auto">
                 <Table>
-                  <TableHeader className="bg-gray-50 dark:bg-gray-800">
+                  <TableHeader className="bg-gray-50  ">
                     <TableRow>
                       <TableHead className="font-medium w-2/5">
                         Produit
@@ -348,7 +348,7 @@ function OrderConfirmed() {
           )}
 
           {products.length > 0 && (
-            <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-md">
+            <div className="mt-6 p-4 bg-gray-50   rounded-md">
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-500 dark:text-gray-400">

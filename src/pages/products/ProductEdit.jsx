@@ -234,7 +234,7 @@ export default function ProductEdit() {
                       errors.name
                         ? "border-red-500 focus:ring-red-500"
                         : "border-gray-300 dark:border-gray-700 focus:ring-primary"
-                    } rounded-lg dark:bg-gray-800 focus:border-transparent transition-all`}
+                    } rounded-lg   focus:border-transparent transition-all`}
                   />
                   {errors.name && (
                     <p className="mt-1.5 text-sm text-red-600">{errors.name}</p>
@@ -259,7 +259,7 @@ export default function ProductEdit() {
                       errors.reference
                         ? "border-red-500 focus:ring-red-500"
                         : "border-gray-300 dark:border-gray-700 focus:ring-primary"
-                    } rounded-lg dark:bg-gray-800 focus:border-transparent transition-all`}
+                    } rounded-lg   focus:border-transparent transition-all`}
                   />
                   {errors.reference && (
                     <p className="mt-1.5 text-sm text-red-600">
@@ -289,7 +289,7 @@ export default function ProductEdit() {
                           errors.price
                             ? "border-red-500 focus:ring-red-500"
                             : "border-gray-300 dark:border-gray-700 focus:ring-primary"
-                        } rounded-lg dark:bg-gray-800 focus:border-transparent transition-all`}
+                        } rounded-lg   focus:border-transparent transition-all`}
                       />
                       <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                         <span className="text-gray-500 dark:text-gray-400">
@@ -323,7 +323,7 @@ export default function ProductEdit() {
                         errors.quantity_available
                           ? "border-red-500 focus:ring-red-500"
                           : "border-gray-300 dark:border-gray-700 focus:ring-primary"
-                      } rounded-lg dark:bg-gray-800 focus:border-transparent transition-all`}
+                      } rounded-lg   focus:border-transparent transition-all`}
                     />
                     {errors.quantity_available && (
                       <p className="mt-1.5 text-sm text-red-600">
@@ -347,7 +347,7 @@ export default function ProductEdit() {
                     value={product.quantity_sold}
                     onChange={handleChange}
                     name="quantity_sold"
-                    className="w-full px-4 py-2.5 text-sm border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-800 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                    className="w-full px-4 py-2.5 text-sm border border-gray-300 dark:border-gray-700 rounded-lg   focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                     readOnly
                   />
                   <p className="mt-1 text-xs text-gray-500">
@@ -370,7 +370,7 @@ export default function ProductEdit() {
                     value={product.message || ""}
                     onChange={handleChange}
                     name="message"
-                    className="w-full px-4 py-2.5 text-sm border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-800 focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none"
+                    className="w-full px-4 py-2.5 text-sm border border-gray-300 dark:border-gray-700 rounded-lg   focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none"
                   />
                 </div>
               </div>
@@ -379,7 +379,7 @@ export default function ProductEdit() {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Image du produit
                 </label>
-                <div className="mt-1 border-2 border-gray-300 dark:border-gray-700 border-dashed rounded-lg h-[300px] flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-gray-800/50">
+                <div className="mt-1 border-2 border-gray-300 dark:border-gray-700 border-dashed rounded-lg h-[300px] flex items-center justify-center overflow-hidden bg-gray-50  /50">
                   {imagePreview ? (
                     <div className="flex flex-col items-center p-4 w-full h-full">
                       <div className="relative w-full h-full flex items-center justify-center">

@@ -217,7 +217,7 @@ function ProductDetails() {
         <CardContent className="pt-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="md:col-span-1 flex flex-col">
-              <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 flex items-center justify-center h-[300px] border border-gray-200 dark:border-gray-700">
+              <div className="bg-gray-50  /50 rounded-lg p-4 flex items-center justify-center h-[300px] border border-gray-200 dark:border-gray-700">
                 {product?.image ? (
                   <img
                     src={renderImageDir(product.image)}
@@ -236,7 +236,7 @@ function ProductDetails() {
                 )}
               </div>
 
-              <div className="mt-6 bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+              <div className="mt-6 bg-gray-50  /50 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
                 <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center">
                   <Calendar className="h-4 w-4 mr-2" />
                   Information
@@ -330,7 +330,7 @@ function ProductDetails() {
                   </div>
                 </div>
 
-                <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                <div className="bg-gray-50  /50 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
                   <div className="flex justify-between items-start">
                     <div>
                       <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -350,7 +350,7 @@ function ProductDetails() {
               </div>
 
               {product?.message && (
-                <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 mb-6 border border-gray-200 dark:border-gray-700">
+                <div className="bg-gray-50  /50 rounded-lg p-4 mb-6 border border-gray-200 dark:border-gray-700">
                   <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-2">
                     Note
                   </h3>
@@ -361,7 +361,7 @@ function ProductDetails() {
               )}
 
               {orders && orders.length > 0 && (
-                <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                <div className="bg-gray-50  /50 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
                   <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-3">
                     Dernières commandes
                   </h3>
@@ -406,7 +406,7 @@ function ProductDetails() {
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full p-6 shadow-lg">
+          <div className="bg-white   rounded-lg max-w-md w-full p-6 shadow-lg">
             <h2 className="text-lg font-semibold">Êtes-vous sûr ?</h2>
             <p className="text-sm text-gray-500 mt-2 mb-4">
               Cette action ne peut pas être annulée. Ce produit sera

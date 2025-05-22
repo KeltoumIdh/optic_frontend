@@ -57,14 +57,14 @@ const App = () => {
             className="absolute inset-0 bg-black/50"
             onClick={toggleMobileSideBar}
           />
-          <div className="absolute left-0 top-0 h-full w-64 bg-white dark:bg-gray-800 shadow-lg">
+          <div className="absolute left-0 top-0 h-full w-64 bg-white   shadow-lg">
             <MobileMenu toggleMobileSideBar={toggleMobileSideBar} />
           </div>
         </div>
       )}
 
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="sticky top-0 z-10 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+        <header className="sticky top-0 z-10 bg-white   border-b border-gray-200 dark:border-gray-700 shadow-sm">
           <NavBar
             open={open}
             toggleOpen={toggleOpen}

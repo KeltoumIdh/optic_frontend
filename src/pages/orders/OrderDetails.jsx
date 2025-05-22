@@ -136,7 +136,7 @@ function OrderDetails() {
                       return (
                         <div
                           key={p.product_id}
-                          className="flex items-center p-4 rounded-lg bg-gray-50 dark:bg-gray-800"
+                          className="flex items-center p-4 rounded-lg bg-gray-50  "
                         >
                           <div className="flex-shrink-0 w-16 h-16 mr-4">
                             <img
@@ -174,7 +174,7 @@ function OrderDetails() {
                       return (
                         <div
                           key={`deleted-${p.product_id}`}
-                          className="flex items-center p-4 rounded-lg bg-gray-50 dark:bg-gray-800 border border-amber-300"
+                          className="flex items-center p-4 rounded-lg bg-gray-50   border border-amber-300"
                         >
                           <div className="flex-shrink-0 w-16 h-16 mr-4 flex items-center justify-center bg-gray-200 rounded">
                             <AlertTriangle className="h-8 w-8 text-amber-500" />
@@ -211,7 +211,7 @@ function OrderDetails() {
               </div>
 
               {/* Order summary */}
-              <div className="mt-6 p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
+              <div className="mt-6 p-4 rounded-lg bg-gray-50  ">
                 <h3 className="text-lg font-medium mb-4">Récapitulatif</h3>
 
                 <div className="space-y-2">
@@ -252,7 +252,7 @@ function OrderDetails() {
             {/* Client and payment info section */}
             <div className="space-y-6">
               {/* Client info card */}
-              <div className="p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
+              <div className="p-4 rounded-lg bg-gray-50  ">
                 <h3 className="text-lg font-medium mb-4">Client</h3>
 
                 <div className="flex items-center mb-4">
@@ -280,7 +280,7 @@ function OrderDetails() {
               </div>
 
               {/* Payment info card */}
-              <div className="p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
+              <div className="p-4 rounded-lg bg-gray-50  ">
                 <h3 className="text-lg font-medium mb-4">
                   Détails du paiement
                 </h3>

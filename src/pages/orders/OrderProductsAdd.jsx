@@ -297,7 +297,7 @@ export default function OrderProductsAdd() {
           <div className="rounded-md border border-gray-200 dark:border-gray-700 overflow-hidden">
             <div className="overflow-x-auto">
               <Table>
-                <TableHeader className="bg-gray-50 dark:bg-gray-800">
+                <TableHeader className="bg-gray-50  ">
                   <TableRow>
                     <TableHead className="w-[50px]"></TableHead>
                     <TableHead className="font-medium">Produit</TableHead>

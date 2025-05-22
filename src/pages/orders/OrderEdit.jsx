@@ -248,7 +248,7 @@ export default function OrderEdit() {
                       <FormControl>
                         <select
                           {...field}
-                          className="border rounded-md w-full py-2 px-3 bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                          className="border rounded-md w-full py-2 px-3 bg-white   dark:border-gray-700 dark:text-white"
                           onChange={handleStatusChange}
                         >
                           <option value="in_delivery">En livraison</option>
@@ -271,7 +271,7 @@ export default function OrderEdit() {
                       <FormControl>
                         <select
                           {...field}
-                          className="border rounded-md w-full py-2 px-3 bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                          className="border rounded-md w-full py-2 px-3 bg-white   dark:border-gray-700 dark:text-white"
                         >
                           <option value="">
                             Sélectionnez une méthode de paiement
@@ -299,7 +299,7 @@ export default function OrderEdit() {
                           placeholder="Prix payé"
                           {...field}
                           type="number"
-                          className="dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                          className="  dark:border-gray-700 dark:text-white"
                         />
                       </FormControl>
                       <FormMessage />
@@ -318,7 +318,7 @@ export default function OrderEdit() {
                           <input
                             type="date"
                             {...field}
-                            className="border rounded-md w-full py-2 px-3 text-black dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                            className="border rounded-md w-full py-2 px-3 text-black   dark:border-gray-700 dark:text-white"
                             onClick={(e) => e.target.showPicker()}
                           />
                         </FormControl>
@@ -329,7 +329,7 @@ export default function OrderEdit() {
                 )}
               </div>
 
-              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+              <div className="bg-gray-50   rounded-lg p-4 border border-gray-200 dark:border-gray-700">
                 <Label
                   htmlFor="payement_file"
                   className="block mb-2 font-medium"

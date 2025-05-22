@@ -288,7 +288,7 @@ function Checkout() {
           <div className="grid lg:grid-cols-2 gap-6">
             {/* PAYMENT OPTIONS COLUMN */}
             <div className="space-y-6">
-              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+              <div className="bg-gray-50   rounded-lg p-4">
                 <h3 className="text-lg font-medium mb-4">Mode de paiement</h3>
 
                 <RadioGroup
@@ -348,7 +348,7 @@ function Checkout() {
                 )}
               </div>
 
-              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+              <div className="bg-gray-50   rounded-lg p-4">
                 <h3 className="text-lg font-medium mb-4">
                   Méthode de paiement
                 </h3>
@@ -506,7 +506,7 @@ function Checkout() {
 
             {/* ORDER SUMMARY COLUMN */}
             <div>
-              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+              <div className="bg-gray-50   rounded-lg p-4">
                 <h3 className="text-lg font-medium mb-4">
                   Récapitulatif de la commande
                 </h3>
@@ -540,7 +540,7 @@ function Checkout() {
                 </div>
               </div>
 
-              <div className="mt-6 bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+              <div className="mt-6 bg-gray-50   rounded-lg p-4">
                 <h3 className="text-lg font-medium mb-4">Produits</h3>
 
                 <div className="space-y-2 max-h-52 overflow-y-auto">

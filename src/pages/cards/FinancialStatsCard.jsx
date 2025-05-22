@@ -130,7 +130,7 @@ const FinancialStatsCard = () => {
     const isNeutral = percentChange === 0;
 
     return (
-      <div className="rounded-lg bg-white dark:bg-gray-800 p-4 shadow border">
+      <div className="rounded-lg bg-white   p-4 shadow border">
         <div
           className={cn(
             "flex items-center mb-2",
@@ -185,7 +185,7 @@ const FinancialStatsCard = () => {
   // Render progress card for payment completion rate
   const renderProgressCard = (rate) => {
     return (
-      <div className="rounded-lg bg-white dark:bg-gray-800 p-4 shadow border">
+      <div className="rounded-lg bg-white   p-4 shadow border">
         <div
           className={cn(
             "flex items-center mb-2",
@@ -247,8 +247,7 @@ const FinancialStatsCard = () => {
                     onClick={() => handleTimeframeChange(option.id)}
                     className={cn(
                       "cursor-pointer",
-                      activeTimeframe === option.id &&
-                        "bg-gray-100 dark:bg-gray-800"
+                      activeTimeframe === option.id && "bg-gray-100  "
                     )}
                   >
                     {option.label}

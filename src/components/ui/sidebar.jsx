@@ -78,7 +78,7 @@ const SideBar = ({ open }) => {
   return (
     <div
       className={cn(
-        "h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out",
+        "h-full bg-white   border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out",
         open ? "w-64" : "w-20",
         isRTL ? "border-l border-r-0" : "border-r"
       )}
@@ -169,7 +169,7 @@ export const MobileMenu = ({ toggleMobileSideBar }) => {
   };
 
   return (
-    <div className="h-full overflow-y-auto flex flex-col bg-white dark:bg-gray-800">
+    <div className="h-full overflow-y-auto flex flex-col bg-white  ">
       <div className="p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between mb-2">
           <Link

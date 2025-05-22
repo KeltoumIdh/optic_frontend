@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import {
-    Form,
-    FormField,
+  Form,
+  FormField,
   FormItem,
   FormLabel,
   FormControl,
@@ -25,9 +25,9 @@ import {
 } from "@/components/ui/card";
 
 export default function ClientAdd() {
-    const { toast } = useToast();
-    const navigate = useNavigate();
-    const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [image, setImage] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
 
@@ -41,94 +41,94 @@ export default function ClientAdd() {
     },
   });
 
-    const {
-        register,
-        handleSubmit,
-        setError,
-        reset,
-        formState: { errors },
-    } = form;
+  const {
+    register,
+    handleSubmit,
+    setError,
+    reset,
+    formState: { errors },
+  } = form;
 
   const { csrf } = useAuth();
 
-    const handleFileChange = (e) => {
-        const file = e.target.files[0];
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
 
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImage(reader.result); // Base64 string
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage(reader.result); // Base64 string
         setImagePreview(reader.result);
-            };
-            reader.readAsDataURL(file);
-        } else {
+      };
+      reader.readAsDataURL(file);
+    } else {
       setImage("");
       setImagePreview(null);
     }
   };
 
-    const onSubmit = async (values) => {
-        setIsSubmitting(true);
+  const onSubmit = async (values) => {
+    setIsSubmitting(true);
 
-        // re-arrange data
-        const formData = new FormData();
-        formData.append("name", values.name);
-        formData.append("lname", values.lname);
-        formData.append("phone", values.phone);
-        formData.append("city", values.city);
-        formData.append("address", values.address);
-        formData.append("image", image);
+    // re-arrange data
+    const formData = new FormData();
+    formData.append("name", values.name);
+    formData.append("lname", values.lname);
+    formData.append("phone", values.phone);
+    formData.append("city", values.city);
+    formData.append("address", values.address);
+    formData.append("image", image);
 
-        try {
-            await csrf();
+    try {
+      await csrf();
       const response = await axiosClient.post("/api/clients/add", formData);
-            if (response.status === 201) {
-                toast({
+      if (response.status === 201) {
+        toast({
           title: "Succès",
           description: "Client créé avec succès!",
           variant: "success",
-                });
-                reset();
-                navigate("/clients");
-            }
-        } catch (error) {
-            if (error.response) {
-                const { data } = error.response;
-                if (data.errors) {
+        });
+        reset();
+        navigate("/clients");
+      }
+    } catch (error) {
+      if (error.response) {
+        const { data } = error.response;
+        if (data.errors) {
           Object.entries(data.errors).forEach(([fieldName, errorMessages]) => {
-                            setError(fieldName, {
-                                message: errorMessages.join(),
-                            });
+            setError(fieldName, {
+              message: errorMessages.join(),
+            });
           });
-                } else {
-                    toast({
+        } else {
+          toast({
             title: "Erreur",
-                        description:
-                            data.message ||
+            description:
+              data.message ||
               "Une erreur s'est produite lors de la création du client.",
             variant: "destructive",
-                    });
-                }
-            } else if (error.request) {
-                toast({
+          });
+        }
+      } else if (error.request) {
+        toast({
           title: "Erreur",
           description: "Aucune réponse reçue du serveur.",
           variant: "destructive",
-                });
-            } else {
-                toast({
+        });
+      } else {
+        toast({
           title: "Erreur",
-                    description:
+          description:
             "Une erreur s'est produite lors du traitement de la demande.",
           variant: "destructive",
-                });
-            }
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
+        });
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-    return (
+  return (
     <div className="mx-auto px-2 py-4 md:px-4 md:py-6">
       <Card className="shadow-md border border-gray-200 dark:border-gray-700">
         <CardHeader className="pb-4 border-b dark:border-gray-700">
@@ -138,11 +138,11 @@ export default function ClientAdd() {
               className="mr-3 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
               <ArrowLeft className="h-5 w-5" />
-                </Link>
+            </Link>
             <div className="flex items-center">
               <User className="h-6 w-6 mr-2 text-primary" />
               <CardTitle className="text-xl md:text-2xl font-bold">
-                    Ajouter un client
+                Ajouter un client
               </CardTitle>
             </div>
           </div>
@@ -151,12 +151,12 @@ export default function ClientAdd() {
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-6">
-            <Form {...form}>
-                <form
-                    onSubmit={handleSubmit(onSubmit)}
+          <Form {...form}>
+            <form
+              onSubmit={handleSubmit(onSubmit)}
               className="space-y-6"
-                    encType="multipart/form-data"
-                >
+              encType="multipart/form-data"
+            >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-5">
                   <FormItem>
@@ -167,7 +167,7 @@ export default function ClientAdd() {
                       <Input
                         placeholder="Nom"
                         {...register("name", { required: "Le nom est requis" })}
-                        className="w-full px-4 py-2.5 text-sm border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-800 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                        className="w-full px-4 py-2.5 text-sm border border-gray-300 dark:border-gray-700 rounded-lg   focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                       />
                     </FormControl>
                     {errors.name && (
@@ -187,14 +187,14 @@ export default function ClientAdd() {
                         {...register("lname", {
                           required: "Le prénom est requis",
                         })}
-                        className="w-full px-4 py-2.5 text-sm border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-800 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                        className="w-full px-4 py-2.5 text-sm border border-gray-300 dark:border-gray-700 rounded-lg   focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                       />
                     </FormControl>
                     {errors.lname && (
                       <p className="mt-1.5 text-sm text-red-600">
                         {errors.lname.message}
                       </p>
-                        )}
+                    )}
                   </FormItem>
 
                   <FormItem>
@@ -207,14 +207,14 @@ export default function ClientAdd() {
                         {...register("phone", {
                           required: "Le numéro de téléphone est requis",
                         })}
-                        className="w-full px-4 py-2.5 text-sm border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-800 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                        className="w-full px-4 py-2.5 text-sm border border-gray-300 dark:border-gray-700 rounded-lg   focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                       />
                     </FormControl>
                     {errors.phone && (
                       <p className="mt-1.5 text-sm text-red-600">
                         {errors.phone.message}
                       </p>
-                        )}
+                    )}
                   </FormItem>
 
                   <FormItem>
@@ -225,14 +225,14 @@ export default function ClientAdd() {
                       <Input
                         placeholder="Ville"
                         {...register("city")}
-                        className="w-full px-4 py-2.5 text-sm border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-800 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                        className="w-full px-4 py-2.5 text-sm border border-gray-300 dark:border-gray-700 rounded-lg   focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                       />
                     </FormControl>
                     {errors.city && (
                       <p className="mt-1.5 text-sm text-red-600">
                         {errors.city.message}
                       </p>
-                        )}
+                    )}
                   </FormItem>
 
                   <FormItem>
@@ -243,14 +243,14 @@ export default function ClientAdd() {
                       <Input
                         placeholder="Adresse"
                         {...register("address")}
-                        className="w-full px-4 py-2.5 text-sm border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-800 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                        className="w-full px-4 py-2.5 text-sm border border-gray-300 dark:border-gray-700 rounded-lg   focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                       />
                     </FormControl>
                     {errors.address && (
                       <p className="mt-1.5 text-sm text-red-600">
                         {errors.address.message}
                       </p>
-                        )}
+                    )}
                   </FormItem>
                 </div>
 
@@ -258,7 +258,7 @@ export default function ClientAdd() {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Photo du client
                   </label>
-                  <div className="mt-1 border-2 border-gray-300 dark:border-gray-700 border-dashed rounded-lg h-[300px] flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-gray-800/50">
+                  <div className="mt-1 border-2 border-gray-300 dark:border-gray-700 border-dashed rounded-lg h-[300px] flex items-center justify-center overflow-hidden bg-gray-50  /50">
                     {imagePreview ? (
                       <div className="flex flex-col items-center p-4 w-full h-full">
                         <div className="relative w-full h-full flex items-center justify-center">
@@ -310,13 +310,13 @@ export default function ClientAdd() {
                             <line x1="12" y1="3" x2="12" y2="15"></line>
                           </svg>
                           Changer l&apos;image
-                        <input
+                          <input
                             id="image"
                             type="file"
                             onChange={handleFileChange}
                             className="sr-only"
                             accept="image/png, image/jpg, image/jpeg"
-                        />
+                          />
                         </label>
                       </div>
                     ) : (
@@ -374,13 +374,13 @@ export default function ClientAdd() {
                     </div>
                   ) : (
                     "Créer le client"
-                        )}
-                    </Button>
+                  )}
+                </Button>
               </div>
-                </form>
-            </Form>
+            </form>
+          </Form>
         </CardContent>
       </Card>
     </div>
-    );
+  );
 }

@@ -421,7 +421,7 @@ export default function Activities() {
             <>
               <div className="rounded-md border border-gray-200 dark:border-gray-700 overflow-hidden">
                 <Table>
-                  <TableHeader className="bg-gray-50 dark:bg-gray-800">
+                  <TableHeader className="bg-gray-50  ">
                     <TableRow>
                       <TableHead className="font-medium w-[80px]">
                         <Button

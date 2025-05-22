@@ -148,7 +148,7 @@ export default function Products() {
                 <select
                   value={searchStatus}
                   onChange={handleStatusChange}
-                  className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 text-sm rounded-md w-full px-3 py-2 outline-none focus:ring-2 focus:ring-primary/50"
+                  className="bg-white   border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 text-sm rounded-md w-full px-3 py-2 outline-none focus:ring-2 focus:ring-primary/50"
                 >
                   <option value="">Tous les statuts</option>
                   <option value="Disponible">Disponible</option>
@@ -162,7 +162,7 @@ export default function Products() {
                     value={searchQuery}
                     onChange={handleChangeSearch}
                     type="search"
-                    className="block w-full px-4 py-2 ps-10 text-sm text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary/50 outline-none"
+                    className="block w-full px-4 py-2 ps-10 text-sm text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-700 rounded-md bg-white   focus:ring-2 focus:ring-primary/50 outline-none"
                     placeholder="Recherche par nom ou référence..."
                   />
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3">
@@ -179,7 +179,7 @@ export default function Products() {
           <div className="border rounded-md overflow-hidden">
             <div className="overflow-x-auto">
               <Table>
-                <TableHeader className="bg-gray-50 dark:bg-gray-800">
+                <TableHeader className="bg-gray-50  ">
                   <TableRow>
                     <TableHead className="py-3 font-medium">Produit</TableHead>
                     <TableHead className="py-3 font-medium text-center">

@@ -159,7 +159,7 @@ function ListUser() {
           ) : (
             <>
               {filteredUsers.length === 0 ? (
-                <div className="text-center py-8 border rounded-md bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                <div className="text-center py-8 border rounded-md bg-gray-50   border-gray-200 dark:border-gray-700">
                   <UserCheck className="mx-auto h-12 w-12 text-gray-400" />
                   <h3 className="mt-4 text-lg font-medium text-gray-900 dark:text-gray-100">
                     Aucun utilisateur trouvé
@@ -182,7 +182,7 @@ function ListUser() {
               ) : (
                 <div className="rounded-md border border-gray-200 dark:border-gray-700 overflow-hidden">
                   <Table>
-                    <TableHeader className="bg-gray-50 dark:bg-gray-800">
+                    <TableHeader className="bg-gray-50  ">
                       <TableRow>
                         <TableHead className="font-medium">Nom</TableHead>
                         <TableHead className="font-medium">Email</TableHead>
