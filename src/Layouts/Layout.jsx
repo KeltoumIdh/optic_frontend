@@ -115,7 +115,7 @@ export default function Layout() {
         </nav>
       </header>
 
-      <main className={"mx-auto  space-y-4 "}>
+      <main className={"mx-auto overflow-hidden space-y-4 "}>
         <div className="flex ">
           <div className=" md:h-1/4">
             <Sidebare />

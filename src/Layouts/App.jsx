@@ -40,7 +40,7 @@ const App = () => {
   }, [isLargeScreen]);
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900 transition-all duration-300 ease-in-out">
+    <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 transition-all duration-300 ease-in-out">
       {/* Desktop sidebar - hidden on small screens */}
       <div
         className={`hidden lg:block ${
