@@ -2,7 +2,6 @@ import { FourCard } from "./cards/FourCard";
 import { ListCard } from "./cards/listCard";
 import ChartCard from "./cards/ChartCard";
 import { StockCard } from "./cards/StockProduct";
-import FinancialStatsCard from "./cards/FinancialStatsCard";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 
@@ -22,27 +21,16 @@ const Home = () => {
           <FourCard />
         </div>
 
-        {/* <div className="w-full">
-          <FinancialStatsCard />
-        </div> */}
+        <div className="w-full">
+          <ListCard />
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
           <div className="bg-white rounded-lg shadow-sm">
             <StockCard />
           </div>
-
-          <div className="bg-white rounded-lg shadow-sm">
-            <ListCard />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
           <div className="bg-white rounded-lg shadow-sm">
             <ChartCard />
-          </div>
-
-          <div className="bg-white rounded-lg shadow-sm">
-            {/* Reserved for future content */}
           </div>
         </div>
       </div>

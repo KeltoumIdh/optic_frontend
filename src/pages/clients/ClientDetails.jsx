@@ -227,7 +227,7 @@ function ClientDetails() {
     if (orders.length > 0) {
       const filtered = orders.filter((order) => {
         if (!orderSearchDate) return true;
-        return dayjs(order.created_at).format("YYYY-MM-DD") === orderSearchDate;
+        return dayjs(order.order_date).format("YYYY-MM-DD") === orderSearchDate;
       });
       setFilteredOrders(filtered);
     }
@@ -631,7 +631,7 @@ function ClientDetails() {
                                 {order.id}
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap">
-                                {dayjs(order.created_at).format("DD/MM/YYYY")}
+                                {dayjs(order.order_date).format("DD/MM/YYYY")}
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap">
                                 {order.total_price} DH
